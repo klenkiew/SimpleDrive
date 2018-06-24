@@ -1,0 +1,14 @@
+form
+{
+  margin-top: 10px;
+}
+
+.well-success
+{
+  background: #5cb85c;
+}
+
+.well-alert
+{
+  background: #d9534f;
+}

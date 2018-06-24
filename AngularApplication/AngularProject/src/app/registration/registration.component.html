@@ -1,0 +1,48 @@
+<form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)" novalidate>
+
+  <div class="form-group">
+    <label for="email">E-mail</label>
+    <input type="text" class="form-control" name="email" ngModel required #email="ngModel">
+  </div>
+
+  <div *ngIf="!email?.valid && (email?.dirty || email?.touched)" class="alert alert-danger">
+    <div [hidden]="!email.errors.required">
+      E-mail is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" name="password" ngModel required minlength="6" #password="ngModel"
+           (change)="onPasswordChange($event)">
+  </div>
+
+  <div *ngIf="!password?.valid && (password?.dirty || password?.touched)" class="alert alert-danger">
+    <div [hidden]="!password.errors.required">
+      Password is required
+    </div>
+    <div [hidden]="!password.errors.minlength">
+      Password length must be at least 6 characters
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="passwordConfirmation">Repeat password</label>
+    <input type="password" class="form-control" name="passwordConfirmation" ngModel required minlength="6" #password_conf="ngModel"
+    (change)="onPasswordChange($event)">
+  </div>
+
+  <div *ngIf="passwordsDontMatch" class="alert alert-danger">
+    <div [hidden]="!passwordsDontMatch">
+      Password and password confirmation don't match
+    </div>
+  </div>
+
+  <div class="form-group">
+    <button class="btn btn-primary" type="submit" [disabled]="!registerForm.valid">Register</button>
+  </div>
+
+</form>
+
+<div class="well well-success bg-success" *ngIf="result != null && result.success">{{result.message}} <a [routerLink]="['/login']">Log in</a></div>
+<div class="well well-alert bg-alert" *ngIf="result != null && !result.success">{{result.message}}</div>
