@@ -1,9 +1,9 @@
-﻿using AuthenticationService.Model;
+﻿using FileService.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthenticationService.Database
+namespace FileService.Database
 {
     public class UserDbContext : DbContext
     {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AuthenticationService.Requests
+namespace FileService.Requests
 {
     public class RegisterRequest
     {

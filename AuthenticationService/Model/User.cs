@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace AuthenticationService.Model
+namespace FileService.Model
 {
     public class User
     {

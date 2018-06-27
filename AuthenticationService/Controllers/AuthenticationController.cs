@@ -5,10 +5,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using AuthenticationService.Validation;
-using AuthenticationService.Model;
-using AuthenticationService.Requests;
-using AuthenticationService.Services;
+using FileService.Validation;
+using FileService.Model;
+using FileService.Requests;
+using FileService.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthenticationService.Controllers
+namespace FileService.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class AuthenticationController : Controller

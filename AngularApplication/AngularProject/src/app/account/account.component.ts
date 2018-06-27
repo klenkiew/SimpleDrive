@@ -15,7 +15,7 @@ export class AccountComponent implements OnInit {
   constructor(private accountService: AccountService, private router: Router) { }
 
   ngOnInit() {
-    this.token = JSON.stringify(jwtDecode(JSON.parse(this.accountService.getToken()).token));
+    this.token = JSON.stringify(jwtDecode(this.accountService.getToken()));
   }
 
   logout(): void

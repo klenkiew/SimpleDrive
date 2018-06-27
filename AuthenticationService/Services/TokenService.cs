@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using AuthenticationService.Model;
+using FileService.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AuthenticationService.Services
+namespace FileService.Services
 {
     public class TokenService
     {
@@ -21,16 +22,18 @@ namespace AuthenticationService.Services
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var data = new { username = user.UserName};
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
             
             var jwtToken = new JwtSecurityToken(
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Issuer"],
                 expires: DateTime.Now.AddMinutes(30),
+                claims: claims,
                 signingCredentials: credentials
             );
-
-            jwtToken.Payload["data"] = data;
 
             return new JwtSecurityTokenHandler().WriteToken(jwtToken);
         }

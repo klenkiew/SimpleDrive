@@ -21,9 +21,9 @@ export class AccountService {
     return this.http.post<string>(apiUrl, data);
   }
 
-  public saveToken(token: string): void
+  public saveToken(tokenObj: any): void
   {
-    localStorage['token'] = JSON.stringify(token);
+    localStorage['token'] = tokenObj.token;
     this.loggedIn.next(true);
   }
 

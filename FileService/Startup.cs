@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FileService.Commands;
 using FileService.Database;
 using FileService.Model;
+using FileService.Queries;
 using FileService.Services;
 using FileService.Validation;
 using FluentValidation.AspNetCore;
@@ -19,7 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using UserStore = FileService.Authentication.UserStore;
 
 namespace FileService
 {
@@ -56,27 +57,20 @@ namespace FileService
                     .AllowAnyHeader();
             }));
             
-            services.AddIdentity<User, IdentityRole>(options =>
-            {
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireDigit = false;
-            });
             services.ConfigureApplicationCookie(options => options.Events.OnRedirectToLogin = context =>
             {
                 context.Response.StatusCode = 401;
                 return Task.CompletedTask;
             });
 
-            services.AddDbContext<UserDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"), 
+            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"), 
                 optionsLifetime: ServiceLifetime.Scoped);
-            services.AddDbContext<DbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"), 
-                optionsLifetime: ServiceLifetime.Scoped);
-            services.AddTransient<IUserStore<User>, Authentication.UserStore>();
-            services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
-            services.AddTransient<TokenService>();
 
+            services.AddTransient<ICommandHandler<AddFileCommand>, AddFileCommandHandler>();
+            services.AddTransient<ICommandHandler<DeleteFileCommand>, DeleteFileCommandHandler>();
+            services.AddTransient<IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>>, FindFilesByOwnerQueryHandler>();
+            services.AddSingleton<IFileStorage, LocalFileStorage>();
+            
             services
                 .AddMvc(options => options.Filters.Add(new ValidationFilter()))
                 .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<ValidationMessage>());

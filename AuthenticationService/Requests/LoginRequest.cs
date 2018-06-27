@@ -1,4 +1,4 @@
-﻿namespace AuthenticationService.Requests
+﻿namespace FileService.Requests
 {
     public class LoginRequest
     {
