@@ -44,5 +44,4 @@
 
 </form>
 
-<div class="well well-success bg-success" *ngIf="result != null && result.success">{{result.message}} <a [routerLink]="['/login']">Log in</a></div>
-<div class="well well-alert bg-alert" *ngIf="result != null && !result.success">{{result.message}}</div>
+<p-messages [(value)]="messageSink.messages"></p-messages>

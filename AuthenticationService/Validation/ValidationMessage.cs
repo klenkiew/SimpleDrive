@@ -6,9 +6,9 @@ namespace FileService.Validation
 {
     public class ValidationMessage
     {
-        private string Message { get; }
+        public string Message { get; }
         
-        private List<ValidationError> Errors { get; }
+        public List<ValidationError> Errors { get; }
         
         public ValidationMessage(ModelStateDictionary validationState)
         {

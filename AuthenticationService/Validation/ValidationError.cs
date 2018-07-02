@@ -5,8 +5,8 @@ namespace FileService.Validation
     public class ValidationError
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        private string Field { get; }
-        private string Error { get; }
+        public string Field { get; }
+        public string Error { get; }
 
         public ValidationError(string field, string error)
         {

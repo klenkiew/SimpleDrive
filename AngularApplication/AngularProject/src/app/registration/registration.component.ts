@@ -2,7 +2,9 @@ import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {AccountService} from "../account.service";
 import {Router} from "@angular/router";
-import {ResultFunc} from "rxjs/observable/GenerateObservable";
+import {OperationResult} from "../operation-result";
+import {MessageSink, ResultService, ResultServiceFactory} from "../result.service";
+import {Message} from "primeng/api";
 
 @Component({
   selector: 'app-registration',
@@ -12,15 +14,25 @@ import {ResultFunc} from "rxjs/observable/GenerateObservable";
 export class RegistrationComponent implements OnInit {
 
   passwordsDontMatch: boolean = false;
-  result: RegisterResult = null;
 
-  constructor(private http: HttpClient, private accountService: AccountService, private router: Router, private ref: ChangeDetectorRef) { }
+  private resultService: ResultService;
+  private messageSink: MessageSink = {messages: <Message[]>[]};
+
+  constructor(
+    private http: HttpClient,
+    private accountService: AccountService,
+    private router: Router,
+    private ref: ChangeDetectorRef,
+    resultServiceFactory: ResultServiceFactory)
+  {
+      this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
+  }
 
   ngOnInit() {
   }
 
   onSubmit(registerForm) {
-    this.result = null;
+    this.messageSink.messages = [];
     if (registerForm.value.password !== registerForm.value.passwordConfirmation) {
       this.passwordsDontMatch = true;
       this.ref.detectChanges();
@@ -29,12 +41,14 @@ export class RegistrationComponent implements OnInit {
 
     this.accountService.register(registerForm.value).subscribe(
       value => {
-        console.log("success");
-        this.result = new RegisterResult(true, "You have successfully registered.");
+        const route = this.router.createUrlTree(['login']).toString();
+        const result = new OperationResult(true, `You have successfully registered. <a href="${route}">Log in</a>`);
+        this.resultService.handle(result);
       },
       err => {
-        console.log("error");
-        this.result = new RegisterResult(false, "The registration process failed. Try again later.")
+        const errorMessage = "The registration process failed. Try again later.";
+        const result = new OperationResult(false, errorMessage, err);
+        this.resultService.handle(result);
       });
   }
 
@@ -43,12 +57,3 @@ export class RegistrationComponent implements OnInit {
   }
 }
 
-class RegisterResult {
-  success: boolean;
-  message: string;
-
-  constructor(success: boolean, message: string) {
-    this.success = success;
-    this.message = message;
-  }
-}

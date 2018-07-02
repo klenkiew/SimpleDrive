@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
 import {HttpClient} from "@angular/common/http";
+import {ReplaySubject} from "rxjs/ReplaySubject";
 
 @Injectable()
 export class AccountService {
 
-  private loggedIn: Subject<boolean> = new Subject<boolean>();
+  private loggedIn: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.loggedIn.next(this.getToken() != null);
+  }
 
-  public isLoggedIn(): Observable<boolean>
+  public loggedInChange(): Observable<boolean>
   {
     return this.loggedIn.asObservable();
   }

@@ -16,7 +16,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loginStateSub = this.accountService.isLoggedIn().subscribe(logged => this.loggedIn = logged);
+    this.loginStateSub = this.accountService.loggedInChange().subscribe(logged => this.loggedIn = logged);
   }
 
   ngOnDestroy() {
