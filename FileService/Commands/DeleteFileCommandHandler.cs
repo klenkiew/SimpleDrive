@@ -18,8 +18,7 @@ namespace FileService.Commands
         public void Handle(DeleteFileCommand command)
         {
             fileDb.Files.Remove(new File() {Id = command.FileId});
-            var owner = new User() {Id = command.OwnerUserId, UserName = command.OwnerUserId};
-            fileStorage.DeleteFile(owner, command.FileId);
+            fileStorage.DeleteFile(command.Owner, command.FileId);
             fileDb.SaveChanges();
         }
     }

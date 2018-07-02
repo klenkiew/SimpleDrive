@@ -19,10 +19,10 @@ namespace FileService.Commands
 
         public void Handle(AddFileCommand command)
         {
-            var owner = fileDb.Users.FirstOrDefault(u => u.Id == command.OwnerUserId);
+            var owner = fileDb.Users.FirstOrDefault(u => u.Id == command.Owner.Id);
 
             if (owner == null)
-                fileDb.Users.Add(new User() {Id = command.OwnerUserId, UserName = command.OwnerUserId});
+                fileDb.Users.Add(command.Owner);
             
             var file = new File()
             {
@@ -32,7 +32,7 @@ namespace FileService.Commands
                 DateModified = DateTime.UtcNow,
                 PhysicalPath = "N/A",
                 Size = command.Content.Length,
-                OwnerId = command.OwnerUserId
+                OwnerId = command.Owner.Id
             };
             fileDb.Files.Add(file);
             fileDb.SaveChanges();

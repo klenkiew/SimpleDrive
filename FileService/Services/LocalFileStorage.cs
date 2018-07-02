@@ -11,21 +11,22 @@ namespace FileService.Services
     {
         private readonly string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "Content");
 
-        public async Task SaveFile(User owner, string fileName, Stream content)
+        public Task SaveFile(User owner, string fileName, Stream content)
         {
             var filePath = Path.Combine(rootPath, EscapeName(owner.UserName), EscapeName(fileName));
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            await File.WriteAllBytesAsync(filePath, ReadFully(content));
+            File.WriteAllBytesAsync(filePath, ReadFully(content)).Wait();
+            return Task.CompletedTask;
         }
 
-        public async Task<Stream> ReadFile(User owner, string fileName)
+        public Task<Stream> ReadFile(User owner, string fileName)
         {
             var filePath = Path.Combine(rootPath, EscapeName(owner.UserName), EscapeName(fileName));
-            var memory = new MemoryStream();
+            Stream memory = new MemoryStream();
             using (var stream = new FileStream(filePath, FileMode.Open))
-                await stream.CopyToAsync(memory);
+                stream.CopyToAsync(memory).Wait();
             memory.Position = 0;
-            return memory;
+            return Task.FromResult(memory);
         }
 
         public void DeleteFile(User owner, string fileName)

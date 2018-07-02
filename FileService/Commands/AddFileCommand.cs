@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using FileService.Model;
 
 namespace FileService.Commands
 {
@@ -7,9 +8,7 @@ namespace FileService.Commands
         public string FileId { get; set; }
         public string FileName { get; set; }
         public string Description { get; set; }
-//        public int Size { get; set; }
-//        public string PhysicalPath { get; set; }
-        public string OwnerUserId { get; set; }
+        public User Owner { get; set; }
         public Stream Content { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace FileService.Model
         public virtual string UserName { get; set; }
         public virtual string NormalizedUserName { get; set; }
         public virtual string Email { get; set; }
+        public virtual string NormalizedEmail { get; set; }
         public virtual bool EmailConfirmed { get; set; }
         public virtual string PasswordHash { get; set; }
         public virtual string SecurityStamp { get; set; }

@@ -82,14 +82,16 @@ export class BrowseFilesComponent implements OnInit {
     })
   }
 
-  private deleteFile(selectedFile: File) {
+  private deleteFile(selectedFile: File): void {
     console.log("Delete: " + selectedFile.name);
-    this.fileService.deleteFile(selectedFile.id);
-    this.files.forEach((item, index) =>
+    this.fileService.deleteFile(selectedFile.id).subscribe(value =>
     {
-      if (item.name === selectedFile.name)
-        this.files.splice(index, 1);
-    })
+      this.files.forEach((item, index) =>
+      {
+        if (item.name === selectedFile.name)
+          this.files.splice(index, 1);
+      });
+    });
   }
 }
 

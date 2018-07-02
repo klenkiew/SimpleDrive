@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Authentication
 {
-    public class UserStore : IUserPasswordStore<User>
+    public class UserStore : IUserPasswordStore<User>, IUserEmailStore<User>
     {
         private readonly UserDbContext dbContext;
 
@@ -172,6 +172,81 @@ namespace FileService.Authentication
             if (user == null) throw new ArgumentNullException(nameof(user));
             
             return Task.FromResult(string.IsNullOrWhiteSpace(user.PasswordHash));
+        }
+
+        public Task SetEmailAsync(User user, string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            user.Email = email;
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetEmailAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            
+            return Task.FromResult(user.Email);
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            
+            return Task.FromResult(user.EmailConfirmed);
+        }
+
+        public Task SetEmailConfirmedAsync(User user, bool confirmed, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            user.EmailConfirmed = confirmed;
+            return Task.CompletedTask;
+        }
+
+        public Task<User> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (string.IsNullOrWhiteSpace(normalizedEmail)) 
+                throw new ArgumentException("Cannot be null or whitespace", nameof(normalizedEmail));
+            
+            var user = dbContext.Users.FirstOrDefaultAsync(
+                u => u.NormalizedEmail == normalizedEmail,
+                cancellationToken: cancellationToken);
+            
+            Debug.WriteLineIf(user == null, $"User with email {normalizedEmail} not found.");
+            
+            return user;
+        }
+
+        public Task<string> GetNormalizedEmailAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            return Task.FromResult(user.NormalizedEmail);
+        }
+
+        public Task SetNormalizedEmailAsync(User user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            if (string.IsNullOrWhiteSpace(normalizedEmail)) 
+                throw new ArgumentException("Cannot be null or whitespace", nameof(normalizedEmail));
+
+            user.NormalizedEmail = normalizedEmail;
+            return Task.CompletedTask;
         }
     }
 }

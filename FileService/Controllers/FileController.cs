@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using FileService.Commands;
 using FileService.Model;
@@ -46,7 +47,7 @@ namespace FileService.Controllers
         [HttpGet]
         public IEnumerable<File> Get()
         {
-            return findFilesQueryHandler.Handle(new FindFilesByOwnerQuery() {OwnerId = HttpContext.User.Identity.Name});
+            return findFilesQueryHandler.Handle(new FindFilesByOwnerQuery() {OwnerId = GetCurrentUser().Id});
         }
 
         // GET api/files/5
@@ -63,16 +64,12 @@ namespace FileService.Controllers
             var query = new GetFileContentQuery()
             {
                 FileId = id,
-                Owner = new User()
-                {
-                    Id = HttpContext.User.Identity.Name,
-                    UserName = HttpContext.User.Identity.Name,
-                }
+                Owner = GetCurrentUser()
             };
             var fileContentStream = getFileContentQueryHandler.Handle(query);
             return new FileStreamResult(fileContentStream, "text/plain");
         }
-        
+
         // POST api/files
         [HttpPost]
         public void Post([FromForm] AddFileRequest addFileRequest)
@@ -81,7 +78,7 @@ namespace FileService.Controllers
             {
                 FileName = addFileRequest.FileName,
                 Description = addFileRequest.Description,
-                OwnerUserId = HttpContext.User.Identity.Name,
+                Owner = GetCurrentUser(),
                 Content = addFileRequest.File.OpenReadStream(),
             };
 
@@ -102,10 +99,19 @@ namespace FileService.Controllers
             var command = new DeleteFileCommand()
             {
                 FileId = id,
-                OwnerUserId = HttpContext.User.Identity.Name
+                Owner = GetCurrentUser()
             };
 
             deleteFileCommandHandler.Handle(command);
+        }
+
+        private User GetCurrentUser()
+        {
+            return new User()
+            {
+                Id = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
+                UserName = HttpContext.User.Identity.Name,
+            };
         }
     }
 }

@@ -34,7 +34,7 @@ namespace FileService.Controllers
         {
             var identityUser = new User()
             {
-                UserName = request.Email,
+                UserName = request.Username,
                 Email = request.Email
             };
             var result = await userManager.CreateAsync(identityUser, request.Password);
@@ -48,7 +48,7 @@ namespace FileService.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateToken([FromBody] LoginRequest request)
         {
-            var user = await userManager.FindByNameAsync(request.Email);
+            var user = await userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
                 return BadRequest(new BasicError("Login failed: invalid e-mail or password."));
