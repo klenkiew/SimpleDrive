@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileService.Commands;
 using FileService.Database;
-using FileService.Model;
 using FileService.Queries;
 using FileService.Services;
 using FileService.Validation;
@@ -21,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using File = FileService.Model.File;
 
 namespace FileService
 {
@@ -69,6 +70,7 @@ namespace FileService
             services.AddTransient<ICommandHandler<AddFileCommand>, AddFileCommandHandler>();
             services.AddTransient<ICommandHandler<DeleteFileCommand>, DeleteFileCommandHandler>();
             services.AddTransient<IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>>, FindFilesByOwnerQueryHandler>();
+            services.AddTransient<IQueryHandler<GetFileContentQuery, Stream>, GetFileContentQueryHandler>();
             services.AddSingleton<IFileStorage, LocalFileStorage>();
             
             services

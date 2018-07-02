@@ -20,6 +20,12 @@ export class FilesService {
     this.http.delete(apiUrl).subscribe(_ => {});
   }
 
+  public downloadFile(fileId: string): Observable<any>
+  {
+    const apiUrl = 'http://localhost:5001/api/files/' + fileId + "/content";
+    return this.http.get(apiUrl, {responseType: 'blob' as 'json'});
+  }
+
   public getFiles(): Observable<any> {
     const apiUrl = 'http://localhost:5001/api/files';
     return this.http.get<any>(apiUrl);

@@ -19,7 +19,7 @@ import { BrowseFilesComponent } from './browse-files/browse-files.component';
 import { AddFileComponent } from './add-file/add-file.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TableModule} from "primeng/table";
-import {ContextMenuModule, InputTextModule, PasswordModule} from "primeng/primeng";
+import {ContextMenuModule, FileUploadModule, InputTextModule, PasswordModule} from "primeng/primeng";
 import {TokenInterceptor} from "./auth/TokenInterceptor";
 import {FilesService} from "./files.service";
 import { FileDetailsComponent } from './file-details/file-details.component';
@@ -49,6 +49,7 @@ import {CardModule} from "primeng/card";
     PasswordModule,
     InputTextModule,
     CardModule,
+    FileUploadModule,
     RouterModule.forRoot(routes)
   ],
   providers: [
