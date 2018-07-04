@@ -1,17 +1,17 @@
 import {Routes} from '@angular/router';
-import {LoginComponent} from "./login/login.component";
-import {RegistrationComponent} from "./registration/registration.component";
-import {AccountComponent} from "./account/account.component";
-import {ErrorComponent} from "./error/error.component";
-import {AboutComponent} from "./about/about.component";
-import {FilesComponent} from "./files/files.component";
-import {BrowseFilesComponent} from "./browse-files/browse-files.component";
-import {AddFileComponent} from "./add-file/add-file.component";
-import {FileDetailsComponent} from "./file-details/file-details.component";
-import {AccountDetailsComponent} from "./account-details/account-details.component";
-import {AccountManageComponent} from "./account-manage/account-manage.component";
-import {NotAuthorizedComponent} from "./not-authorized/not-authorized.component";
-import {AuthorizationGuardService} from "./authorization-guard.service";
+import {LoginComponent} from "./components/login/login.component";
+import {RegistrationComponent} from "./components/registration/registration.component";
+import {AccountComponent} from "./components/account/account.component";
+import {ErrorComponent} from "./components/error/error.component";
+import {AboutComponent} from "./components/about/about.component";
+import {FilesComponent} from "./components/files/files.component";
+import {BrowseFilesComponent} from "./components/browse-files/browse-files.component";
+import {AddFileComponent} from "./components/add-file/add-file.component";
+import {FileDetailsComponent} from "./components/file-details/file-details.component";
+import {AccountDetailsComponent} from "./components/account-details/account-details.component";
+import {AccountManageComponent} from "./components/account-manage/account-manage.component";
+import {NotAuthorizedComponent} from "./components/not-authorized/not-authorized.component";
+import {AuthorizationGuardService} from "./infrastructure/authorization-guard.service";
 
 export const routes: Routes =
   [
