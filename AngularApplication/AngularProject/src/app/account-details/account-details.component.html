@@ -1,0 +1,10 @@
+<p-panel header="Details">
+  <strong>Username:</strong> {{username}}<br>
+  <strong>Email:</strong> {{email}}<br>
+  <strong>Token expiration:</strong> {{expirationDate | date: 'medium'}}
+  <button type="button" class="btn btn-info btn-xs" (click)="refreshToken()">Refresh</button>
+</p-panel>
+<br>
+<button class="btn btn-primary" (click)="logout()">Logout</button>
+
+<p-messages [(value)]="messageSink.messages"></p-messages>

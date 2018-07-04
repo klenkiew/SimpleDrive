@@ -8,12 +8,22 @@ import {FilesComponent} from "./files/files.component";
 import {BrowseFilesComponent} from "./browse-files/browse-files.component";
 import {AddFileComponent} from "./add-file/add-file.component";
 import {FileDetailsComponent} from "./file-details/file-details.component";
+import {AccountDetailsComponent} from "./account-details/account-details.component";
+import {AccountManageComponent} from "./account-manage/account-manage.component";
 
 export const routes: Routes =
   [
     {path: 'login', component: LoginComponent},
     {path: 'register', component: RegistrationComponent},
-    {path: 'account', component: AccountComponent},
+    {
+      path: 'account', component: AccountComponent, children:
+        [
+          {path: 'details', component: AccountDetailsComponent},
+          {path: 'manage', component: AccountManageComponent},
+          {path: '', redirectTo: 'details', pathMatch: 'full'},
+          {path: '**', component: ErrorComponent}
+        ]
+    },
     {
       path: 'files', component: FilesComponent, children:
         [

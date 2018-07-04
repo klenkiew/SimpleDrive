@@ -22,8 +22,11 @@ namespace FileService.Commands
             var owner = fileDb.Users.FirstOrDefault(u => u.Id == command.Owner.Id);
 
             if (owner == null)
-                fileDb.Users.Add(command.Owner);
-            
+            {
+                owner = command.Owner;
+                fileDb.Users.Add(owner);
+            }
+
             var file = new File()
             {
                 FileName = command.FileName,

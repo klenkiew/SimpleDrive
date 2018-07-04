@@ -29,11 +29,9 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(loginForm) {
-    const apiUrl = 'http://localhost:5000/api/authentication/createToken';
-    this.http.post<string>(apiUrl, loginForm.value)
+    this.accountService.login(loginForm.value)
       .subscribe(
         value => {
-          this.accountService.saveToken(value);
           this.router.navigate(['files']);
         },
         err => {

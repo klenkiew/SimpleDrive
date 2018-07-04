@@ -1,7 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {AccountService} from "../account.service";
-import * as jwtDecode from "jwt-decode"
-import {Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-account',
@@ -10,17 +7,8 @@ import {Router} from "@angular/router";
 })
 export class AccountComponent implements OnInit {
 
-  private token: string;
-
-  constructor(private accountService: AccountService, private router: Router) { }
+  constructor() { }
 
   ngOnInit() {
-    this.token = JSON.stringify(jwtDecode(this.accountService.getToken()));
-  }
-
-  logout(): void
-  {
-    this.accountService.deleteToken();
-    this.router.navigate(['/login']);
   }
 }

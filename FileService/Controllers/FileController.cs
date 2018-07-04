@@ -15,7 +15,6 @@ using File = FileService.Model.File;
 
 namespace FileService.Controllers
 {
-    [Authorize]
     [Route("api/[controller]s")]
     public class FileController : Controller
     {

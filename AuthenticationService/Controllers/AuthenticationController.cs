@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AuthenticationService.Requests;
 using FileService.Model;
 using FileService.Requests;
 using FileService.Services;
@@ -60,6 +62,51 @@ namespace FileService.Controllers
             
             var tokenString = tokenService.BuildToken(user);
             return Ok(new {token = tokenString});
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var user = await userManager.FindByIdAsync(GetCurrentUserId());
+            var tokenString = tokenService.BuildToken(user);
+            return Ok(new {token = tokenString});
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+        {
+            var user = await userManager.FindByIdAsync(GetCurrentUserId());
+
+            if (!await userManager.CheckPasswordAsync(user, request.Password))
+                return BadRequest(new BasicError("Invalid password."));
+            
+            var token = await userManager.GenerateChangeEmailTokenAsync(user, request.Email);
+            var result = await userManager.ChangeEmailAsync(user, request.Email, token);
+            
+            if (!result.Succeeded) return BadRequest(new BasicError(result.Errors.First().Description));
+            
+            // the information in the user's token is stale after the e-mail change
+            // - generate and send a new token with current user info  
+            var tokenString = tokenService.BuildToken(user);
+            return Ok(new {token = tokenString});
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var user = await userManager.FindByIdAsync(
+                HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+
+            var result = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            
+            if (!result.Succeeded) return BadRequest(new BasicError(result.Errors.First().Description));
+            
+            return Ok();
+        }
+
+        private string GetCurrentUserId()
+        {
+            return HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
         }
 
         private static BasicError ExtractError(SignInResult result)

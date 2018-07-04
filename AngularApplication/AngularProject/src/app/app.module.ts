@@ -19,7 +19,7 @@ import {BrowseFilesComponent} from './browse-files/browse-files.component';
 import {AddFileComponent} from './add-file/add-file.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TableModule} from "primeng/table";
-import {ContextMenuModule, FileUploadModule, InputTextModule, PasswordModule} from "primeng/primeng";
+import {ContextMenuModule, FieldsetModule, FileUploadModule, InputTextModule, PasswordModule} from "primeng/primeng";
 import {TokenInterceptor} from "./auth/TokenInterceptor";
 import {FilesService} from "./files.service";
 import {FileDetailsComponent} from './file-details/file-details.component';
@@ -31,6 +31,9 @@ import {GrowlModule} from "primeng/growl";
 import {MessageSink, ResultServiceFactory} from "./result.service";
 import {growlMessages, GrowlMessageSinkToken} from "./growl-message-sink";
 import {DefaultErrorHandler} from "./error-handler";
+import { AccountDetailsComponent } from './account-details/account-details.component';
+import { AccountManageComponent } from './account-manage/account-manage.component';
+import {PanelModule} from "primeng/panel";
 
 const messageSink: MessageSink = {messages: growlMessages};
 
@@ -47,6 +50,8 @@ const messageSink: MessageSink = {messages: growlMessages};
     BrowseFilesComponent,
     AddFileComponent,
     FileDetailsComponent,
+    AccountDetailsComponent,
+    AccountManageComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +67,8 @@ const messageSink: MessageSink = {messages: growlMessages};
     MessagesModule,
     MessageModule,
     GrowlModule,
+    PanelModule,
+    FieldsetModule,
     RouterModule.forRoot(routes)
   ],
   providers: [

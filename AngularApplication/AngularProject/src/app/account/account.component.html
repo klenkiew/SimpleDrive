@@ -1,5 +1,6 @@
-<p>
-  Token: {{token}}
-</p>
-
-<button class="btn btn-primary" (click)="logout()">Logout</button>
+<ul class="nav nav-tabs">
+  <li><a [routerLink]="['details']">Details</a></li>
+  <li><a [routerLink]="['manage']">Manage</a></li>
+</ul>
+<br>
+<router-outlet></router-outlet>

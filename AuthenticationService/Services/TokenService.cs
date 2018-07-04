@@ -32,7 +32,7 @@ namespace FileService.Services
             var jwtToken = new JwtSecurityToken(
                 configuration["Jwt:Issuer"],
                 configuration["Jwt:Issuer"],
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.UtcNow.AddMinutes(30),
                 claims: claims,
                 signingCredentials: credentials
             );

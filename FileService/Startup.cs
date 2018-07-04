@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,8 +65,7 @@ namespace FileService
                 return Task.CompletedTask;
             });
 
-            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"), 
-                optionsLifetime: ServiceLifetime.Scoped);
+            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
 
             services.AddTransient<ICommandHandler<AddFileCommand>, AddFileCommandHandler>();
             services.AddTransient<ICommandHandler<DeleteFileCommand>, DeleteFileCommandHandler>();
@@ -74,7 +74,11 @@ namespace FileService
             services.AddSingleton<IFileStorage, LocalFileStorage>();
             
             services
-                .AddMvc(options => options.Filters.Add(new ValidationFilter()))
+                .AddMvc(options =>
+                {
+                    options.Filters.Add(new ValidationFilter());
+                    options.Filters.Add(new AuthorizeFilter());
+                })
                 .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<ValidationMessage>());
         }
 
