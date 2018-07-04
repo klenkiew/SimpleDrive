@@ -4,9 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FileService.Cache;
+using FileService.Cache.Redis;
 using FileService.Commands;
 using FileService.Database;
 using FileService.Queries;
+using FileService.Serialization;
 using FileService.Services;
 using FileService.Validation;
 using FluentValidation.AspNetCore;
@@ -19,7 +22,6 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using File = FileService.Model.File;
@@ -28,12 +30,12 @@ namespace FileService
 {
     public class Startup
     {
+        private IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -69,10 +71,19 @@ namespace FileService
 
             services.AddTransient<ICommandHandler<AddFileCommand>, AddFileCommandHandler>();
             services.AddTransient<ICommandHandler<DeleteFileCommand>, DeleteFileCommandHandler>();
-            services.AddTransient<IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>>, FindFilesByOwnerQueryHandler>();
-            services.AddTransient<IQueryHandler<GetFileContentQuery, Stream>, GetFileContentQueryHandler>();
-            services.AddSingleton<IFileStorage, LocalFileStorage>();
+            services.RegisterQueryHandler<FindFilesByOwnerQueryHandler, FindFilesByOwnerQuery, IEnumerable<File>>();
             
+            // no caching of file content for now - query handler without decorators
+            services.AddTransient<IQueryHandler<GetFileContentQuery, Stream>, GetFileContentQueryHandler>();
+            
+            services.AddSingleton<IFileStorage, LocalFileStorage>();
+            services.AddSingleton<ISerializer, JsonSerializer>();
+            services.AddSingleton<ICacheKeyConverter, CacheKeyConverter>();
+            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+            services.AddSingleton<ICache<string>, RedisStringCache>();
+            services.AddSingleton<ICache, ObjectCache>();
+            services.AddSingleton<IUniversalCache, UniversalCache>();
+
             services
                 .AddMvc(options =>
                 {

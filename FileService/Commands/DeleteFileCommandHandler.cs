@@ -1,18 +1,22 @@
-﻿using FileService.Database;
+﻿using FileService.Cache;
+using FileService.Database;
 using FileService.Model;
+using FileService.Queries;
 using FileService.Services;
 
 namespace FileService.Commands
 {
-    class DeleteFileCommandHandler: ICommandHandler<DeleteFileCommand>
+    internal class DeleteFileCommandHandler: ICommandHandler<DeleteFileCommand>
     {
         private readonly IFileStorage fileStorage;
         private readonly FileDbContext fileDb;
+        private readonly IUniversalCache cache;
 
-        public DeleteFileCommandHandler(IFileStorage fileStorage, FileDbContext fileDb)
+        public DeleteFileCommandHandler(IFileStorage fileStorage, FileDbContext fileDb, IUniversalCache cache)
         {
             this.fileStorage = fileStorage;
             this.fileDb = fileDb;
+            this.cache = cache;
         }
 
         public void Handle(DeleteFileCommand command)
@@ -20,6 +24,13 @@ namespace FileService.Commands
             fileDb.Files.Remove(new File() {Id = command.FileId});
             fileStorage.DeleteFile(command.Owner, command.FileId);
             fileDb.SaveChanges();
+            
+            // invalidate the cache
+            var query = new FindFilesByOwnerQuery()
+            {
+                OwnerId = command.Owner.Id
+            };
+            cache.Remove(query);
         }
     }
 }

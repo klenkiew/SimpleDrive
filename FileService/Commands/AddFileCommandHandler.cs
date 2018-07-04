@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using FileService.Cache;
 using FileService.Database;
 using FileService.Model;
+using FileService.Queries;
 using FileService.Services;
 
 namespace FileService.Commands
@@ -10,11 +12,13 @@ namespace FileService.Commands
     {
         private readonly FileDbContext fileDb;
         private readonly IFileStorage fileStorage;
+        private readonly IUniversalCache cache;
 
-        public AddFileCommandHandler(FileDbContext fileDb, IFileStorage fileStorage)
+        public AddFileCommandHandler(FileDbContext fileDb, IFileStorage fileStorage, IUniversalCache cache)
         {
             this.fileDb = fileDb;
             this.fileStorage = fileStorage;
+            this.cache = cache;
         }
 
         public void Handle(AddFileCommand command)
@@ -41,6 +45,13 @@ namespace FileService.Commands
             fileDb.SaveChanges();
 
             fileStorage.SaveFile(owner, file.Id, command.Content);
+
+            // invalidate the cache
+            var query = new FindFilesByOwnerQuery()
+            {
+                OwnerId = owner.Id
+            };
+            cache.Remove(query);
         }
     }
 }
