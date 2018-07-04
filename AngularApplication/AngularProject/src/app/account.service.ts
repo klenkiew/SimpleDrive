@@ -19,6 +19,8 @@ export class AccountService {
 
   constructor(private http: HttpClient) {
     this.loggedIn.next(this.getEncodedToken() != null);
+    if (this.getEncodedToken() != null)
+      this.decodeCurrentToken();
   }
 
   public loggedInChange(): Observable<boolean>
@@ -28,7 +30,7 @@ export class AccountService {
 
 
   public isLoggedIn() {
-    return this.decodedToken && this.decodedToken.expirationDate < new Date();
+    return this.decodedToken && this.decodedToken.expirationDate > new Date();
   }
 
   public register(data: RegistrationData): Observable<any>
@@ -96,7 +98,6 @@ export class AccountService {
   }
 
   private downloadToken(apiUrl: string, requestBody: any) {
-    console.log('downloadToken');
     let sub = this.http.post<string>(apiUrl, requestBody);
     sub = sub.do(value => this.saveToken(value));
     return sub;
