@@ -13,7 +13,10 @@ export class DefaultErrorHandler implements ErrorHandler {
   }
 
   handleError(error) {
-    const result = new OperationResult(false, "An unexpected error occured", error);
+    const errorMessage = error && error.status && error.status === 401
+      ? 'You are not authorized to perform this operation (401 Forbidden)'
+      : 'An unexpected error occured' + (error.message ? ': ' + error.message : '');
+    const result = new OperationResult(false, errorMessage, error);
     this.resultService.handle(result);
   }
 }

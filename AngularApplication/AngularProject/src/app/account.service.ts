@@ -26,6 +26,11 @@ export class AccountService {
     return this.loggedIn.asObservable();
   }
 
+
+  public isLoggedIn() {
+    return this.decodedToken && this.decodedToken.expirationDate < new Date();
+  }
+
   public register(data: RegistrationData): Observable<any>
   {
     const apiUrl = 'http://localhost:5000/api/authentication/register';
@@ -77,6 +82,14 @@ export class AccountService {
     return localStorage['token'];
   }
 
+  public getValidEncodedToken(): string
+  {
+    const token = this.getEncodedToken();
+    if (!token)
+      throw new Error("You don't have a valid token. Please try logging in.");
+    return token;
+  }
+
   public getToken(): JwtToken
   {
     return this.getJwtToken();
@@ -90,7 +103,7 @@ export class AccountService {
   }
 
   private decodeCurrentToken() {
-    this.decodedToken = this.toJwtToken(jwtDecode(this.getEncodedToken()));
+    this.decodedToken = this.toJwtToken(jwtDecode(this.getValidEncodedToken()));
   }
 
   private getJwtToken() {

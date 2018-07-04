@@ -34,6 +34,8 @@ import {DefaultErrorHandler} from "./error-handler";
 import { AccountDetailsComponent } from './account-details/account-details.component';
 import { AccountManageComponent } from './account-manage/account-manage.component';
 import {PanelModule} from "primeng/panel";
+import { NotAuthorizedComponent } from './not-authorized/not-authorized.component';
+import {AuthorizationGuardService} from "./authorization-guard.service";
 
 const messageSink: MessageSink = {messages: growlMessages};
 
@@ -52,6 +54,7 @@ const messageSink: MessageSink = {messages: growlMessages};
     FileDetailsComponent,
     AccountDetailsComponent,
     AccountManageComponent,
+    NotAuthorizedComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,6 +79,7 @@ const messageSink: MessageSink = {messages: growlMessages};
     FilesService,
     MessageService,
     ResultServiceFactory,
+    AuthorizationGuardService,
     {
       provide: GrowlMessageSinkToken,
       useValue: messageSink
