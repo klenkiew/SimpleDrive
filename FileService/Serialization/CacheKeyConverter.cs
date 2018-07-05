@@ -11,7 +11,7 @@
 
         public string ToString<TKey>(TKey key)
         {
-            return $"[{typeof(TKey).Name}]{serializer.Serialize(key)}";
+            return $"[{key.GetType().Name}]{serializer.Serialize(key)}";
         }
     }
 }

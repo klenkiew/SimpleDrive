@@ -114,14 +114,14 @@ namespace FileService
         {
             // Add application presentation components:
             container.RegisterMvcControllers(app);
-            // container.RegisterMvcViewComponents(app);
 
             // Add application services:
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
-            container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
-
-            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
+            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>));
+            container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
             
+            container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
+            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
             container.RegisterDecorator(
                 typeof(IQueryHandler<,>),
                 typeof(CachedQuery<,>),

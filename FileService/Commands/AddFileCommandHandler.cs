@@ -3,7 +3,6 @@ using System.Linq;
 using FileService.Cache;
 using FileService.Database;
 using FileService.Model;
-using FileService.Queries;
 using FileService.Services;
 
 namespace FileService.Commands
@@ -45,13 +44,6 @@ namespace FileService.Commands
             fileDb.SaveChanges();
 
             fileStorage.SaveFile(owner, file.Id, command.Content);
-
-            // invalidate the cache
-            var query = new FindFilesByOwnerQuery()
-            {
-                OwnerId = owner.Id
-            };
-            cache.Remove(query);
         }
     }
 }

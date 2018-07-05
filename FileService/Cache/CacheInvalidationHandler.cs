@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using FileService.Commands;
 
 namespace FileService.Cache
@@ -8,12 +7,12 @@ namespace FileService.Cache
     {
         private readonly ICommandHandler<TCommand> decorated;
         private readonly IUniversalCache cache;
-        private readonly Func<TCommand, object> invalidationKeysProvider;
+        private readonly IInvalidationKeysProvider<TCommand> invalidationKeysProvider;
 
         public CacheInvalidationHandler(
             ICommandHandler<TCommand> decorated, 
             IUniversalCache cache, 
-            Func<TCommand, IEnumerable<object>> invalidationKeysProvider)
+            IInvalidationKeysProvider<TCommand> invalidationKeysProvider)
         {
             this.decorated = decorated;
             this.cache = cache;
@@ -23,7 +22,9 @@ namespace FileService.Cache
         public void Handle(TCommand command)
         {
             decorated.Handle(command);
-            cache.Remove(invalidationKeysProvider(command));
+            var cacheKeysToInvalidate = invalidationKeysProvider.GetCacheKeysToInvalidate(command);
+            foreach (var key in cacheKeysToInvalidate)
+                cache.Remove(key);
         }
     }
 }
