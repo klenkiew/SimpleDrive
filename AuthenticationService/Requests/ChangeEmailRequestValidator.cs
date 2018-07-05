@@ -1,7 +1,6 @@
-﻿using FileService.Controllers;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace FileService.Requests
+namespace AuthenticationService.Requests
 {
     public class ChangeEmailRequestValidator : AbstractValidator<ChangeEmailRequest>
     {

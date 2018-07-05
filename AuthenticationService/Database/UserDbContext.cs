@@ -1,7 +1,7 @@
-﻿using FileService.Model;
+﻿using AuthenticationService.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileService.Database
+namespace AuthenticationService.Database
 {
     public class UserDbContext : DbContext
     {

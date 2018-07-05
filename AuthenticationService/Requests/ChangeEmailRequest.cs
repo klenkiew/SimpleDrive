@@ -1,4 +1,4 @@
-﻿namespace FileService.Controllers
+﻿namespace AuthenticationService.Requests
 {
     public class ChangeEmailRequest
     {

@@ -1,17 +1,16 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AuthenticationService.Model;
 using AuthenticationService.Requests;
-using FileService.Model;
-using FileService.Requests;
-using FileService.Services;
-using FileService.Validation;
+using AuthenticationService.Services;
+using AuthenticationService.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace FileService.Controllers
+namespace AuthenticationService.Controllers
 {
     [Route("api/[controller]/[action]")]
     public class AuthenticationController : Controller

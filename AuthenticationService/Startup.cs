@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FileService.Database;
-using FileService.Model;
-using FileService.Services;
-using FileService.Validation;
+using AuthenticationService.Database;
+using AuthenticationService.Model;
+using AuthenticationService.Services;
+using AuthenticationService.Validation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,9 +19,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using UserStore = FileService.Authentication.UserStore;
+using UserStore = AuthenticationService.Authentication.UserStore;
 
-namespace FileService
+namespace AuthenticationService
 {
     public class Startup
     {

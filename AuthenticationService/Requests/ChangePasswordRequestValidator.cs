@@ -1,7 +1,6 @@
-﻿using AuthenticationService.Requests;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace FileService.Requests
+namespace AuthenticationService.Requests
 {
     public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRequest>
     {

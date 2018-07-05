@@ -2,12 +2,12 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using FileService.Database;
-using FileService.Model;
+using AuthenticationService.Database;
+using AuthenticationService.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileService.Authentication
+namespace AuthenticationService.Authentication
 {
     public class UserStore : IUserPasswordStore<User>, IUserEmailStore<User>
     {

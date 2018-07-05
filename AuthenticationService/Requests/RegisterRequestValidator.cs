@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace FileService.Requests
+namespace AuthenticationService.Requests
 {
     public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     {

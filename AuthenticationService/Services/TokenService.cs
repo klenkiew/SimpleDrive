@@ -2,11 +2,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FileService.Model;
+using AuthenticationService.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FileService.Services
+namespace AuthenticationService.Services
 {
     public class TokenService
     {

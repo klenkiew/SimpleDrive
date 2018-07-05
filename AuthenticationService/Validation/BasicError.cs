@@ -1,4 +1,4 @@
-﻿namespace FileService.Validation
+﻿namespace AuthenticationService.Validation
 {
     public class BasicError
     {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace FileService.Validation
+namespace AuthenticationService.Validation
 {
     public class ValidationError
     {
