@@ -8,21 +8,21 @@ namespace FileService.Queries
     {
         private readonly IQueryHandler<TQuery, TResult> decorated;
         private readonly ILogger<IQueryHandler<TQuery, TResult> > logger;
-        private readonly ISerializer serializer;
-
+        private readonly IObjectConverter converter;
+        
         public LoggedQuery(
             IQueryHandler<TQuery, TResult> decorated, 
             ILogger<IQueryHandler<TQuery, TResult>> logger, 
-            ISerializer serializer)
+            IObjectConverter converter)
         {
             this.decorated = decorated;
             this.logger = logger;
-            this.serializer = serializer;
+            this.converter = converter;
         }
 
         public TResult Handle(TQuery query)
         {
-            logger.LogDebug("Executing query: " + serializer.Serialize(query));
+            logger.LogDebug("Executing query: " + converter.ToString(query));
             return decorated.Handle(query);
         }
     }

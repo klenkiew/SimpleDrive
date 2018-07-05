@@ -129,7 +129,7 @@ namespace FileService
 
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
-            container.Register<ICacheKeyConverter, CacheKeyConverter>(Lifestyle.Singleton);
+            container.Register<IObjectConverter, ObjectConverter>(Lifestyle.Singleton);
             container.Register<IRedisConnectionFactory, RedisConnectionFactory>(Lifestyle.Singleton);
             container.Register<ICache<string>, RedisStringCache>(Lifestyle.Singleton);
             container.Register<ICache, ObjectCache>(Lifestyle.Singleton);

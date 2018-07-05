@@ -1,10 +1,10 @@
 ﻿namespace FileService.Serialization
 {
-    internal class CacheKeyConverter : ICacheKeyConverter
+    internal class ObjectConverter : IObjectConverter
     {
         private readonly ISerializer serializer;
 
-        public CacheKeyConverter(ISerializer serializer)
+        public ObjectConverter(ISerializer serializer)
         {
             this.serializer = serializer;
         }

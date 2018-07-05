@@ -6,9 +6,9 @@ namespace FileService.Cache
     internal class UniversalCache : IUniversalCache
     {
         private readonly ICache cache;
-        private readonly ICacheKeyConverter keyConverter;
+        private readonly IObjectConverter keyConverter;
 
-        public UniversalCache(ICache cache, ICacheKeyConverter keyConverter)
+        public UniversalCache(ICache cache, IObjectConverter keyConverter)
         {
             this.cache = cache;
             this.keyConverter = keyConverter;

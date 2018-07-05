@@ -1,6 +1,6 @@
 ﻿namespace FileService.Serialization
 {
-    public interface ICacheKeyConverter
+    public interface IObjectConverter
     {
         string ToString<TKey>(TKey key);
     }
