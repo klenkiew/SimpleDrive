@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
-import {GrowlMessageSinkToken} from "./infrastructure/growl-message-sink";
+import {GrowlMessageSinkToken} from "./core/infrastructure/growl-message-sink";
 import {Message} from "primeng/api";
-import {MessageSink} from "./services/result.service";
+import {MessageSink} from "./shared/services/result.service";
 
 @Component({
   selector: 'app-root',
