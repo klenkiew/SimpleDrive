@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
+using FileService.Configuration;
 using StackExchange.Redis;
 
 namespace FileService.Cache.Redis
@@ -8,9 +8,9 @@ namespace FileService.Cache.Redis
     {
         private readonly Lazy<IConnectionMultiplexer> connectionProvider;
         
-        public RedisConnectionFactory(IConfiguration configuration)
+        public RedisConnectionFactory(IRedisConfiguration configuration)
         {
-            connectionProvider = new Lazy<IConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(configuration["RedisHost"]));
+            connectionProvider = new Lazy<IConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(configuration.Host));
         }
 
         public IConnectionMultiplexer Connection => connectionProvider.Value;

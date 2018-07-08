@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FileService.Cache;
 using FileService.Cache.Redis;
 using FileService.Commands;
+using FileService.Configuration;
 using FileService.Database;
 using FileService.Middlewares;
 using FileService.Model;
@@ -22,13 +23,16 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
+using StackExchange.Redis;
 using JsonSerializer = FileService.Serialization.JsonSerializer;
 
 namespace FileService
@@ -36,11 +40,13 @@ namespace FileService
     public class Startup
     {
         private readonly Container container = new Container();
+        private ILogger Logger { get; }                         
         private IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
+            Logger = loggerFactory.CreateLogger(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -89,7 +95,6 @@ namespace FileService
             };
             
             services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
-
             services.AddSingleton<JsonSerializer>();
             
             IntegrateSimpleInjector(services);
@@ -144,13 +149,62 @@ namespace FileService
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
             container.Register<IObjectConverter, ObjectConverter>(Lifestyle.Singleton);
+
+            RegisterCache();
+            
+            // Allow Simple Injector to resolve services from ASP.NET Core.
+            container.AutoCrossWireAspNetComponents(app);
+        }
+
+        private void RegisterCache()
+        {
+            var redisConfiguration = Configuration.GetSection("Redis").Get<RedisConfiguration>();
+            container.Register<IUniversalCache, UniversalCache>(Lifestyle.Singleton);
+            
+            if (redisConfiguration.ConnectionFailedFallback == ConnectionFailedFallback.Ignore)
+            {
+                AddRedis(redisConfiguration);
+                return;
+            }
+
+            try
+            {
+                var redisConnectionFactory = new RedisConnectionFactory(redisConfiguration);
+                redisConnectionFactory.Connection.GetDatabase().Ping();
+                AddRedis(redisConfiguration);
+            }
+            catch (RedisConnectionException ex)
+            {
+                switch (redisConfiguration.ConnectionFailedFallback)
+                {
+                    case ConnectionFailedFallback.Error:
+                        throw;
+                    case ConnectionFailedFallback.InMemoryCache:
+                        Logger.LogWarning(ex, "Redis connection failed, using InMemoryCache as fallback.");
+                        AddInMemoryCache();
+                        return;
+                    case ConnectionFailedFallback.TryStart:
+                        // TODO try start the redis server - probably just a 'redis-server' command and check the result
+                        throw new NotImplementedException();
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private void AddInMemoryCache()
+        {
+            container.Register<IMemoryCache, MemoryCache>(Lifestyle.Singleton);
+            container.Register<ICache, InMemoryObjectCache>(Lifestyle.Singleton);
+        }
+
+        private void AddRedis(RedisConfiguration redisConfiguration)
+        {            
+            container.Register<IRedisConfiguration>(() => redisConfiguration, Lifestyle.Singleton);
+            
             container.Register<IRedisConnectionFactory, RedisConnectionFactory>(Lifestyle.Singleton);
             container.Register<ICache<string>, RedisStringCache>(Lifestyle.Singleton);
             container.Register<ICache, ObjectCache>(Lifestyle.Singleton);
-            container.Register<IUniversalCache, UniversalCache>(Lifestyle.Singleton);
-
-            // Allow Simple Injector to resolve services from ASP.NET Core.
-            container.AutoCrossWireAspNetComponents(app);
         }
 
         private bool ShouldCommandInvalidateCache(DecoratorPredicateContext context)
