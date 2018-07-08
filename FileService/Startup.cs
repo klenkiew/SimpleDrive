@@ -6,8 +6,10 @@ using FileService.Cache;
 using FileService.Cache.Redis;
 using FileService.Commands;
 using FileService.Database;
+using FileService.Middlewares;
 using FileService.Model;
 using FileService.Queries;
+using FileService.Requests;
 using FileService.Serialization;
 using FileService.Services;
 using FileService.Validation;
@@ -70,7 +72,7 @@ namespace FileService
                 context.Response.StatusCode = 401;
                 return Task.CompletedTask;
             });
-
+            
             services
                 .AddMvc(options =>
                 {
@@ -88,6 +90,8 @@ namespace FileService
             
             services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
 
+            services.AddSingleton<JsonSerializer>();
+            
             IntegrateSimpleInjector(services);
         }
 
@@ -102,6 +106,7 @@ namespace FileService
 
             app.UseAuthentication();
             app.UseCors("MyPolicy");
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMvc();
         }
 
@@ -124,10 +129,10 @@ namespace FileService
 
             // Add application services:
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
-            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>), 
-                context => context.ServiceType != typeof(ICommandHandler<ShareFileCommand>));
             container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
-            
+            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>), 
+                context => ShouldCommandInvalidateCache(context));
+
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
             container.RegisterDecorator(
@@ -135,6 +140,7 @@ namespace FileService
                 typeof(CachedQuery<,>),
                 context => ShouldQueryHandlerBeCached(context.ServiceType));
 
+            container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
             container.Register<IObjectConverter, ObjectConverter>(Lifestyle.Singleton);
@@ -145,6 +151,13 @@ namespace FileService
 
             // Allow Simple Injector to resolve services from ASP.NET Core.
             container.AutoCrossWireAspNetComponents(app);
+        }
+
+        private bool ShouldCommandInvalidateCache(DecoratorPredicateContext context)
+        {
+            return !(context.ServiceType == typeof(ICommandHandler<ShareFileCommand>)
+                   || context.ServiceType == typeof(ICommandHandler<AddFileRequest>)
+                   || context.ServiceType == typeof(ICommandHandler<ShareFileRequest>));
         }
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)

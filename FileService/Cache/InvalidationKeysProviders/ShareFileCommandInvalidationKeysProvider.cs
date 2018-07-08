@@ -10,7 +10,7 @@ namespace FileService.Cache.InvalidationKeysProviders
         {
             return new object[]
             {
-                new FindFilesByUserQuery() {UserId = command.SharedWithUserId},
+                new FindFilesByUserQuery() {UserId = command.ShareWithUserId},
                 new FindUsersBySharedFileQuery() {FileId = command.FileId}
             };
         }

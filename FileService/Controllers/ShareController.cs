@@ -12,12 +12,12 @@ namespace FileService.Controllers
     [Route("api/[controller]s")]
     public class ShareController : Controller
     {
-        private readonly ICommandHandler<ShareFileCommand> shareFileCommandHandler;
+        private readonly ICommandHandler<ShareFileRequest> shareFileCommandHandler;
         private readonly ICommandHandler<UnshareFileCommand> unshareFileCommandHandler;
         private readonly IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<User>> usersBySharedFileQueryHandler;
 
         public ShareController(
-            ICommandHandler<ShareFileCommand> shareFileCommandHandler, 
+            ICommandHandler<ShareFileRequest> shareFileCommandHandler, 
             ICommandHandler<UnshareFileCommand> unshareFileCommandHandler, 
             IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<User>> usersBySharedFileQueryHandler)
         {
@@ -30,14 +30,7 @@ namespace FileService.Controllers
         [HttpPost]
         public void Post([FromBody] ShareFileRequest shareFileRequest)
         {
-            var command = new ShareFileCommand()
-            {
-                FileId =  shareFileRequest.FileId,
-                OwnerId = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
-                SharedWithUserId = shareFileRequest.ShareWithUserId
-            };
-
-            shareFileCommandHandler.Handle(command);
+            shareFileCommandHandler.Handle(shareFileRequest);
         }
         
         // DELETE api/shares
@@ -47,7 +40,6 @@ namespace FileService.Controllers
             var command = new UnshareFileCommand()
             {
                 FileId =  fileId,
-                OwnerId = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
                 UserId = userId
             };
 

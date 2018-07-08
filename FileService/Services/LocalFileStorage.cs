@@ -2,46 +2,55 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using FileService.Model;
-using File = System.IO.File;
+using FileService.Exceptions;
+using FileModel = FileService.Model.File;
 
 namespace FileService.Services
 {
-    class LocalFileStorage : IFileStorage
+    internal class LocalFileStorage : IFileStorage
     {
         private readonly string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "Content");
 
-        public Task SaveFile(User owner, string fileName, Stream content)
+        public async Task SaveFile(FileModel file, Stream content)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
+            var filePath = GetFilePath(file);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            File.WriteAllBytesAsync(filePath, ReadFully(content)).Wait();
-            return Task.CompletedTask;
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                await content.CopyToAsync(fileStream);
         }
 
-        public Task<Stream> ReadFile(User owner, string fileName)
+        public Task<Stream> ReadFile(FileModel file)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
-            Stream memory = new MemoryStream();
-            using (var stream = new FileStream(filePath, FileMode.Open))
-                stream.CopyToAsync(memory).Wait();
-            memory.Position = 0;
-            return Task.FromResult(memory);
+            try
+            {
+                var filePath = GetFilePath(file);
+                return ReadFile(filePath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new NotFoundException($"A file with id {file.Id} was not found in the storage.", ex);
+            }
+            catch (Exception ex) when (ex is UnauthorizedAccessException || ex is IOException)
+            {
+                throw new StorageAccessException("An error occured during accessing the file storage", ex);
+            }
         }
 
-        public void DeleteFile(User owner, string fileName)
+        public void DeleteFile(FileModel file)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
+            var filePath = Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
             File.Delete(filePath);
         }
 
-        private static byte[] ReadFully(Stream input)
+        private Task<Stream> ReadFile(string filePath)
         {
-            using (var ms = new MemoryStream())
-            {
-                input.CopyTo(ms);
-                return ms.ToArray();
-            }
+            Stream stream = new FileStream(filePath, FileMode.Open);
+            return Task.FromResult(stream);
+        }
+
+        private string GetFilePath(FileModel file)
+        {
+            return Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
         }
 
         private string EscapeName(string name)

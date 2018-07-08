@@ -7,6 +7,7 @@ using FileService.Commands;
 using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
+using FileService.Services;
 using Microsoft.AspNetCore.Mvc;
 using File = FileService.Model.File;
 
@@ -15,19 +16,24 @@ namespace FileService.Controllers
     [Route("api/[controller]s")]
     public class FileController : Controller
     {
-        private readonly ICommandHandler<AddFileCommand> addFileCommandHandler;
+        private readonly ICurrentUser currentUser;
+        private readonly ICommandHandler<AddFileRequest> addFileCommandHandler;
         private readonly ICommandHandler<DeleteFileCommand> deleteFileCommandHandler;
         private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler;
         private readonly IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler;
         private readonly IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler;
 
         public FileController(
-            ICommandHandler<AddFileCommand> addFileCommandHandler,
+            ICurrentUser currentUser,
+            ICommandHandler<AddFileRequest> addFileCommandHandler,
             ICommandHandler<DeleteFileCommand> deleteFileCommandHandler, 
             IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler, 
             IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler, 
             IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler)
         {
+            this.currentUser =
+                currentUser ?? throw new ArgumentNullException(nameof(currentUser));
+            ;
             this.addFileCommandHandler =
                 addFileCommandHandler ?? throw new ArgumentNullException(nameof(addFileCommandHandler));
             
@@ -48,7 +54,7 @@ namespace FileService.Controllers
         [HttpGet]
         public IEnumerable<File> Get()
         {
-            return findFilesQueryHandler.Handle(new FindFilesByUserQuery() {UserId = GetCurrentUser().Id});
+            return findFilesQueryHandler.Handle(new FindFilesByUserQuery() {UserId = currentUser.Id});
         }
 
         // GET api/files/5
@@ -65,7 +71,6 @@ namespace FileService.Controllers
             var query = new GetFileContentQuery()
             {
                 FileId = id,
-                Owner = GetCurrentUser()
             };
             var fileContentStream = getFileContentQueryHandler.Handle(query);
             return new FileStreamResult(fileContentStream, "text/plain");
@@ -75,24 +80,9 @@ namespace FileService.Controllers
         [HttpPost]
         public void Post([FromForm] AddFileRequest addFileRequest)
         {
-            var command = new AddFileCommand()
-            {
-                FileName = addFileRequest.FileName,
-                Description = addFileRequest.Description,
-                Owner = GetCurrentUser(),
-                Content = addFileRequest.File.OpenReadStream(),
-            };
-
-            addFileCommandHandler.Handle(command);
+            addFileCommandHandler.Handle(addFileRequest);
         }
-
-        // PUT api/files/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         // DELETE api/files/5
         [HttpDelete("{id}")]
         public void Delete(string id)
@@ -100,19 +90,9 @@ namespace FileService.Controllers
             var command = new DeleteFileCommand()
             {
                 FileId = id,
-                Owner = GetCurrentUser()
             };
 
             deleteFileCommandHandler.Handle(command);
-        }
-
-        private User GetCurrentUser()
-        {
-            return new User()
-            {
-                Id = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
-                Username = HttpContext.User.Identity.Name,
-            };
         }
     }
 }

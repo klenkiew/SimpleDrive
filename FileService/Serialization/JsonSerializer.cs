@@ -2,7 +2,7 @@
 
 namespace FileService.Serialization
 {
-    internal class JsonSerializer: ISerializer
+    public class JsonSerializer: ISerializer
     {
         public string Serialize<T>(T @object)
         {
