@@ -10,7 +10,14 @@ import {AddFileComponent} from "./components/add-file/add-file.component";
 import {FileDetailsComponent} from "./components/file-details/file-details.component";
 import {SharedModule} from "../shared/shared.module";
 import {GrowlModule} from "primeng/growl";
-import {ContextMenuModule, FieldsetModule, FileUploadModule, InputTextModule, PasswordModule} from "primeng/primeng";
+import {
+  AutoCompleteModule,
+  ContextMenuModule, DataScrollerModule,
+  FieldsetModule,
+  FileUploadModule,
+  InputTextModule,
+  PasswordModule
+} from "primeng/primeng";
 import {PanelModule} from "primeng/panel";
 import {TableModule} from "primeng/table";
 import {MessagesModule} from "primeng/messages";
@@ -18,6 +25,7 @@ import {MessageModule} from "primeng/message";
 import {CardModule} from "primeng/card";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import {UsersService} from "../shared/users.service";
 
 @NgModule({
   declarations: [
@@ -30,6 +38,8 @@ import {CommonModule} from "@angular/common";
     CommonModule,
     SharedModule,
     RouterModule.forChild(routes),
+    AutoCompleteModule,
+    DataScrollerModule,
 
     FormsModule,
     TableModule,
@@ -44,6 +54,6 @@ import {CommonModule} from "@angular/common";
     PanelModule,
     FieldsetModule
   ],
-  providers: [FilesService],
+  providers: [FilesService, UsersService],
 })
 export class FilesModule { }

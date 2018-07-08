@@ -1,6 +1,4 @@
 ﻿using FileService.Model;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Database
@@ -17,6 +15,7 @@ namespace FileService.Database
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
             modelBuilder.ApplyConfiguration(new FileEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new FileShareEntityConfiguration());
         }
 
         public DbSet<User> Users { get; set; }

@@ -8,7 +8,7 @@ namespace FileService.Cache.InvalidationKeysProviders
     {
         public IEnumerable<object> GetCacheKeysToInvalidate(AddFileCommand command)
         {
-            return new[] { new FindFilesByOwnerQuery() {OwnerId = command.Owner.Id} };
+            return new[] { new FindFilesByUserQuery() {UserId = command.Owner.Id} };
         }
     }
 }

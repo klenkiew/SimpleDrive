@@ -33,7 +33,7 @@ namespace AuthenticationService.Authentication
             
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return Task.FromResult(user.UserName);
+            return Task.FromResult(user.Username);
         }
 
         public Task SetUserNameAsync(User user, string userName, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ namespace AuthenticationService.Authentication
             if (string.IsNullOrWhiteSpace(userName)) 
                 throw new ArgumentException("Cannot be null or whitespace", nameof(userName));
             
-            user.UserName = userName;
+            user.Username = userName;
             
             return Task.CompletedTask;
         }
@@ -55,7 +55,7 @@ namespace AuthenticationService.Authentication
             
             if (user == null) throw new ArgumentNullException(nameof(user));
 
-            return Task.FromResult(user.NormalizedUserName);
+            return Task.FromResult(user.NormalizedUsername);
         }
 
         public Task SetNormalizedUserNameAsync(User user, string normalizedName, CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ namespace AuthenticationService.Authentication
             if (string.IsNullOrWhiteSpace(normalizedName)) 
                 throw new ArgumentException("Cannot be null or whitespace", nameof(normalizedName));
 
-            user.NormalizedUserName = normalizedName;
+            user.NormalizedUsername = normalizedName;
             
             return Task.CompletedTask;
         }
@@ -80,7 +80,7 @@ namespace AuthenticationService.Authentication
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync(cancellationToken);
             
-            Debug.WriteLine($"User {user.UserName} created.");
+            Debug.WriteLine($"User {user.Username} created.");
             
             return IdentityResult.Success;
         }
@@ -131,7 +131,7 @@ namespace AuthenticationService.Authentication
                 throw new ArgumentException("Cannot be null or whitespace", nameof(normalizedUserName));
 
             var user = dbContext.Users.FirstOrDefaultAsync(
-                u => u.NormalizedUserName == normalizedUserName, 
+                u => u.NormalizedUsername == normalizedUserName, 
                 cancellationToken: cancellationToken);
             
             Debug.WriteLineIf(user == null, $"User with name {normalizedUserName} not found.");

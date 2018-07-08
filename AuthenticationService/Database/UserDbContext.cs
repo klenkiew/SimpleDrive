@@ -12,9 +12,9 @@ namespace AuthenticationService.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasKey(user => user.Id).HasName("Id");
-            modelBuilder.Entity<User>().Property(user => user.UserName).IsRequired();
+            modelBuilder.Entity<User>().Property(user => user.Username).IsRequired();
             
-            modelBuilder.Entity<User>().HasIndex(user => user.UserName);
+            modelBuilder.Entity<User>().HasIndex(user => user.Username);
             modelBuilder.Entity<User>().HasIndex(user => user.Email);
 
             modelBuilder.Entity<User>().ToTable("Users");

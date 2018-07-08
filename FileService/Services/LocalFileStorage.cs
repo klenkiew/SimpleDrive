@@ -13,7 +13,7 @@ namespace FileService.Services
 
         public Task SaveFile(User owner, string fileName, Stream content)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.UserName), EscapeName(fileName));
+            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllBytesAsync(filePath, ReadFully(content)).Wait();
             return Task.CompletedTask;
@@ -21,7 +21,7 @@ namespace FileService.Services
 
         public Task<Stream> ReadFile(User owner, string fileName)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.UserName), EscapeName(fileName));
+            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
             Stream memory = new MemoryStream();
             using (var stream = new FileStream(filePath, FileMode.Open))
                 stream.CopyToAsync(memory).Wait();
@@ -31,7 +31,7 @@ namespace FileService.Services
 
         public void DeleteFile(User owner, string fileName)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(owner.UserName), EscapeName(fileName));
+            var filePath = Path.Combine(rootPath, EscapeName(owner.Username), EscapeName(fileName));
             File.Delete(filePath);
         }
 

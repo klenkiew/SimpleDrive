@@ -13,6 +13,7 @@ export class AccountService {
 
   private static readonly usernameClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
   private static readonly emailClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
+  private static readonly idClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
 
   private decodedToken: JwtToken = null;
   private loggedIn: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
@@ -97,6 +98,11 @@ export class AccountService {
     return this.getJwtToken();
   }
 
+  public getCurrentUserName(): string
+  {
+    return this.getToken().username;
+  }
+
   private downloadToken(apiUrl: string, requestBody: any) {
     let sub = this.http.post<string>(apiUrl, requestBody);
     sub = sub.do(value => this.saveToken(value));
@@ -116,10 +122,11 @@ export class AccountService {
   }
 
   private toJwtToken(serverToken: any) {
+    const id = serverToken[AccountService.idClaim];
     const username = serverToken[AccountService.usernameClaim];
     const email = serverToken[AccountService.emailClaim];
     const expirationDate = new Date(serverToken['exp'] * 1000);
 
-    return new JwtToken(username, email, expirationDate);
+    return new JwtToken(id, username, email, expirationDate);
   }
 }

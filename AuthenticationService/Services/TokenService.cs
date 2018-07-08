@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AuthenticationService.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly IConfiguration configuration;
 
@@ -25,7 +25,7 @@ namespace AuthenticationService.Services
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email)
             };
             

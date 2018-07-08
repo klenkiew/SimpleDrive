@@ -1,10 +1,11 @@
-import {Component, ContentChild, OnInit} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import {MenuItem} from "primeng/api";
 import {File} from "../../../shared/models/file";
 import {FilesService} from "../../files.service";
 import {Observable} from "rxjs/Rx";
 import "rxjs/add/operator/map";
 import {ActivatedRoute, Router} from "@angular/router";
+import {User} from "../../../shared/models/user";
 
 @Component({
   selector: 'app-browse-files',
@@ -32,6 +33,7 @@ export class BrowseFilesComponent implements OnInit {
     this.cols = [
       { field: 'name', header: 'Name' },
       { field: 'size', header: 'Size' },
+      { field: 'ownerName', header: 'Owner'},
       { field: 'lastModified', header: 'Last modification', type: 'date' },
     ];
 
@@ -45,7 +47,7 @@ export class BrowseFilesComponent implements OnInit {
   getFiles(): Observable<any>
   {
     return this.fileService.getFiles().map(files => {
-      return files.map(f => new File(f.id, f.fileName, f.size, f.dateModified));
+      return files.map(f => new File(f.id, f.fileName, f.size, f.description, new User(f.ownerId, f.ownerName), f.dateModified));
     });
   }
 
@@ -58,12 +60,11 @@ export class BrowseFilesComponent implements OnInit {
   }
 
   private showDetails(selectedFile: File) {
-    console.log("Details: " + selectedFile.name);
+    console.log("Details: %o", selectedFile);
     this.router.navigate(['details', this.selectedFile.id], {relativeTo: this.route});
   }
 
   private download(selectedFile: File) {
-    console.log("Download: " + selectedFile.name);
     this.fileService.downloadFile(this.selectedFile.id).subscribe(content => {
       console.log('start download');
       const url = window.URL.createObjectURL(content);
@@ -83,8 +84,13 @@ export class BrowseFilesComponent implements OnInit {
   }
 
   private deleteFile(selectedFile: File): void {
-    console.log("Delete: " + selectedFile.name);
-    this.fileService.deleteFile(selectedFile.id).subscribe(value =>
+    let sub: Observable<any>;
+    if (this.fileService.isOwnedByCurrentUser(selectedFile))
+      sub = this.fileService.deleteFile(selectedFile.id);
+    else
+      sub = this.fileService.unshareFile(selectedFile.id);
+
+    sub.subscribe(value =>
     {
       this.files.forEach((item, index) =>
       {

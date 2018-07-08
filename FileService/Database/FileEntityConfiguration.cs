@@ -15,6 +15,12 @@ namespace FileService.Database
             builder.Property(file => file.DateModified).IsRequired();
             builder.Property(file => file.Size).IsRequired();
             
+            builder
+                .HasMany(file => file.SharedWith)
+                .WithOne(fs => fs.File)
+                .HasForeignKey(fs => fs.FileId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
             builder.HasIndex(file => file.FileName);
             
             builder.ToTable("Files");

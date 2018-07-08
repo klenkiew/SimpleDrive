@@ -8,7 +8,12 @@ namespace FileService.Cache.InvalidationKeysProviders
     {
         public IEnumerable<object> GetCacheKeysToInvalidate(DeleteFileCommand command)
         {
-            return new[] { new FindFilesByOwnerQuery() {OwnerId = command.Owner.Id} };
+            return new object[]
+            {
+                new FindFilesByUserQuery() {UserId = command.Owner.Id},
+                new FindFileByIdQuery() {FileId = command.FileId},
+                new FindUsersBySharedFileQuery() {FileId = command.FileId}
+            };
         }
     }
 }

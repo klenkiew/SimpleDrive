@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FileService.Model
 {
@@ -13,6 +14,9 @@ namespace FileService.Model
         public virtual DateTime DateModified { get; set; }
         
         public virtual string OwnerId { get; set; }
+        public virtual string OwnerName { get; set; }
         public virtual User Owner { get; set; }
+        
+        public virtual ICollection<FileShare> SharedWith{ get; set; }
     }
 }

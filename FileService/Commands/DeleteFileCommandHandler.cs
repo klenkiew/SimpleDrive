@@ -1,5 +1,4 @@
-﻿using FileService.Cache;
-using FileService.Database;
+﻿using FileService.Database;
 using FileService.Model;
 using FileService.Services;
 
@@ -9,17 +8,17 @@ namespace FileService.Commands
     {
         private readonly IFileStorage fileStorage;
         private readonly FileDbContext fileDb;
-        private readonly IUniversalCache cache;
 
-        public DeleteFileCommandHandler(IFileStorage fileStorage, FileDbContext fileDb, IUniversalCache cache)
+        public DeleteFileCommandHandler(IFileStorage fileStorage, FileDbContext fileDb)
         {
             this.fileStorage = fileStorage;
             this.fileDb = fileDb;
-            this.cache = cache;
         }
 
         public void Handle(DeleteFileCommand command)
         {
+            // TODO throw if the file doesn't exist?
+            // TODO check if the current user is the owner of the file
             fileDb.Files.Remove(new File() {Id = command.FileId});
             fileStorage.DeleteFile(command.Owner, command.FileId);
             fileDb.SaveChanges();

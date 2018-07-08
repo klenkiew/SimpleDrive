@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using FileService.Commands;
 using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using File = FileService.Model.File;
 
 namespace FileService.Controllers
@@ -20,13 +17,15 @@ namespace FileService.Controllers
     {
         private readonly ICommandHandler<AddFileCommand> addFileCommandHandler;
         private readonly ICommandHandler<DeleteFileCommand> deleteFileCommandHandler;
-        private readonly IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>> findFilesQueryHandler;
+        private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler;
+        private readonly IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler;
         private readonly IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler;
 
         public FileController(
             ICommandHandler<AddFileCommand> addFileCommandHandler,
             ICommandHandler<DeleteFileCommand> deleteFileCommandHandler, 
-            IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>> findFilesQueryHandler, 
+            IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler, 
+            IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler, 
             IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler)
         {
             this.addFileCommandHandler =
@@ -37,6 +36,9 @@ namespace FileService.Controllers
             
             this.findFilesQueryHandler =
                 findFilesQueryHandler ?? throw new ArgumentNullException(nameof(findFilesQueryHandler));
+
+            this.findFileByIdQueryHandler = 
+                findFileByIdQueryHandler ?? throw new ArgumentNullException(nameof(findFileByIdQueryHandler));
             
             this.getFileContentQueryHandler = 
                 getFileContentQueryHandler ?? throw new ArgumentNullException(nameof(getFileContentQueryHandler));
@@ -46,14 +48,14 @@ namespace FileService.Controllers
         [HttpGet]
         public IEnumerable<File> Get()
         {
-            return findFilesQueryHandler.Handle(new FindFilesByOwnerQuery() {OwnerId = GetCurrentUser().Id});
+            return findFilesQueryHandler.Handle(new FindFilesByUserQuery() {UserId = GetCurrentUser().Id});
         }
 
         // GET api/files/5
         [HttpGet("{id}")]
-        public string Get(string id)
+        public File Get(string id)
         {
-            throw new NotImplementedException();
+            return findFileByIdQueryHandler.Handle(new FindFileByIdQuery() {FileId = id});
         }
 
         // GET api/files/5/content
@@ -109,7 +111,7 @@ namespace FileService.Controllers
             return new User()
             {
                 Id = HttpContext.User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value,
-                UserName = HttpContext.User.Identity.Name,
+                Username = HttpContext.User.Identity.Name,
             };
         }
     }

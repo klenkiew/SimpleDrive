@@ -17,12 +17,12 @@ namespace AuthenticationService.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        private readonly TokenService tokenService;
+        private readonly ITokenService tokenService;
 
         public AuthenticationController(
             UserManager<User> userManager, 
             SignInManager<User> signInManager,
-            TokenService tokenService)
+            ITokenService tokenService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -35,7 +35,7 @@ namespace AuthenticationService.Controllers
         {
             var identityUser = new User()
             {
-                UserName = request.Username,
+                Username = request.Username,
                 Email = request.Email
             };
             var result = await userManager.CreateAsync(identityUser, request.Password);

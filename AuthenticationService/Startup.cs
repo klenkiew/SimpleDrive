@@ -84,7 +84,8 @@ namespace AuthenticationService
             services.AddDbContext<DbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
             services.AddTransient<IUserStore<User>, UserStore>();
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
-            services.AddTransient<TokenService>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IUsersService, UsersService>();
 
             services
                 .AddMvc(options =>
@@ -144,8 +145,8 @@ namespace AuthenticationService
                 EmailConfirmed = true,
                 Id = Guid.NewGuid().ToString(),
                 NormalizedEmail = "test@mail.com".ToUpper(),
-                NormalizedUserName = "testUser".ToUpper(),
-                UserName = "testUser"
+                NormalizedUsername = "testUser".ToUpper(),
+                Username = "testUser"
             };
             Debug.WriteLine("Create the test user.");
             userManager.CreateAsync(testUser).Wait();

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FileService.Cache;
 using FileService.Cache.Redis;
 using FileService.Commands;
 using FileService.Database;
+using FileService.Model;
 using FileService.Queries;
 using FileService.Serialization;
 using FileService.Services;
@@ -24,10 +23,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
-using File = FileService.Model.File;
+using JsonSerializer = FileService.Serialization.JsonSerializer;
 
 namespace FileService
 {
@@ -77,8 +77,15 @@ namespace FileService
                     options.Filters.Add(new ValidationFilter());
                     options.Filters.Add(new AuthorizeFilter());
                 })
+                .AddJsonOptions(options => 
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                )
                 .AddFluentValidation(config => config.RegisterValidatorsFromAssemblyContaining<ValidationMessage>());
 
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+            
             services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
 
             IntegrateSimpleInjector(services);
@@ -117,7 +124,8 @@ namespace FileService
 
             // Add application services:
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
-            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>));
+            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>), 
+                context => context.ServiceType != typeof(ICommandHandler<ShareFileCommand>));
             container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
             
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
@@ -141,7 +149,7 @@ namespace FileService
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)
         {
-            return serviceType == typeof(IQueryHandler<FindFilesByOwnerQuery, IEnumerable<File>>);
+            return serviceType == typeof(IQueryHandler<FindFilesByUserQuery, IEnumerable<File>>);
         }
     }
 }
