@@ -1,6 +1,6 @@
-﻿namespace FileService.Serialization
+﻿namespace Serialization
 {
-    internal class ObjectConverter : IObjectConverter
+    public class ObjectConverter : IObjectConverter
     {
         private readonly ISerializer serializer;
 

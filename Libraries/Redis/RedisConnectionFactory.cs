@@ -1,10 +1,9 @@
 ﻿using System;
-using FileService.Configuration;
 using StackExchange.Redis;
 
-namespace FileService.Cache.Redis
+namespace Redis
 {
-    internal class RedisConnectionFactory : IRedisConnectionFactory
+    public class RedisConnectionFactory : IRedisConnectionFactory
     {
         private readonly Lazy<IConnectionMultiplexer> connectionProvider;
         

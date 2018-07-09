@@ -1,9 +1,9 @@
 ﻿using System;
-using FileService.Serialization;
+using Serialization;
 
-namespace FileService.Cache
+namespace Cache
 {
-    internal class UniversalCache : IUniversalCache
+    public class UniversalCache : IUniversalCache
     {
         private readonly ICache cache;
         private readonly IObjectConverter keyConverter;

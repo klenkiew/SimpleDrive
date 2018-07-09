@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using FileService.Cache;
-using FileService.Cache.Redis;
+using Cache;
 using FileService.Commands;
+using FileService.Commands.InvalidationKeysProviders;
 using FileService.Configuration;
 using FileService.Database;
 using FileService.Middlewares;
 using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
-using FileService.Serialization;
 using FileService.Services;
 using FileService.Validation;
 using FluentValidation.AspNetCore;
@@ -29,11 +28,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Redis;
+using Redis.Cache;
+using Serialization;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
-using StackExchange.Redis;
-using JsonSerializer = FileService.Serialization.JsonSerializer;
+using JsonSerializer = Serialization.JsonSerializer;
 
 namespace FileService
 {
@@ -107,7 +108,9 @@ namespace FileService
             container.Verify();
 
             if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
+            }
 
             app.UseAuthentication();
             app.UseCors("MyPolicy");
@@ -136,7 +139,7 @@ namespace FileService
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
             container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
             container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>), 
-                context => ShouldCommandInvalidateCache(context));
+                context => ShouldCommandInvalidateCache(context.ServiceType));
 
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
@@ -173,7 +176,11 @@ namespace FileService
                 redisConnectionFactory.Connection.GetDatabase().Ping();
                 AddRedis(redisConfiguration);
             }
-            catch (RedisConnectionException ex)
+            // catching Exception and not RedisException because of the issue with strongly named StackExchange.Redis
+            // assembly - classes (with their fully qualified names) are duplicated. There is a workaround which requires
+            // editing manually the .csproj file and it works for builds but Rider doesn't handle it and shows errors
+            // which makes auto completion and inspections useless
+            catch (Exception ex)
             {
                 switch (redisConfiguration.ConnectionFailedFallback)
                 {
@@ -207,11 +214,11 @@ namespace FileService
             container.Register<ICache, ObjectCache>(Lifestyle.Singleton);
         }
 
-        private bool ShouldCommandInvalidateCache(DecoratorPredicateContext context)
+        private bool ShouldCommandInvalidateCache(Type serviceType)
         {
-            return !(context.ServiceType == typeof(ICommandHandler<ShareFileCommand>)
-                   || context.ServiceType == typeof(ICommandHandler<AddFileRequest>)
-                   || context.ServiceType == typeof(ICommandHandler<ShareFileRequest>));
+            return !(serviceType== typeof(ICommandHandler<ShareFileCommand>)
+                   || serviceType == typeof(ICommandHandler<AddFileRequest>)
+                   || serviceType == typeof(ICommandHandler<ShareFileRequest>));
         }
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)

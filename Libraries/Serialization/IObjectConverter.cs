@@ -1,4 +1,4 @@
-﻿namespace FileService.Serialization
+﻿namespace Serialization
 {
     public interface IObjectConverter
     {

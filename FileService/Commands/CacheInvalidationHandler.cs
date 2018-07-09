@@ -1,7 +1,7 @@
-﻿using System;
-using FileService.Commands;
+﻿using Cache;
+using FileService.Commands.InvalidationKeysProviders;
 
-namespace FileService.Cache
+namespace FileService.Commands
 {
     internal class CacheInvalidationHandler<TCommand> : ICommandHandler<TCommand>
     {

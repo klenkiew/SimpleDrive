@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileService.Cache
+namespace FileService.Commands.InvalidationKeysProviders
 {
     interface IInvalidationKeysProvider<TCommand>
     {

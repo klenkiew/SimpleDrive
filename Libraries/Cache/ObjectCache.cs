@@ -1,9 +1,9 @@
 ﻿using System;
-using FileService.Serialization;
+using Serialization;
 
-namespace FileService.Cache
+namespace Cache
 {
-    internal class ObjectCache : ICache
+    public class ObjectCache : ICache
     {
         private readonly ISerializer serializer;
         private readonly ICache<string> stringCache;

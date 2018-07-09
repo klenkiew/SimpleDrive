@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace FileService.Serialization
+namespace Serialization
 {
-    public class JsonSerializer: ISerializer
+    public class JsonSerializer : ISerializer
     {
         public string Serialize<T>(T @object)
         {

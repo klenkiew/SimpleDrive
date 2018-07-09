@@ -1,6 +1,6 @@
 ﻿using StackExchange.Redis;
 
-namespace FileService.Cache.Redis
+namespace Redis
 {
     public interface IRedisConnectionFactory
     {

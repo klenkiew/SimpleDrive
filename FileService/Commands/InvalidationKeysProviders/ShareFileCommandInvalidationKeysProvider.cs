@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using FileService.Commands;
 using FileService.Queries;
 
-namespace FileService.Cache.InvalidationKeysProviders
+namespace FileService.Commands.InvalidationKeysProviders
 {
     internal class ShareFileCommandInvalidationKeysProvider: IInvalidationKeysProvider<ShareFileCommand>
     {

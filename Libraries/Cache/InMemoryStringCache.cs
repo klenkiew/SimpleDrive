@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace FileService.Cache
+namespace Cache
 {
     public class InMemoryObjectCache : ICache
     {

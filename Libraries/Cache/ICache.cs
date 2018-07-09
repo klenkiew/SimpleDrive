@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FileService.Cache
+namespace Cache
 {
     public interface ICache
     {

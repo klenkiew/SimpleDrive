@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using FileService.Commands;
 using FileService.Queries;
 using FileService.Services;
 
-namespace FileService.Cache.InvalidationKeysProviders
+namespace FileService.Commands.InvalidationKeysProviders
 {
     internal class DeleteFileCommandInvalidationKeysProvider: IInvalidationKeysProvider<DeleteFileCommand>
     {

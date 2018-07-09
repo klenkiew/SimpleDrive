@@ -1,9 +1,10 @@
 ﻿using System;
+using Cache;
 using StackExchange.Redis;
 
-namespace FileService.Cache.Redis
+namespace Redis.Cache
 {
-    internal class RedisStringCache : ICache<string>
+    public class RedisStringCache : ICache<string>
     {
         private readonly IRedisConnectionFactory redisConnectionFactory;
 

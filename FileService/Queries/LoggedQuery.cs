@@ -1,6 +1,5 @@
-﻿using System;
-using FileService.Serialization;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Serialization;
 
 namespace FileService.Queries
 {

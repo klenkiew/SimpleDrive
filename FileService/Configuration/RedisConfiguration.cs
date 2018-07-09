@@ -1,4 +1,6 @@
-﻿namespace FileService.Configuration
+﻿using Redis;
+
+namespace FileService.Configuration
 {
     public class RedisConfiguration : IRedisConfiguration
     {
