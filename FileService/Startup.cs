@@ -116,7 +116,8 @@ namespace FileService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                ClearRedisCache();
+                if (UsingInMemoryDb(app))
+                    ClearRedisCache();
             }
 
             app.UseAuthentication();
@@ -126,6 +127,15 @@ namespace FileService
 
             container.GetInstance<IEventDispatcher>().SubscribeToEvents();
             container.GetInstance<IUsersIntegrationService>().Run();
+        }
+
+        private bool UsingInMemoryDb(IApplicationBuilder app)
+        {   
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                return scope.ServiceProvider.GetService<DbContextOptions>().Extensions
+                    .Any(extension => extension is InMemoryOptionsExtension);
+            }
         }
 
         private void ClearRedisCache()
