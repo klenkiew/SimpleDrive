@@ -114,6 +114,7 @@ namespace FileService
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                ClearRedisCache();
             }
 
             app.UseAuthentication();
@@ -123,6 +124,16 @@ namespace FileService
 
             container.GetInstance<IEventDispatcher>().SubscribeToEvents();
             container.GetInstance<IUsersIntegrationService>().Run();
+        }
+
+        private void ClearRedisCache()
+        {
+            Logger.LogInformation("Clearing the redis cache [development mode]");
+            const string defaultRedisPort = "6379";
+            var redisConfiguration = container.GetInstance<IRedisConfiguration>();
+            var redisHost = redisConfiguration.Host + ":" + defaultRedisPort;
+            var connectionFactory = new AdminModeRedisConnectionFactory(redisConfiguration);
+            connectionFactory.Connection.GetServer(redisHost).FlushAllDatabases();
         }
 
         private void IntegrateSimpleInjector(IServiceCollection services)
