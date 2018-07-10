@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FileService.Configuration;
 using FileService.Exceptions;
 using FileModel = FileService.Model.File;
 
@@ -9,7 +11,14 @@ namespace FileService.Services
 {
     internal class LocalFileStorage : IFileStorage
     {
-        private readonly string rootPath = Path.Combine(Directory.GetCurrentDirectory(), "Content");
+        private readonly string rootPath;
+
+        public LocalFileStorage(StorageConfiguration configuration)
+        {
+            rootPath = configuration.Path;
+            // ensure that the path is valid and indicates an accessible directory to prevent issues during requests 
+            Directory.CreateDirectory(rootPath);
+        }
 
         public async Task SaveFile(FileModel file, Stream content)
         {
@@ -40,6 +49,11 @@ namespace FileService.Services
         {
             var filePath = Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
             File.Delete(filePath);
+            
+            // clear the parent directory if it's empty after deleting the file
+            var parentDirectory = Directory.GetParent(filePath);
+            if (!parentDirectory.GetFiles().Any())
+                Directory.Delete(parentDirectory.FullName);
         }
 
         private Task<Stream> ReadFile(string filePath)

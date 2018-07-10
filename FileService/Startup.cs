@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cache;
@@ -26,6 +27,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -160,6 +162,8 @@ namespace FileService
 
             container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
+            var storageConfiguration = Configuration.GetSection("Storage").Get<StorageConfiguration>();
+            container.RegisterInstance(storageConfiguration);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
             container.Register<IObjectConverter, ObjectConverter>(Lifestyle.Singleton);
 
