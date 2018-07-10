@@ -143,16 +143,9 @@ namespace FileService
 
             // Add application services:
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
-            container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
-            container.RegisterDecorator(typeof(ICommandHandler<>),typeof(CacheInvalidationHandler<>), 
-                context => ShouldCommandInvalidateCache(context.ServiceType));
 
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
-            container.RegisterDecorator(
-                typeof(IQueryHandler<,>),
-                typeof(CachedQuery<,>),
-                context => ShouldQueryHandlerBeCached(context.ServiceType));
 
             container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
@@ -170,50 +163,42 @@ namespace FileService
             container.Register<IScopedServiceFactory<FileDbContext>, ScopedServiceFactory<FileDbContext>>(Lifestyle.Singleton);
             container.Register<IUsersIntegrationService, UsersIntegrationService>(Lifestyle.Singleton);
 
-            RegisterCache();
+            AddRedis();
+            ConfigureCache();
             
             // Allow Simple Injector to resolve services from ASP.NET Core.
             container.AutoCrossWireAspNetComponents(app);
         }
 
-        private void RegisterCache()
+        private void AddRedis()
         {
             var redisConfiguration = Configuration.GetSection("Redis").Get<RedisConfiguration>();
-            container.Register<IUniversalCache, UniversalCache>(Lifestyle.Singleton);
+            container.Register<IRedisConfiguration>(() => redisConfiguration, Lifestyle.Singleton);
+            container.Register<IRedisConnectionFactory, RedisConnectionFactory>(Lifestyle.Singleton);
             
-            if (redisConfiguration.ConnectionFailedFallback == ConnectionFailedFallback.Ignore)
-            {
-                AddRedis(redisConfiguration);
-                return;
-            }
+            var redisConnectionFactory = new RedisConnectionFactory(redisConfiguration);
+            redisConnectionFactory.Connection.GetDatabase().Ping();
+        }
 
-            try
-            {
-                var redisConnectionFactory = new RedisConnectionFactory(redisConfiguration);
-                redisConnectionFactory.Connection.GetDatabase().Ping();
-                AddRedis(redisConfiguration);
-            }
-            // catching Exception and not RedisException because of the issue with strongly named StackExchange.Redis
-            // assembly - classes (with their fully qualified names) are duplicated. There is a workaround which requires
-            // editing manually the .csproj file and it works for builds but Rider doesn't handle it and shows errors
-            // which makes auto completion and inspections useless
-            catch (Exception ex)
-            {
-                switch (redisConfiguration.ConnectionFailedFallback)
-                {
-                    case ConnectionFailedFallback.Error:
-                        throw;
-                    case ConnectionFailedFallback.InMemoryCache:
-                        Logger.LogWarning(ex, "Redis connection failed, using InMemoryCache as fallback.");
-                        AddInMemoryCache();
-                        return;
-                    case ConnectionFailedFallback.TryStart:
-                        // TODO try start the redis server - probably just a 'redis-server' command and check the result
-                        throw new NotImplementedException();
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+        private void ConfigureCache()
+        {
+            var cacheConfig = Configuration.GetSection("Cache").Get<CacheConfiguration>();
+            
+            if (cacheConfig.CacheType == CacheType.None)
+                return;
+            
+            container.Register<IUniversalCache, UniversalCache>(Lifestyle.Singleton);
+            container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
+            
+            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(CacheInvalidationHandler<>), 
+                context => ShouldCommandInvalidateCache(context.ServiceType));
+            container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(CachedQuery<,>),
+                context => ShouldQueryHandlerBeCached(context.ServiceType));
+            
+            if (cacheConfig.CacheType == CacheType.Redis)
+                AddRedisCache();
+            else if (cacheConfig.CacheType == CacheType.InMemory)
+                AddInMemoryCache();
         }
 
         private void AddInMemoryCache()
@@ -222,11 +207,8 @@ namespace FileService
             container.Register<ICache, InMemoryObjectCache>(Lifestyle.Singleton);
         }
 
-        private void AddRedis(RedisConfiguration redisConfiguration)
+        private void AddRedisCache()
         {            
-            container.Register<IRedisConfiguration>(() => redisConfiguration, Lifestyle.Singleton);
-            
-            container.Register<IRedisConnectionFactory, RedisConnectionFactory>(Lifestyle.Singleton);
             container.Register<ICache<string>, RedisStringCache>(Lifestyle.Singleton);
             container.Register<ICache, ObjectCache>(Lifestyle.Singleton);
         }
