@@ -8,6 +8,7 @@ using AuthenticationService.Database;
 using AuthenticationService.Model;
 using AuthenticationService.Services;
 using AuthenticationService.Validation;
+using CommonEvents;
 using EventBus;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -122,6 +123,9 @@ namespace AuthenticationService
             app.UseAuthentication();
             app.UseCors("MyPolicy");
             app.UseMvc();
+
+            var eventBus = app.ApplicationServices.GetService<IEventBusWrapper>();
+            eventBus.Publish<IEvent<AuthenticationServiceStarted>, AuthenticationServiceStarted>(AuthenticationServiceStartedEvent.Create());
         }
 
         private void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env, UserDbContext context)

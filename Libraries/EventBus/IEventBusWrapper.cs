@@ -29,7 +29,6 @@ namespace EventBus
 
         public void Handle(TMessage message)
         {
-            Console.WriteLine("Handling message: " + message.GetType());
             handler.Invoke(message);
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AuthenticationService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationService.Controllers
@@ -18,6 +19,13 @@ namespace AuthenticationService.Controllers
         public async Task<IActionResult> GetUsersByNamePrefix(string prefix)
         {
             return Ok(await usersService.GetUsersByNamePrefix(prefix ?? ""));
+        }
+        
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            return Ok(await usersService.GetAllUsers());
         }
     }
 }

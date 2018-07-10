@@ -1,5 +1,4 @@
-﻿using System;
-using EventBus;
+﻿using EventBus;
 
 namespace Redis
 {
@@ -14,14 +13,12 @@ namespace Redis
 
         public void Subscribe(string topic, IMessageHandler<string> messageHandler)
         {
-            Console.WriteLine("[Redis] Subscribing: " + topic);
             var subscriber = connectionFactory.Connection.GetSubscriber();
             subscriber.Subscribe(topic, (channel, message) => messageHandler.Handle(message));
         }
 
         public void Publish(string topic, string message)
         {
-            Console.WriteLine("[Redis] Publishing: " + topic);
             connectionFactory.Connection.GetDatabase().Publish(topic, message);
         }
     }

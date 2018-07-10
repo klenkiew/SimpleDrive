@@ -10,7 +10,9 @@ using FileService.Commands.InvalidationKeysProviders;
 using FileService.Configuration;
 using FileService.Database;
 using FileService.Infrastructure;
+using FileService.Infrastructure.HttpClient;
 using FileService.Infrastructure.Middlewares;
+using FileService.Infrastructure.ScopedServices;
 using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
@@ -120,6 +122,7 @@ namespace FileService
             app.UseMvc();
 
             container.GetInstance<IEventDispatcher>().SubscribeToEvents();
+            container.GetInstance<IUsersIntegrationService>().Run();
         }
 
         private void IntegrateSimpleInjector(IServiceCollection services)
@@ -162,7 +165,11 @@ namespace FileService
             
             container.Register<IMessageHandler<UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
             container.Register<IEventDispatcher, EventDispatcher>(Lifestyle.Singleton);
-            
+            container.Register<IHttpClientAccessor, HttpClientAccessor>(Lifestyle.Singleton);
+            container.Register<IHttpClientWrapper, HttpClientWrapper>(Lifestyle.Singleton);
+            container.Register<IScopedServiceFactory<FileDbContext>, ScopedServiceFactory<FileDbContext>>(Lifestyle.Singleton);
+            container.Register<IUsersIntegrationService, UsersIntegrationService>(Lifestyle.Singleton);
+
             RegisterCache();
             
             // Allow Simple Injector to resolve services from ASP.NET Core.
