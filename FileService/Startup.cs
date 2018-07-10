@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Cache;
+using CommonEvents;
+using EventBus;
 using FileService.Commands;
 using FileService.Commands.InvalidationKeysProviders;
 using FileService.Configuration;
 using FileService.Database;
-using FileService.Middlewares;
+using FileService.Infrastructure;
+using FileService.Infrastructure.Middlewares;
 using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
@@ -20,7 +23,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -94,8 +96,8 @@ namespace FileService
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            
-            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
+
+            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb")); 
             services.AddSingleton<JsonSerializer>();
             
             IntegrateSimpleInjector(services);
@@ -116,6 +118,8 @@ namespace FileService
             app.UseCors("MyPolicy");
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMvc();
+
+            container.GetInstance<IEventDispatcher>().SubscribeToEvents();
         }
 
         private void IntegrateSimpleInjector(IServiceCollection services)
@@ -124,7 +128,6 @@ namespace FileService
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IControllerActivator>(new SimpleInjectorControllerActivator(container));
-            services.AddSingleton<IViewComponentActivator>(new SimpleInjectorViewComponentActivator(container));
 
             services.EnableSimpleInjectorCrossWiring(container);
             services.UseSimpleInjectorAspNetRequestScoping(container);
@@ -153,6 +156,13 @@ namespace FileService
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
             container.Register<IObjectConverter, ObjectConverter>(Lifestyle.Singleton);
 
+            container.Register<IEventBus, StringEventBusAdapter>(Lifestyle.Singleton);
+            container.Register<ITypedEventBus<string>, RedisEventBus>(Lifestyle.Singleton);
+            container.Register<IEventBusWrapper, EventBusWrapper>(Lifestyle.Singleton);
+            
+            container.Register<IMessageHandler<UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
+            container.Register<IEventDispatcher, EventDispatcher>(Lifestyle.Singleton);
+            
             RegisterCache();
             
             // Allow Simple Injector to resolve services from ASP.NET Core.

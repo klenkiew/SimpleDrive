@@ -3,10 +3,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AuthenticationService.Configuration;
 using AuthenticationService.Database;
 using AuthenticationService.Model;
 using AuthenticationService.Services;
 using AuthenticationService.Validation;
+using EventBus;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +21,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Redis;
+using Serialization;
 using UserStore = AuthenticationService.Authentication.UserStore;
 
 namespace AuthenticationService
@@ -86,7 +90,15 @@ namespace AuthenticationService
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUsersService, UsersService>();
-
+            
+            services.AddSingleton<IRedisConfiguration, RedisConfiguration>(
+                provider => new RedisConfiguration(Configuration["Redis:Host"]));
+            services.AddSingleton<IEventBus, StringEventBusAdapter>();
+            services.AddSingleton<ITypedEventBus<string>, RedisEventBus>();
+            services.AddSingleton<IEventBusWrapper, EventBusWrapper>();
+            services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
+            services.AddSingleton<ISerializer, JsonSerializer>();
+            
             services
                 .AddMvc(options =>
                 {
@@ -107,7 +119,6 @@ namespace AuthenticationService
             }
 
             InitializeDatabase(app, env, context);
-//            InitializeDatabase(app, env);
             app.UseAuthentication();
             app.UseCors("MyPolicy");
             app.UseMvc();
@@ -124,18 +135,6 @@ namespace AuthenticationService
                 }
             }
         }
-
-//        private void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env)
-//        {
-//            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-//            {
-//                using (var context = scope.ServiceProvider.GetRequiredService<UserDbContext>())
-//                {
-//                    if (context.Database.EnsureCreated() && env.IsDevelopment())
-//                        SeedDatabase(context, app.ApplicationServices.GetService<UserManager<User>>().PasswordHasher);
-//                }
-//            }
-//        }
 
         private void SeedDatabase(UserManager<User> userManager)
         {

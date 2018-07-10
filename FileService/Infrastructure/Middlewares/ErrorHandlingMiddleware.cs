@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Serialization;
 
-namespace FileService.Middlewares
+namespace FileService.Infrastructure.Middlewares
 {
     public class ErrorHandlingMiddleware
     {

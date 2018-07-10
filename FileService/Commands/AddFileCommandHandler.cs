@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FileService.Database;
+using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
 
@@ -24,10 +25,7 @@ namespace FileService.Commands
             var owner = fileDb.Users.FirstOrDefault(u => u.Id == currentUser.Id);
 
             if (owner == null)
-            {
-                owner = new User() {Id = currentUser.Id, Username =currentUser.Username};
-                fileDb.Users.Add(owner);
-            }
+                throw new NotFoundException("The current user cannot be found in the database.");
 
             var file = new File()
             {

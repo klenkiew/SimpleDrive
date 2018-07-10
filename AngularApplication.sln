@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serialization", "Libraries\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventBus", "Libraries\EventBus\EventBus.csproj", "{7FD3EBD7-6FC1-4003-92EC-1455CF44009A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonEvents", "Libraries\CommonEvents\CommonEvents.csproj", "{7F0D9574-9552-4D90-A082-6EA756BF5484}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{7FD3EBD7-6FC1-4003-92EC-1455CF44009A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FD3EBD7-6FC1-4003-92EC-1455CF44009A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FD3EBD7-6FC1-4003-92EC-1455CF44009A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0D9574-9552-4D90-A082-6EA756BF5484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0D9574-9552-4D90-A082-6EA756BF5484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0D9574-9552-4D90-A082-6EA756BF5484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F0D9574-9552-4D90-A082-6EA756BF5484}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

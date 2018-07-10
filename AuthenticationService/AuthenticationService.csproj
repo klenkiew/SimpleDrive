@@ -12,4 +12,8 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libraries\CommonEvents\CommonEvents.csproj" />
+    <ProjectReference Include="..\Libraries\Redis\Redis.csproj" />
+  </ItemGroup>
 </Project>

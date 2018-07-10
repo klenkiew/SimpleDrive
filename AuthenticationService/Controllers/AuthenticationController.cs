@@ -5,6 +5,8 @@ using AuthenticationService.Model;
 using AuthenticationService.Requests;
 using AuthenticationService.Services;
 using AuthenticationService.Validation;
+using CommonEvents;
+using EventBus;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,29 +20,35 @@ namespace AuthenticationService.Controllers
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
         private readonly ITokenService tokenService;
+        private readonly IEventBusWrapper eventBus;
 
         public AuthenticationController(
             UserManager<User> userManager, 
             SignInManager<User> signInManager,
-            ITokenService tokenService)
+            ITokenService tokenService, 
+            IEventBusWrapper eventBus)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.tokenService = tokenService;
+            this.eventBus = eventBus;
         }
 
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var identityUser = new User()
+            var user = new User()
             {
                 Username = request.Username,
                 Email = request.Email
             };
-            var result = await userManager.CreateAsync(identityUser, request.Password);
+            var result = await userManager.CreateAsync(user, request.Password);
             
             if (!result.Succeeded) return BadRequest(new BasicError(result.Errors.First().Description));
+            
+            eventBus.Publish<IEvent<UserInfo>, UserInfo>(
+                new UserRegisteredEvent(new UserInfo(user.Id, user.Username, user.Email)));
             
             return Ok();
         }
