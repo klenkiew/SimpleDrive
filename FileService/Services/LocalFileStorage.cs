@@ -24,7 +24,15 @@ namespace FileService.Services
         {
             var filePath = GetFilePath(file);
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                await content.CopyToAsync(fileStream);
+        }
+
+        public async Task UpdateFile(FileModel file, Stream content)
+        {
+            var filePath = GetFilePath(file);
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Write))
                 await content.CopyToAsync(fileStream);
         }
 
@@ -51,15 +59,20 @@ namespace FileService.Services
             File.Delete(filePath);
             
             // clear the parent directory if it's empty after deleting the file
-            var parentDirectory = Directory.GetParent(filePath);
-            if (!parentDirectory.GetFiles().Any())
-                Directory.Delete(parentDirectory.FullName);
+            DeleteParentDirectoryIfEmpty(filePath);
         }
 
         private Task<Stream> ReadFile(string filePath)
         {
-            Stream stream = new FileStream(filePath, FileMode.Open);
+            Stream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             return Task.FromResult(stream);
+        }
+
+        private static void DeleteParentDirectoryIfEmpty(string filePath)
+        {
+            var parentDirectory = Directory.GetParent(filePath);
+            if (!parentDirectory.GetFiles().Any())
+                Directory.Delete(parentDirectory.FullName);
         }
 
         private string GetFilePath(FileModel file)

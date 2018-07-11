@@ -39,6 +39,7 @@ export class BrowseFilesComponent implements OnInit {
 
     this.items = [
       { label: 'Details', icon: 'fa-search', command: (event) => this.showDetails(this.selectedFile) },
+      { label: 'Edit', icon: 'fa-edit', command: (event) => this.editFile(this.selectedFile) },
       { label: 'Download', icon: 'fa-download', command: (event) => this.download(this.selectedFile) },
       { label: 'Delete', icon: 'fa-close', command: (event) => this.deleteFile(this.selectedFile) }
     ];
@@ -60,7 +61,6 @@ export class BrowseFilesComponent implements OnInit {
   }
 
   private showDetails(selectedFile: File) {
-    console.log("Details: %o", selectedFile);
     this.router.navigate(['details', this.selectedFile.id], {relativeTo: this.route});
   }
 
@@ -98,6 +98,10 @@ export class BrowseFilesComponent implements OnInit {
           this.files.splice(index, 1);
       });
     });
+  }
+
+  private editFile(selectedFile: File) {
+    this.router.navigate(['edit', this.selectedFile.id], {relativeTo: this.route.parent});
   }
 }
 

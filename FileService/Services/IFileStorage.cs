@@ -7,6 +7,7 @@ namespace FileService.Services
     public interface IFileStorage
     {
         Task SaveFile(File file, Stream content);
+        Task UpdateFile(File file, Stream content);
         Task<Stream> ReadFile(File file);
         void DeleteFile(File file);
     }

@@ -242,7 +242,8 @@ namespace FileService
         {
             return !(serviceType== typeof(ICommandHandler<ShareFileCommand>)
                    || serviceType == typeof(ICommandHandler<AddFileRequest>)
-                   || serviceType == typeof(ICommandHandler<ShareFileRequest>));
+                   || serviceType == typeof(ICommandHandler<ShareFileRequest>)
+                   || serviceType == typeof(ICommandHandler<UpdateFileContentCommand>));
         }
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)

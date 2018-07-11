@@ -1,0 +1,7 @@
+<div class="file-edit-title">Edit '<strong>{{file?.name}}</strong>'</div>
+<div class="col-12">
+<textarea style="width: 100%; caret-color: red;" #file_content_area pInputTextarea [(ngModel)]="fileContent" [rows]="5" [cols]="120" autoResize="autoResize"></textarea>
+</div>
+<div>
+  <button class="btn btn-lg btn-primary" (click)="submitEdit()">Submit</button>
+</div>

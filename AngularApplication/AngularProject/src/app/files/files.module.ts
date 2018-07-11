@@ -14,7 +14,7 @@ import {
   AutoCompleteModule,
   ContextMenuModule, DataScrollerModule,
   FieldsetModule,
-  FileUploadModule,
+  FileUploadModule, InputTextareaModule,
   InputTextModule,
   PasswordModule
 } from "primeng/primeng";
@@ -26,13 +26,15 @@ import {CardModule} from "primeng/card";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {UsersService} from "../shared/users.service";
+import { EditFileComponent } from './components/edit-file/edit-file.component';
 
 @NgModule({
   declarations: [
     FilesComponent,
     BrowseFilesComponent,
     AddFileComponent,
-    FileDetailsComponent
+    FileDetailsComponent,
+    EditFileComponent
   ],
   imports: [
     CommonModule,
@@ -40,6 +42,7 @@ import {UsersService} from "../shared/users.service";
     RouterModule.forChild(routes),
     AutoCompleteModule,
     DataScrollerModule,
+    InputTextareaModule,
 
     FormsModule,
     TableModule,

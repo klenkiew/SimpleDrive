@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Claims;
+using System.Text;
 using FileService.Commands;
-using FileService.Model;
 using FileService.Queries;
 using FileService.Requests;
 using FileService.Services;
@@ -19,6 +17,7 @@ namespace FileService.Controllers
         private readonly ICurrentUser currentUser;
         private readonly ICommandHandler<AddFileRequest> addFileCommandHandler;
         private readonly ICommandHandler<DeleteFileCommand> deleteFileCommandHandler;
+        private readonly ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler;
         private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler;
         private readonly IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler;
         private readonly IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler;
@@ -27,6 +26,7 @@ namespace FileService.Controllers
             ICurrentUser currentUser,
             ICommandHandler<AddFileRequest> addFileCommandHandler,
             ICommandHandler<DeleteFileCommand> deleteFileCommandHandler, 
+            ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler, 
             IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler, 
             IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler, 
             IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler)
@@ -39,13 +39,16 @@ namespace FileService.Controllers
             
             this.deleteFileCommandHandler = 
                 deleteFileCommandHandler ?? throw new ArgumentNullException(nameof(addFileCommandHandler));;
+
+            this.updateFileContentCommandHandler = 
+                updateFileContentCommandHandler ?? throw new ArgumentNullException(nameof(updateFileContentCommandHandler));
             
             this.findFilesQueryHandler =
                 findFilesQueryHandler ?? throw new ArgumentNullException(nameof(findFilesQueryHandler));
 
             this.findFileByIdQueryHandler = 
                 findFileByIdQueryHandler ?? throw new ArgumentNullException(nameof(findFileByIdQueryHandler));
-            
+
             this.getFileContentQueryHandler = 
                 getFileContentQueryHandler ?? throw new ArgumentNullException(nameof(getFileContentQueryHandler));
         }
@@ -76,6 +79,24 @@ namespace FileService.Controllers
             return new FileStreamResult(fileContentStream, "text/plain");
         }
 
+        // PUT api/files/5/content
+        [HttpPut("{id}/content")]
+        public IActionResult UpdateContent([FromBody] UpdateContentRequest request)
+        {
+            // TODO content as Stream in the request instead of string
+            using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(request.Content)))
+            {
+                var command = new UpdateFileContentCommand()
+                {
+                    FileId = request.FileId,
+                    Content = memoryStream
+                };
+                updateFileContentCommandHandler.Handle(command);
+            }
+
+            return Ok();
+        }
+        
         // POST api/files
         [HttpPost]
         public void Post([FromForm] AddFileRequest addFileRequest)

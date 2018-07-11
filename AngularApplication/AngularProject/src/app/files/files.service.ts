@@ -59,4 +59,10 @@ export class FilesService {
   isOwnedByCurrentUser(file: File) {
     return this.accountService.getCurrentUserName() == file.owner.username;
   }
+
+  updateContent(fileId: string, content: string) {
+    const apiUrl = this.filesApiUrl + fileId + "/content";
+    return this.http.put(apiUrl, {fileId: fileId, content: content});
+
+  }
 }
