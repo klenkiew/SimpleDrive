@@ -16,7 +16,7 @@ import {
   FieldsetModule,
   FileUploadModule, InputTextareaModule,
   InputTextModule,
-  PasswordModule
+  PasswordModule, ToggleButtonModule
 } from "primeng/primeng";
 import {PanelModule} from "primeng/panel";
 import {TableModule} from "primeng/table";
@@ -27,6 +27,7 @@ import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {UsersService} from "../shared/users.service";
 import { EditFileComponent } from './components/edit-file/edit-file.component';
+import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.service";
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { EditFileComponent } from './components/edit-file/edit-file.component';
     AutoCompleteModule,
     DataScrollerModule,
     InputTextareaModule,
+    ToggleButtonModule,
 
     FormsModule,
     TableModule,
@@ -57,6 +59,6 @@ import { EditFileComponent } from './components/edit-file/edit-file.component';
     PanelModule,
     FieldsetModule
   ],
-  providers: [FilesService, UsersService],
+  providers: [FilesService, UsersService, BeforeUnloadGuardService],
 })
 export class FilesModule { }

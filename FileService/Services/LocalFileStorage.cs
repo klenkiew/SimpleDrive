@@ -53,13 +53,14 @@ namespace FileService.Services
             }
         }
 
-        public void DeleteFile(FileModel file)
+        public Task DeleteFile(FileModel file)
         {
             var filePath = Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
             File.Delete(filePath);
             
             // clear the parent directory if it's empty after deleting the file
             DeleteParentDirectoryIfEmpty(filePath);
+            return Task.CompletedTask;
         }
 
         private Task<Stream> ReadFile(string filePath)

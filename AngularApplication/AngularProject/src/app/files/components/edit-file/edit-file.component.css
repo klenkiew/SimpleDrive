@@ -3,3 +3,17 @@
   margin-bottom: 10px;
   font-size: 36px;
 }
+
+.text-area-wrapper
+{
+  margin-bottom: 10px;
+}
+
+.lock-file-button {
+  margin-bottom: 10px;
+}
+
+.content-textarea {
+  width: 100%;
+  caret-color: red;
+}

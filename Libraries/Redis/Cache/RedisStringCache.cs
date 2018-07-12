@@ -20,19 +20,19 @@ namespace Redis.Cache
             return Redis.StringGet(key);
         }
 
-        public void Set(string key, string value)
+        public void Set(string key, string value, TimeSpan? expiry)
         {
-            Redis.StringSet(key, value);
+            Redis.StringSet(key, value, expiry);
         }
 
-        public string ComputeIfAbsent(string key, Func<string> valueProvider)
+        public string ComputeIfAbsent(string key, Func<string> valueProvider, TimeSpan? expiry)
         {
             var value = Get(key);
             if (value != null)
                 return value;
 
             value = valueProvider();
-            Set(key, value);
+            Set(key, value, expiry);
             return value;
         }
 

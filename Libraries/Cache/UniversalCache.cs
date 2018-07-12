@@ -19,14 +19,14 @@ namespace Cache
             return cache.Get<TValue>(keyConverter.ToString(key));
         }
 
-        public void Set<TKey, TValue>(TKey key, TValue value)
+        public void Set<TKey, TValue>(TKey key, TValue value, TimeSpan? expiry)
         {
-            cache.Set(keyConverter.ToString(key), value);
+            cache.Set(keyConverter.ToString(key), value, expiry);
         }
 
-        public TValue ComputeIfAbsent<TKey, TValue>(TKey key, Func<TValue> valueProvider)
+        public TValue ComputeIfAbsent<TKey, TValue>(TKey key, Func<TValue> valueProvider, TimeSpan? expiry)
         {
-            return cache.ComputeIfAbsent(keyConverter.ToString(key), valueProvider);
+            return cache.ComputeIfAbsent(keyConverter.ToString(key), valueProvider, expiry);
         }
 
         public void Remove<TKey>(TKey key)

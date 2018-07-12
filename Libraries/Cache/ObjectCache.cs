@@ -16,17 +16,19 @@ namespace Cache
 
         public T Get<T>(string key)
         {
-            return serializer.Deserialize<T>(stringCache.Get(key));
+            var value = stringCache.Get(key);
+            return value != null ? serializer.Deserialize<T>(value) : default(T);
         }
 
-        public void Set<T>(string key, T value)
+        public void Set<T>(string key, T value, TimeSpan? expiry)
         {
-            stringCache.Set(key, serializer.Serialize(value));
+            stringCache.Set(key, serializer.Serialize(value), expiry);
         }
 
-        public T ComputeIfAbsent<T>(string key, Func<T> valueProvider)
+        public T ComputeIfAbsent<T>(string key, Func<T> valueProvider, TimeSpan? expiry)
         {
-            return serializer.Deserialize<T>(stringCache.ComputeIfAbsent(key, () => serializer.Serialize(valueProvider())));
+            var value = stringCache.ComputeIfAbsent(key, () => serializer.Serialize(valueProvider()), expiry);
+            return serializer.Deserialize<T>(value);
         }
 
         public void Remove(string key)

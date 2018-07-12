@@ -9,6 +9,6 @@ namespace FileService.Services
         Task SaveFile(File file, Stream content);
         Task UpdateFile(File file, Stream content);
         Task<Stream> ReadFile(File file);
-        void DeleteFile(File file);
+        Task DeleteFile(File file);
     }
 }

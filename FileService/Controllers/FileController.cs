@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using FileService.Commands;
+using FileService.Dto;
 using FileService.Queries;
 using FileService.Requests;
 using FileService.Services;

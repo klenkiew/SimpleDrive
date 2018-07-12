@@ -1,7 +1,13 @@
 <div class="file-edit-title">Edit '<strong>{{file?.name}}</strong>'</div>
-<div class="col-12">
-<textarea style="width: 100%; caret-color: red;" #file_content_area pInputTextarea [(ngModel)]="fileContent" [rows]="5" [cols]="120" autoResize="autoResize"></textarea>
+<div class="lock-file-button">
+  <p-toggleButton onLabel="File locked" offLabel="Lock file" onIcon="pi pi-check" offIcon="fa fa-lock"
+                  (onChange)="toggleLock($event)" [disabled]="disableLockButton" [(ngModel)]="checked"></p-toggleButton>
+  <span>{{toggleLockText}}</span>
+</div>
+<div class="col-12 text-area-wrapper">
+    <textarea class="content-textarea" #file_content_area pInputTextarea [(ngModel)]="fileContent"
+              [rows]="5" [cols]="120" [disabled]="textareaDisabled" autoResize="autoResize"></textarea>
 </div>
 <div>
-  <button class="btn btn-lg btn-primary" (click)="submitEdit()">Submit</button>
+  <button class="btn btn-lg btn-primary" [disabled]="textareaDisabled" (click)="submitEdit()">Submit</button>
 </div>

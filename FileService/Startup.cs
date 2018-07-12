@@ -170,8 +170,11 @@ namespace FileService
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
 
-            container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
+            container.Register<IFileLockingService, FileLockingService>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
+            container.RegisterDecorator<IFileStorage, LockingFileStorage>();
+            
+            container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
             var storageConfiguration = Configuration.GetSection("Storage").Get<StorageConfiguration>();
             container.RegisterInstance(storageConfiguration);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
@@ -243,7 +246,9 @@ namespace FileService
             return !(serviceType== typeof(ICommandHandler<ShareFileCommand>)
                    || serviceType == typeof(ICommandHandler<AddFileRequest>)
                    || serviceType == typeof(ICommandHandler<ShareFileRequest>)
-                   || serviceType == typeof(ICommandHandler<UpdateFileContentCommand>));
+                   || serviceType == typeof(ICommandHandler<UpdateFileContentCommand>)
+                   || serviceType == typeof(ICommandHandler<RemoveFileLockCommand>)
+                   || serviceType == typeof(ICommandHandler<AcquireFileLockCommand>));
         }
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)

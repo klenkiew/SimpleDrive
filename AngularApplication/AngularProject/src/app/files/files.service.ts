@@ -65,4 +65,23 @@ export class FilesService {
     return this.http.put(apiUrl, {fileId: fileId, content: content});
 
   }
+
+  getFileLock(fileId: string) {
+    const apiUrl = this.filesApiUrl + fileId + "/lock";
+    return this.http.get(apiUrl);
+  }
+
+  lockFile(fileId: string) {
+    const apiUrl = this.filesApiUrl + fileId + "/lock";
+    return this.http.post(apiUrl, null);
+  }
+
+  unlockFile(fileId: string) {
+    const apiUrl = this.filesApiUrl + fileId + "/lock";
+    return this.http.delete(apiUrl);
+  }
+
+  isLockOwnedByCurrentUser(fileLock: any) {
+    return this.accountService.getCurrentUserName() == fileLock.lockOwner.username;
+  }
 }
