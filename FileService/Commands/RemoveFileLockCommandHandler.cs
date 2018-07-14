@@ -1,5 +1,8 @@
 ﻿using System.Linq;
+using EventBus;
 using FileService.Database;
+using FileService.Dto;
+using FileService.Events;
 using FileService.Exceptions;
 using FileService.Services;
 
@@ -10,15 +13,18 @@ namespace FileService.Commands
         private readonly IFileLockingService fileLockingService;
         private readonly FileDbContext dbContext;
         private readonly ICurrentUser currentUser;
+        private readonly IEventBusWrapper eventBus;
 
         public RemoveFileLockCommandHandler(
             IFileLockingService fileLockingService, 
             FileDbContext dbContext, 
-            ICurrentUser currentUser)
+            ICurrentUser currentUser, 
+            IEventBusWrapper eventBus)
         {
             this.fileLockingService = fileLockingService;
             this.dbContext = dbContext;
             this.currentUser = currentUser;
+            this.eventBus = eventBus;
         }
 
         public void Handle(RemoveFileLockCommand command)
@@ -37,6 +43,14 @@ namespace FileService.Commands
                 throw new PermissionException("The current user is not the lock owner");
             
             fileLockingService.Unlock(file);
+            
+            var newLockOwner = fileLockingService.GetLockOwner(file);
+            
+            eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(new FileLockChangedMessage()
+            {
+                FileId = command.FileId,
+                NewLock = new FileLockDto(newLockOwner != null, newLockOwner)
+            }));
         }
     }
 }

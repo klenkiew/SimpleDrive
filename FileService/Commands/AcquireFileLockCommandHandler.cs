@@ -1,5 +1,8 @@
 ﻿using System.Linq;
+using EventBus;
 using FileService.Database;
+using FileService.Dto;
+using FileService.Events;
 using FileService.Exceptions;
 using FileService.Services;
 
@@ -9,11 +12,13 @@ namespace FileService.Commands
     {
         private readonly IFileLockingService fileLockingService;
         private readonly FileDbContext dbContext;
+        private readonly IEventBusWrapper eventBus;
 
-        public AcquireFileLockCommandHandler(IFileLockingService fileLockingService, FileDbContext dbContext)
+        public AcquireFileLockCommandHandler(IFileLockingService fileLockingService, FileDbContext dbContext, IEventBusWrapper eventBus)
         {
             this.fileLockingService = fileLockingService;
             this.dbContext = dbContext;
+            this.eventBus = eventBus;
         }
 
         public void Handle(AcquireFileLockCommand command)
@@ -24,6 +29,14 @@ namespace FileService.Commands
                 throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
 
             fileLockingService.Lock(file);
+            var lockOwner = fileLockingService.GetLockOwner(file);
+            
+            // TODO replace with a decorator
+            eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(new FileLockChangedMessage()
+            {
+                FileId = command.FileId,
+                NewLock = new FileLockDto(lockOwner != null, lockOwner)
+            }));
         }
     }
 }

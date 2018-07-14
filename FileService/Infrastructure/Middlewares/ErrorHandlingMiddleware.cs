@@ -36,6 +36,9 @@ namespace FileService.Infrastructure.Middlewares
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             logger.LogError(exception, "An error occured during processing a request in the pipeline.");
+
+            if (context.Response.HasStarted)
+                return Task.CompletedTask;
             
             var code = HttpStatusCode.InternalServerError; // 500 if unexpected
 
