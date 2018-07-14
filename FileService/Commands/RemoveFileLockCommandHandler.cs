@@ -49,7 +49,7 @@ namespace FileService.Commands
             eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(new FileLockChangedMessage()
             {
                 FileId = command.FileId,
-                NewLock = new FileLockDto(newLockOwner != null, newLockOwner)
+                NewLock = FileLockDto.ForUser(newLockOwner)
             }));
         }
     }

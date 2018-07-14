@@ -25,7 +25,7 @@ namespace FileService.Queries
                 throw new NotFoundException($"A file with id {query.FileId} doesn't exist in the database.");
 
             var lockOwner = fileLockingService.GetLockOwner(file);
-            return new FileLockDto(lockOwner != null, lockOwner);
+            return FileLockDto.ForUser(lockOwner);
         }
     }
 }

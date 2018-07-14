@@ -193,6 +193,7 @@ namespace FileService
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
 
             container.Register<IFileLockingService, FileLockingService>(Lifestyle.Singleton);
+            container.Register<IFileLockExpiryNotificator, FileLockExpiryNotificator>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
             container.RegisterDecorator<IFileStorage, LockingFileStorage>();
             

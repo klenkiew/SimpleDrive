@@ -12,11 +12,17 @@ namespace FileService.Services
         private readonly ICache lockCache;
         private readonly ICurrentUser currentUser;
         private readonly TimeSpan fileLockDuration;
-
-        public FileLockingService(ICache lockCache, ICurrentUser currentUser, StorageConfiguration configuration)
+        private readonly IFileLockExpiryNotificator expiryNotificator;
+        
+        public FileLockingService(
+            ICache lockCache, 
+            IFileLockExpiryNotificator expiryNotificator, 
+            ICurrentUser currentUser, 
+            StorageConfiguration configuration)
         {
             this.lockCache = lockCache;
             this.currentUser = currentUser;
+            this.expiryNotificator = expiryNotificator;
             this.fileLockDuration = configuration.FileLockDuration;
         }
 
@@ -32,6 +38,11 @@ namespace FileService.Services
                 // ComputeIfAbsent doesn't refresh a cache entry if the value is already present
                 // so the Set method must be invoked to reset the timer for this cache entry
                 lockCache.Set(file.Id, currentUserDto);
+                expiryNotificator.ResetFileLock(file.Id, fileLockDuration);
+            }
+            else
+            {
+                expiryNotificator.ResetFileLock(file.Id, fileLockDuration);
             }
         }
 
@@ -45,6 +56,7 @@ namespace FileService.Services
                 throw new LockingException("The file cannot bu unlocked because the user is not the lock owner.");
             
             lockCache.Remove(file.Id);
+            expiryNotificator.RemoveFileLock(file.Id);
         }
 
         public UserDto GetLockOwner(File file)
