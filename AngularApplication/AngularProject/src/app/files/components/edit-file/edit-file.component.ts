@@ -146,8 +146,8 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     if (event.checked) {
       this.lockActive = true;
       TimerObservable.create(0, 1000 * 50)
-        .flatMap(value => this.fileService.lockFile(this.file.id))
         .takeWhile(() => this.lockActive)
+        .flatMap(value => this.fileService.lockFile(this.file.id))
         .subscribe(value => {
         });
     }
