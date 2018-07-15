@@ -11,6 +11,7 @@ import {FileDetailsComponent} from "./components/file-details/file-details.compo
 import {SharedModule} from "../shared/shared.module";
 import {GrowlModule} from "primeng/growl";
 import {
+  AccordionModule,
   AutoCompleteModule,
   ContextMenuModule, DataScrollerModule,
   FieldsetModule,
@@ -45,6 +46,7 @@ import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.s
     DataScrollerModule,
     InputTextareaModule,
     ToggleButtonModule,
+    AccordionModule,
 
     FormsModule,
     TableModule,

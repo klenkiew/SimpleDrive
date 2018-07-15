@@ -1,23 +1,36 @@
-<div style="float: right"><button class="btn btn-sm btn-info" (click)="close()">X</button></div>
-<p-card title="Description">
-  <p>{{file != null ? file.description : "Loading"}}</p>
-  <br>
-  <p-dataScroller *ngIf="ownedFile()" [value]="sharedWith" [rows]="10">
-    <p-header>
-      Share with:
-      <p-autoComplete [(ngModel)]="currentUser" [suggestions]="results" (completeMethod)="search($event)" field="username">
-      </p-autoComplete>
-      <button class="btn btn-xs btn-primary" (click)="share()">Share</button>
-    </p-header>
-    <ng-template let-user pTemplate="item" let-i="index">
-      <div class="row" style="margin-bottom: 5px;">
-        <div class="col-9 col-md-9">
+<div style="float: right">
+  <button class="btn btn-sm btn-info" (click)="close()">X</button>
+</div>
+<ng-template #loading>Loading the file...</ng-template>
+  <div *ngIf="file; let file; else loading">
+    <p-card [title]="file.name">
+    <p><strong>Owner:</strong> {{file.ownerName}} </p>
+    <p><strong>Size:</strong> {{file.size}} </p>
+    <p><strong>Created:</strong> {{file.lastModified | date:'medium'}} </p>
+    <p-accordion>
+      <p-accordionTab header="Description">
+        {{file.description}}
+      </p-accordionTab>
+    </p-accordion>
+    <br>
+    <p-dataScroller *ngIf="ownedFile()" [value]="sharedWith" [rows]="10">
+      <p-header>
+        Share with:
+        <p-autoComplete [(ngModel)]="currentUser" [suggestions]="results" (completeMethod)="search($event)"
+                        field="username">
+        </p-autoComplete>
+        <button class="btn btn-xs btn-primary" (click)="share()">Share</button>
+      </p-header>
+      <ng-template let-user pTemplate="item" let-i="index">
+        <div class="row" style="margin-bottom: 5px;">
+          <div class="col-9 col-md-9">
             {{user.username}}
+          </div>
+          <div class="col-3 col-md-3">
+            <button class="btn btn-xs btn-danger" (click)="unshare(user.id, index)">Remove</button>
+          </div>
         </div>
-        <div class="col-3 col-md-3">
-          <button class="btn btn-xs btn-danger" (click)="unshare(user.id, index)">Remove</button>
-        </div>
-      </div>
-    </ng-template>
-  </p-dataScroller>
-</p-card>
+      </ng-template>
+    </p-dataScroller>
+    </p-card>
+  </div>
