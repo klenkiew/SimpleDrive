@@ -9,6 +9,7 @@ export class AuthorizationGuardService implements CanActivate {
   constructor(private router: Router, private accountService: AccountService) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    this.accountService.checkTokenValidity();
     if (this.accountService.isLoggedIn())
       return true;
 

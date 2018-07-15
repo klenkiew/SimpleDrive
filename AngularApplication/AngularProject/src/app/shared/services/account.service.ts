@@ -29,6 +29,13 @@ export class AccountService {
     return this.loggedIn.asObservable();
   }
 
+  public checkTokenValidity()
+  {
+    if (this.decodedToken && this.decodedToken.expirationDate < new Date()) {
+      this.decodedToken = null;
+      this.loggedIn.next(false);
+    }
+  }
 
   public isLoggedIn() {
     return this.decodedToken && this.decodedToken.expirationDate > new Date();
