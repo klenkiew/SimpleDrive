@@ -10,6 +10,7 @@ namespace FileService.Model
         public virtual string Description { get; set; }
         public virtual long Size { get; set; }
         public virtual string PhysicalPath { get; set; }
+        public virtual string MimeType { get; set; }
         public virtual DateTime DateCreated { get; set; }
         public virtual DateTime DateModified { get; set; }
         

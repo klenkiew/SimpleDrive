@@ -21,7 +21,7 @@ namespace FileService.Controllers
         private readonly ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler;
         private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler;
         private readonly IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler;
-        private readonly IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler;
+        private readonly IQueryHandler<GetFileContentQuery, FileContentDto> getFileContentQueryHandler;
 
         public FileController(
             ICurrentUser currentUser,
@@ -30,7 +30,7 @@ namespace FileService.Controllers
             ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler, 
             IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler, 
             IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler, 
-            IQueryHandler<GetFileContentQuery, Stream> getFileContentQueryHandler)
+            IQueryHandler<GetFileContentQuery, FileContentDto> getFileContentQueryHandler)
         {
             this.currentUser =
                 currentUser ?? throw new ArgumentNullException(nameof(currentUser));
@@ -76,8 +76,8 @@ namespace FileService.Controllers
             {
                 FileId = id,
             };
-            var fileContentStream = getFileContentQueryHandler.Handle(query);
-            return new FileStreamResult(fileContentStream, "text/plain");
+            var fileContentInfo = getFileContentQueryHandler.Handle(query);
+            return new FileStreamResult(fileContentInfo.Content, fileContentInfo.MimeType ?? "application/octet-stream");
         }
 
         // PUT api/files/5/content

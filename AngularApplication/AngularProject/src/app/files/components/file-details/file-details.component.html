@@ -1,12 +1,13 @@
 <div style="float: right">
   <button class="btn btn-sm btn-info" (click)="close()">X</button>
 </div>
-<ng-template #loading>Loading the file...</ng-template>
+<ng-template #loading>Loading the file details...</ng-template>
   <div *ngIf="file; let file; else loading">
     <p-card [title]="file.name">
     <p><strong>Owner:</strong> {{file.ownerName}} </p>
     <p><strong>Size:</strong> {{file.size}} </p>
-    <p><strong>Created:</strong> {{file.lastModified | date:'medium'}} </p>
+    <p><strong>Content type:</strong> {{file.mimeType || 'unknown'}} </p>
+    <p><strong>Created:</strong> {{file.dateCreated | date:'medium'}} </p>
     <p-accordion>
       <p-accordionTab header="Description">
         {{file.description}}

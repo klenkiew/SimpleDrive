@@ -6,6 +6,7 @@ import {Observable} from "rxjs/Rx";
 import "rxjs/add/operator/map";
 import {ActivatedRoute, Router} from "@angular/router";
 import {User} from "../../../shared/models/user";
+import {MessageService} from "primeng/components/common/messageservice";
 
 @Component({
   selector: 'app-browse-files',
@@ -15,16 +16,17 @@ import {User} from "../../../shared/models/user";
 export class BrowseFilesComponent implements OnInit {
 
   files: File[];
-
   cols: any[];
-
   selectedFile: File;
-
   items: MenuItem[];
 
   showOutlet: boolean = false;
 
-  constructor(private fileService: FilesService, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private fileService: FilesService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private messageService: MessageService) {
   }
 
   ngOnInit() {
@@ -34,7 +36,7 @@ export class BrowseFilesComponent implements OnInit {
       { field: 'name', header: 'Name' },
       { field: 'size', header: 'Size' },
       { field: 'ownerName', header: 'Owner'},
-      { field: 'lastModified', header: 'Last modification', type: 'date' },
+      { field: 'dateCreated', header: 'Created', type: 'date' },
     ];
 
     this.items = [
@@ -48,7 +50,7 @@ export class BrowseFilesComponent implements OnInit {
   getFiles(): Observable<any>
   {
     return this.fileService.getFiles().map(files => {
-      return files.map(f => new File(f.id, f.fileName, f.size, f.description, new User(f.ownerId, f.ownerName), f.dateModified));
+      return files.map(f => new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.ownerId, f.ownerName), f.dateCreated));
     });
   }
 
@@ -101,6 +103,13 @@ export class BrowseFilesComponent implements OnInit {
   }
 
   private editFile(selectedFile: File) {
+    if (selectedFile.mimeType !== 'text/plain')
+      {
+        const message = {severity: 'info', summary: 'No editor for this file',
+          detail: 'Currently only plain text files can be edited.'};
+        this.messageService.add(message);
+        return;
+      }
     this.router.navigate(['edit', this.selectedFile.id], {relativeTo: this.route.parent});
   }
 }

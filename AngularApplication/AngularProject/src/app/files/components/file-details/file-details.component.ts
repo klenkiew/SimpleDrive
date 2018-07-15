@@ -29,7 +29,7 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
       const id: string = params['id'];
       this.fileService.getFile(id).subscribe(f =>
       {
-        this.file = new File(f.id, f.fileName, f.size, f.description, new User(f.ownerId, f.ownerName), f.dateModified);
+        this.file = new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.ownerId, f.ownerName), f.dateCreated);
       });
       this.fileService.getSharedWith(id).subscribe(users =>
       {

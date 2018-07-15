@@ -203,6 +203,7 @@ namespace FileService
             container.Register<IFileLockExpiryNotificator, FileLockExpiryNotificator>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);
             container.RegisterDecorator<IFileStorage, LockingFileStorage>();
+            container.Register<IMimeTypeMap, MimeTypeMap>();
             
             container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
             var storageConfiguration = Configuration.GetSection("Storage").Get<StorageConfiguration>();

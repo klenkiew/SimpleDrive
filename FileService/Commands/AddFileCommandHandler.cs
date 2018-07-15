@@ -27,12 +27,14 @@ namespace FileService.Commands
             if (owner == null)
                 throw new NotFoundException("The current user cannot be found in the database.");
 
+            var now = DateTime.UtcNow;
             var file = new File()
             {
                 FileName = command.FileName,
                 Description = command.Description,
-                DateCreated = DateTime.UtcNow,
-                DateModified = DateTime.UtcNow,
+                MimeType = command.MimeType,
+                DateCreated = now,
+                DateModified = now,
                 PhysicalPath = "N/A",
                 Size = command.Content.Length,
                 OwnerId = owner.Id,
