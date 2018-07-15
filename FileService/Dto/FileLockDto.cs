@@ -5,7 +5,7 @@
         public bool IsLockPresent { get; }
         public UserDto LockOwner { get; }
 
-        private FileLockDto(bool isLockPresent, UserDto lockOwner)
+        public FileLockDto(bool isLockPresent, UserDto lockOwner)
         {
             IsLockPresent = isLockPresent;
             LockOwner = lockOwner;
