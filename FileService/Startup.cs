@@ -282,8 +282,7 @@ namespace FileService
 
         private bool ShouldCommandInvalidateCache(Type serviceType)
         {
-            return !(serviceType== typeof(ICommandHandler<ShareFileCommand>)
-                   || serviceType == typeof(ICommandHandler<AddFileRequest>)
+            return !(serviceType == typeof(ICommandHandler<AddFileRequest>)
                    || serviceType == typeof(ICommandHandler<ShareFileRequest>)
                    || serviceType == typeof(ICommandHandler<UpdateFileContentCommand>)
                    || serviceType == typeof(ICommandHandler<RemoveFileLockCommand>)
