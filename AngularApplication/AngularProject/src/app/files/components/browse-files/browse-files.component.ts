@@ -34,7 +34,7 @@ export class BrowseFilesComponent implements OnInit {
 
     this.cols = [
       { field: 'name', header: 'Name' },
-      { field: 'size', header: 'Size' },
+      { field: 'size', header: 'Size', type: 'size' },
       { field: 'ownerName', header: 'Owner'},
       { field: 'dateCreated', header: 'Created', type: 'date' },
     ];

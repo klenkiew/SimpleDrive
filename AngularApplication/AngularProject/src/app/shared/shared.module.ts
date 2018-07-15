@@ -5,17 +5,19 @@ import {ErrorComponent} from "./components/error/error.component";
 import {NotAuthorizedComponent} from "./components/not-authorized/not-authorized.component";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
+import { SizeFormatPipe } from './pipes/size-format.pipe';
 
 @NgModule({
   declarations: [
     ErrorComponent,
-    NotAuthorizedComponent
+    NotAuthorizedComponent,
+    SizeFormatPipe
   ],
   imports: [
     CommonModule,
     RouterModule
   ],
   providers: [],
-  exports: [ErrorComponent, NotAuthorizedComponent]
+  exports: [ErrorComponent, NotAuthorizedComponent, SizeFormatPipe]
 })
 export class SharedModule { }

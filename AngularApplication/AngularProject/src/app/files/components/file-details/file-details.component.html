@@ -5,7 +5,7 @@
   <div *ngIf="file; let file; else loading">
     <p-card [title]="file.name">
     <p><strong>Owner:</strong> {{file.ownerName}} </p>
-    <p><strong>Size:</strong> {{file.size}} </p>
+    <p><strong>Size:</strong> {{file.size | sizeFormat}} </p>
     <p><strong>Content type:</strong> {{file.mimeType || 'unknown'}} </p>
     <p><strong>Created:</strong> {{file.dateCreated | date:'medium'}} </p>
     <p-accordion>

@@ -12,7 +12,11 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pContextMenuRow]="rowData">
       <td *ngFor="let col of columns">
-        {{col.type === 'date' ? (rowData[col.field] | date:'medium') : rowData[col.field]}}
+        {{
+        (col.type === 'date') ? (rowData[col.field] | date:'medium')
+        : (col.type === 'size') ? (rowData[col.field] | sizeFormat)
+        : rowData[col.field]
+        }}
       </td>
     </tr>
   </ng-template>

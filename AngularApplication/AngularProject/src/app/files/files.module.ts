@@ -29,6 +29,7 @@ import {CommonModule} from "@angular/common";
 import {UsersService} from "../shared/users.service";
 import { EditFileComponent } from './components/edit-file/edit-file.component';
 import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.service";
+import {SizeFormatPipe} from "../shared/pipes/size-format.pipe";
 
 @NgModule({
   declarations: [
