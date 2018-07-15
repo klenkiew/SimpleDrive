@@ -6,7 +6,9 @@
 </div>
 <div class="col-12 text-area-wrapper">
     <textarea class="content-textarea" #file_content_area pInputTextarea [(ngModel)]="fileContent"
-              [rows]="5" [cols]="120" [disabled]="textareaDisabled" autoResize="autoResize"></textarea>
+              [rows]="5" [cols]="120" [readonly]="textareaDisabled" autoResize="autoResize" (input)="textareaInputChange()"
+              (click)="textareaCaretChange()" (keyup)="textareaCaretChange()"
+    ></textarea>
 </div>
 <div>
   <button class="btn btn-lg btn-primary" [disabled]="textareaDisabled" (click)="submitEdit()">Submit</button>

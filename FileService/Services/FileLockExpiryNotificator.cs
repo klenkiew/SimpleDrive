@@ -38,7 +38,7 @@ namespace FileService.Services
             logger.LogDebug($"ProcessLockExpiry");
             lock (@lock)
             {
-                if (!expiryDatesByFileId.Any())
+                if (!expiryDatesByFileId.Any() || expiryDatesByFileId.First.ExpiryDate > DateTime.UtcNow)
                 {
                     ResetInterval();
                     return;

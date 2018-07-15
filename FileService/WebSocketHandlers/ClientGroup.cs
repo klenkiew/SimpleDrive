@@ -3,7 +3,7 @@ using FileService.Infrastructure.WebSockets;
 
 namespace FileService.WebSocketHandlers
 {
-    internal class ClientGroup
+    internal class ClientGroup : IClientGroup
     {
         private string Id { get; }
 

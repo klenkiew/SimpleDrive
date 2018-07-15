@@ -11,7 +11,6 @@ using FileService.Commands.InvalidationKeysProviders;
 using FileService.Configuration;
 using FileService.Database;
 using FileService.Dto;
-using FileService.Events;
 using FileService.Infrastructure;
 using FileService.Infrastructure.HttpClient;
 using FileService.Infrastructure.Middlewares;
@@ -46,7 +45,7 @@ using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore.Mvc;
 using SimpleInjector.Lifestyles;
 using JsonSerializer = Serialization.JsonSerializer;
-using WebSocketManager = Microsoft.AspNetCore.Http.WebSocketManager;
+using WebSocketManager = FileService.Infrastructure.WebSockets.WebSocketManager;
 
 namespace FileService
 {
@@ -83,7 +82,8 @@ namespace FileService
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader()
+                    .AllowCredentials();
             }));
 
             services.ConfigureApplicationCookie(options => options.Events.OnRedirectToLogin = context =>
@@ -108,6 +108,8 @@ namespace FileService
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
 
+            services.AddSignalR();
+            
             services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb")); 
             services.AddSingleton<JsonSerializer>();
             
@@ -138,13 +140,18 @@ namespace FileService
             };
             app.UseWebSockets(webSocketOptions);
             
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<FileContentChangedNotificationHub>("/contentChangesHub");
+            });
+            
             app.UseMiddleware<WebSocketsMiddleware>(container);
             var webSocketHandlerRegistry = container.GetInstance<IWebSocketHandlerRegistry>();
             
-            webSocketHandlerRegistry.RegisterHandler("/ws/test", 
+            webSocketHandlerRegistry.RegisterHandler("/ws/fileLocks", 
                 new BinaryWebSocketHandler(new SerializingWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>(
                     container.GetInstance<FileLockChangedNotificator>(), container.GetInstance<ISerializer>())));
-
+            
             app.UseMvc();
             
             container.GetInstance<IEventDispatcher>().SubscribeToEvents();
@@ -215,10 +222,11 @@ namespace FileService
             container.Register<IUsersIntegrationService, UsersIntegrationService>(Lifestyle.Singleton);
             
             container.Register<IWebSocketHandlerRegistry, WebSocketHandlerRegistry>(Lifestyle.Singleton);
-            container.Register<IWebSocketManager, FileService.Infrastructure.WebSockets.WebSocketManager>(Lifestyle.Singleton);
+            container.Register<IWebSocketManager, WebSocketManager>(Lifestyle.Singleton);
             container.Register<IWebSocketObjectMessageSender, WebSocketObjectMessageSender>(Lifestyle.Singleton);
             container.Register<IWebSocketBinaryMessageSender, WebSocketBinaryMessageSender>(Lifestyle.Singleton);
             container.Register<IWebSocketTextMessageSender, WebSocketTextMessageSender>(Lifestyle.Singleton);
+            container.Register<IClientGroupsManager, ClientGroupsManager>(Lifestyle.Singleton);
                         
             container.Register<FileLockChangedNotificator>(Lifestyle.Singleton);
             
