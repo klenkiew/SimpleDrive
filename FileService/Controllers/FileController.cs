@@ -82,7 +82,7 @@ namespace FileService.Controllers
 
         // PUT api/files/5/content
         [HttpPut("{id}/content")]
-        public IActionResult UpdateContent([FromBody] UpdateContentRequest request)
+        public void UpdateContent([FromBody] UpdateContentRequest request)
         {
             // TODO content as Stream in the request instead of string
             using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(request.Content)))
@@ -94,8 +94,6 @@ namespace FileService.Controllers
                 };
                 updateFileContentCommandHandler.Handle(command);
             }
-
-            return Ok();
         }
         
         // POST api/files

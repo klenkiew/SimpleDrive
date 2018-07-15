@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AuthenticationService.Dto;
 using AuthenticationService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,16 +18,16 @@ namespace AuthenticationService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsersByNamePrefix(string prefix)
+        public async Task<IEnumerable<UserDto>> GetUsersByNamePrefix(string prefix)
         {
-            return Ok(await usersService.GetUsersByNamePrefix(prefix ?? ""));
+            return await usersService.GetUsersByNamePrefix(prefix ?? "");
         }
         
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            return Ok(await usersService.GetAllUsers());
+            return await usersService.GetAllUsers();
         }
     }
 }
