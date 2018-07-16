@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using FileService.Commands;
-using FileService.Model;
+using FileService.Dto;
 using FileService.Queries;
 using FileService.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +12,12 @@ namespace FileService.Controllers
     {
         private readonly ICommandHandler<ShareFileRequest> shareFileCommandHandler;
         private readonly ICommandHandler<UnshareFileCommand> unshareFileCommandHandler;
-        private readonly IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<User>> usersBySharedFileQueryHandler;
+        private readonly IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<UserDto>> usersBySharedFileQueryHandler;
 
         public ShareController(
             ICommandHandler<ShareFileRequest> shareFileCommandHandler, 
             ICommandHandler<UnshareFileCommand> unshareFileCommandHandler, 
-            IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<User>> usersBySharedFileQueryHandler)
+            IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<UserDto>> usersBySharedFileQueryHandler)
         {
             this.shareFileCommandHandler = shareFileCommandHandler;
             this.unshareFileCommandHandler = unshareFileCommandHandler;
@@ -48,7 +46,7 @@ namespace FileService.Controllers
         
         // GET api/shares/{id}
         [HttpGet("{id}")]
-        public IEnumerable<User> Get(string id)
+        public IEnumerable<UserDto> Get(string id)
         {
             var query = new FindUsersBySharedFileQuery()
             {

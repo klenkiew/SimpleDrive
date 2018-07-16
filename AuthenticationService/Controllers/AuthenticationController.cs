@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AuthenticationService.Dto;
 using AuthenticationService.Model;
 using AuthenticationService.Requests;
 using AuthenticationService.Services;
@@ -67,16 +68,16 @@ namespace AuthenticationService.Controllers
             if (!result.Succeeded) 
                 return BadRequest(ExtractError(result));
             
-            var tokenString = tokenService.BuildToken(user);
-            return Ok(new {token = tokenString});
+            var encodedToken = tokenService.BuildToken(user);
+            return Ok(new JwtToken(encodedToken));
         }
         
         [HttpPost]
         public async Task<IActionResult> RefreshToken()
         {
             var user = await userManager.FindByIdAsync(GetCurrentUserId());
-            var tokenString = tokenService.BuildToken(user);
-            return Ok(new {token = tokenString});
+            var encodedToken = tokenService.BuildToken(user);
+            return Ok(new JwtToken(encodedToken));
         }
         
         [HttpPost]
@@ -94,8 +95,8 @@ namespace AuthenticationService.Controllers
             
             // the information in the user's token is stale after the e-mail change
             // - generate and send a new token with current user info  
-            var tokenString = tokenService.BuildToken(user);
-            return Ok(new {token = tokenString});
+            var encodedToken = tokenService.BuildToken(user);
+            return Ok(new JwtToken(encodedToken));
         }
 
         [HttpPost]

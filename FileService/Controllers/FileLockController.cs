@@ -30,13 +30,13 @@ namespace FileService.Controllers
 
         // GET api/files/5/lock
         [HttpGet]
-        public void GetLock(string id)
+        public FileLockDto GetLock(string id)
         {
             var query = new GetFileLockQuery()
             {
                 FileId = id
             };
-            getFileLockQueryHandler.Handle(query);
+            return getFileLockQueryHandler.Handle(query);
         }
         
         // POST api/files/5/lock

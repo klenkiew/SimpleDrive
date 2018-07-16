@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FileService.Database;
+using FileService.Dto;
 using FileService.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Queries
 {
-    public class FindUsersBySharedFileQueryHandler : IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<User>>
+    public class FindUsersBySharedFileQueryHandler : IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<UserDto>>
     {
         private readonly FileDbContext fileDb;
 
@@ -15,7 +16,7 @@ namespace FileService.Queries
             this.fileDb = fileDb;
         }
 
-        public IEnumerable<User> Handle(FindUsersBySharedFileQuery query)
+        public IEnumerable<UserDto> Handle(FindUsersBySharedFileQuery query)
         {
             return fileDb.Files
                 .Where(file => file.Id == query.FileId)
@@ -23,7 +24,8 @@ namespace FileService.Queries
                 .ThenInclude(sharedWith => sharedWith.User)
                 .First()
                 .SharedWith
-                .Select(sh => sh.User).ToList();
+                .Select(sh => new UserDto(sh.User.Id, sh.User.Username, "N/A"))
+                .ToList();
         }
     }
 }

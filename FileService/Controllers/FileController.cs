@@ -19,8 +19,8 @@ namespace FileService.Controllers
         private readonly ICommandHandler<AddFileRequest> addFileCommandHandler;
         private readonly ICommandHandler<DeleteFileCommand> deleteFileCommandHandler;
         private readonly ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler;
-        private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler;
-        private readonly IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler;
+        private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>> findFilesQueryHandler;
+        private readonly IQueryHandler<FindFileByIdQuery, FileDto> findFileByIdQueryHandler;
         private readonly IQueryHandler<GetFileContentQuery, FileContentDto> getFileContentQueryHandler;
 
         public FileController(
@@ -28,8 +28,8 @@ namespace FileService.Controllers
             ICommandHandler<AddFileRequest> addFileCommandHandler,
             ICommandHandler<DeleteFileCommand> deleteFileCommandHandler, 
             ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler, 
-            IQueryHandler<FindFilesByUserQuery, IEnumerable<File>> findFilesQueryHandler, 
-            IQueryHandler<FindFileByIdQuery, File> findFileByIdQueryHandler, 
+            IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>> findFilesQueryHandler, 
+            IQueryHandler<FindFileByIdQuery, FileDto> findFileByIdQueryHandler, 
             IQueryHandler<GetFileContentQuery, FileContentDto> getFileContentQueryHandler)
         {
             this.currentUser =
@@ -56,14 +56,14 @@ namespace FileService.Controllers
 
         // GET api/files
         [HttpGet]
-        public IEnumerable<File> Get()
+        public IEnumerable<FileDto> Get()
         {
             return findFilesQueryHandler.Handle(new FindFilesByUserQuery() {UserId = currentUser.Id});
         }
 
         // GET api/files/5
         [HttpGet("{id}")]
-        public File Get(string id)
+        public FileDto Get(string id)
         {
             return findFileByIdQueryHandler.Handle(new FindFileByIdQuery() {FileId = id});
         }

@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using FileService.Database;
+using FileService.Dto;
 using FileService.Model;
 
 namespace FileService.Queries
 {
-    public class FindFileByIdQueryHandler : IQueryHandler<FindFileByIdQuery, File>
+    public class FindFileByIdQueryHandler : IQueryHandler<FindFileByIdQuery, FileDto>
     {
         private readonly FileDbContext fileDb;
 
@@ -13,9 +14,11 @@ namespace FileService.Queries
             this.fileDb = fileDb;
         }
 
-        public File Handle(FindFileByIdQuery query)
+        public FileDto Handle(FindFileByIdQuery query)
         {
-            return fileDb.Files.FirstOrDefault(file => file.Id == query.FileId);
+            var file = fileDb.Files.FirstOrDefault(f => f.Id == query.FileId);
+            return new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, file.DateCreated, 
+                new UserDto(file.Owner.Id, file.Owner.Username, "N/A"));
         }
     }
 }
