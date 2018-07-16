@@ -50,7 +50,7 @@ export class BrowseFilesComponent implements OnInit {
   getFiles(): Observable<any>
   {
     return this.fileService.getFiles().map(files => {
-      return files.map(f => new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.ownerId, f.ownerName), f.dateCreated));
+      return files.map(f => new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.owner.id, f.owner.username), f.dateCreated));
     });
   }
 
@@ -68,7 +68,6 @@ export class BrowseFilesComponent implements OnInit {
 
   private download(selectedFile: File) {
     this.fileService.downloadFile(this.selectedFile.id).subscribe(content => {
-      console.log('start download');
       const url = window.URL.createObjectURL(content);
       const a = document.createElement('a');
       document.body.appendChild(a);

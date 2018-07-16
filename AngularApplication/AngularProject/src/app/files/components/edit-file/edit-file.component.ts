@@ -40,7 +40,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     this.sub = this.activatedRoute.params.subscribe(params => {
       const id: string = params['id'];
       const fileDownloaded: Observable<any> = this.fileService.getFile(id).flatMap(f => {
-        this.file = new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.ownerId, f.ownerName), f.dateCreated);
+        this.file = new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.owner.id, f.owner.username), f.dateCreated);
         return this.fileService.downloadFile(f.id);
       });
 
