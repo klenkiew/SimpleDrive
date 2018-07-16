@@ -4,8 +4,15 @@ namespace FileService.Requests
 {
     public class AddFileRequest
     {
-        public IFormFile File { get; set; }
-        public string FileName { get; set; }
-        public string Description { get; set; }
+        public IFormFile File { get; }
+        public string FileName { get; }
+        public string Description { get; }
+
+        public AddFileRequest(IFormFile file, string fileName, string description)
+        {
+            File = file;
+            FileName = fileName;
+            Description = description;
+        }
     }
 }

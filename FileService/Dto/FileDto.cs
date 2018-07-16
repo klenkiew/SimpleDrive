@@ -5,6 +5,15 @@ namespace FileService.Dto
 {
     public class FileDto
     {
+        public string Id { get; }
+        public string FileName { get; }
+        public string Description { get; }
+        public long Size { get; }
+        public string MimeType { get; }
+        public DateTime DateCreated { get; }
+          
+        public UserDto Owner { get; }
+
         public FileDto(string id, string fileName, string description, long size, string mimeType, 
             DateTime dateCreated, UserDto owner)
         {
@@ -16,14 +25,5 @@ namespace FileService.Dto
             DateCreated = dateCreated;
             Owner = owner;
         }
-
-        public string Id { get; }
-        public string FileName { get; }
-        public string Description { get; }
-        public long Size { get; }
-        public string MimeType { get; }
-        public DateTime DateCreated { get; }
-          
-        public UserDto Owner { get; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using FileService.Commands;
+﻿using System;
+using System.IO;
+using FileService.Commands;
 using FileService.Services;
 
 namespace FileService.Requests
@@ -16,12 +18,14 @@ namespace FileService.Requests
 
         public void Handle(AddFileRequest request)
         {
-            var command = MapRequestToCommand(request);
-            using (command.Content = request.File?.OpenReadStream())
+            using (var content = request.File?.OpenReadStream())
+            {
+                var command = MapRequestToCommand(request, content);
                 adaptee.Handle(command);
+            }
         }
 
-        private AddFileCommand MapRequestToCommand(AddFileRequest request)
+        private AddFileCommand MapRequestToCommand(AddFileRequest request, Stream content)
         {
             if (request == null)
                 return null;
@@ -29,12 +33,7 @@ namespace FileService.Requests
             var contentType = mimeTypeMap.GetMimeType(request.File.FileName) 
                               ?? mimeTypeMap.GetMimeType(request.FileName);
 
-            return new AddFileCommand()
-            {
-                Description = request.Description,
-                FileName = request.FileName,
-                MimeType = contentType
-            };
+            return new AddFileCommand(request.FileName, request.Description, contentType, content);
         }
     }
 }

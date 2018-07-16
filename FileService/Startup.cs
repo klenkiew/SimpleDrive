@@ -292,7 +292,7 @@ namespace FileService
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)
         {
-            return serviceType == typeof(IQueryHandler<FindFilesByUserQuery, IEnumerable<File>>);
+            return serviceType == typeof(IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>>);
         }
     }
 }

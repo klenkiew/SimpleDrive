@@ -58,24 +58,21 @@ namespace FileService.Controllers
         [HttpGet]
         public IEnumerable<FileDto> Get()
         {
-            return findFilesQueryHandler.Handle(new FindFilesByUserQuery() {UserId = currentUser.Id});
+            return findFilesQueryHandler.Handle(new FindFilesByUserQuery(currentUser.Id));
         }
 
         // GET api/files/5
         [HttpGet("{id}")]
         public FileDto Get(string id)
         {
-            return findFileByIdQueryHandler.Handle(new FindFileByIdQuery() {FileId = id});
+            return findFileByIdQueryHandler.Handle(new FindFileByIdQuery(id));
         }
 
         // GET api/files/5/content
         [HttpGet("{id}/content")]
         public IActionResult GetContent(string id)
         {
-            var query = new GetFileContentQuery()
-            {
-                FileId = id,
-            };
+            var query = new GetFileContentQuery(id);
             var fileContentInfo = getFileContentQueryHandler.Handle(query);
             return new FileStreamResult(fileContentInfo.Content, fileContentInfo.MimeType ?? "application/octet-stream");
         }
@@ -87,11 +84,7 @@ namespace FileService.Controllers
             // TODO content as Stream in the request instead of string
             using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(request.Content)))
             {
-                var command = new UpdateFileContentCommand()
-                {
-                    FileId = request.FileId,
-                    Content = memoryStream
-                };
+                var command = new UpdateFileContentCommand(request.FileId, content: memoryStream);
                 updateFileContentCommandHandler.Handle(command);
             }
         }
@@ -107,12 +100,8 @@ namespace FileService.Controllers
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
-            var command = new DeleteFileCommand()
-            {
-                FileId = id,
-            };
-
+            var command = new DeleteFileCommand(id);
             deleteFileCommandHandler.Handle(command);
         }
     }
-}
+};

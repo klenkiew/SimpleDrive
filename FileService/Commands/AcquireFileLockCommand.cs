@@ -2,6 +2,11 @@
 {
     public class AcquireFileLockCommand
     {
-        public string FileId { get; set; }
+        public string FileId { get; }
+
+        public AcquireFileLockCommand(string fileId)
+        {
+            FileId = fileId;
+        }
     }
 }

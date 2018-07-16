@@ -35,12 +35,7 @@ namespace FileService.Controllers
         [HttpDelete]
         public void Delete([FromQuery] string fileId, [FromQuery] string userId)
         {
-            var command = new UnshareFileCommand()
-            {
-                FileId =  fileId,
-                UserId = userId
-            };
-
+            var command = new UnshareFileCommand(fileId, userId);
             unshareFileCommandHandler.Handle(command);
         }
         
@@ -48,12 +43,8 @@ namespace FileService.Controllers
         [HttpGet("{id}")]
         public IEnumerable<UserDto> Get(string id)
         {
-            var query = new FindUsersBySharedFileQuery()
-            {
-                FileId = id
-            };
-
-            return usersBySharedFileQueryHandler.Handle(query);
+            var query = new FindUsersBySharedFileQuery(id);
+             return usersBySharedFileQueryHandler.Handle(query);
         }
     }
 }

@@ -32,10 +32,7 @@ namespace FileService.Controllers
         [HttpGet]
         public FileLockDto GetLock(string id)
         {
-            var query = new GetFileLockQuery()
-            {
-                FileId = id
-            };
+            var query = new GetFileLockQuery(id);
             return getFileLockQueryHandler.Handle(query);
         }
         
@@ -43,10 +40,7 @@ namespace FileService.Controllers
         [HttpPost]
         public void PostLock(string id)
         {
-            var command = new AcquireFileLockCommand()
-            {
-                FileId = id
-            };
+            var command = new AcquireFileLockCommand(id);
             acquireFileLockCommandHandler.Handle(command);
         }
         
@@ -54,10 +48,7 @@ namespace FileService.Controllers
         [HttpDelete]
         public void DeleteLock(string id)
         {
-            var command = new RemoveFileLockCommand()
-            {
-                FileId = id
-            };
+            var command = new RemoveFileLockCommand(id);
             removeFileLockCommandHandler.Handle(command);
         }
     }

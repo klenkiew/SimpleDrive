@@ -46,11 +46,7 @@ namespace FileService.Services
 
                 var expiredLockInfo = expiryDatesByFileId.Dequeue();
                 eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(
-                    new FileLockChangedMessage()
-                    {
-                        FileId = expiredLockInfo.FileId,
-                        NewLock = FileLockDto.NoLock()
-                    }));
+                    new FileLockChangedMessage(expiredLockInfo.FileId, FileLockDto.NoLock())));
                 ResetInterval();
             }
         }

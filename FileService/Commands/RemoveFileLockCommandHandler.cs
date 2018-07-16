@@ -45,12 +45,9 @@ namespace FileService.Commands
             fileLockingService.Unlock(file);
             
             var newLockOwner = fileLockingService.GetLockOwner(file);
-            
-            eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(new FileLockChangedMessage()
-            {
-                FileId = command.FileId,
-                NewLock = FileLockDto.ForUser(newLockOwner)
-            }));
+
+            eventBus.Publish<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(new FileLockChangedEvent(
+                new FileLockChangedMessage(command.FileId, FileLockDto.ForUser(newLockOwner))));
         }
     }
 }

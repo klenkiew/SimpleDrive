@@ -2,7 +2,13 @@
 {
     public class ShareFileRequest
     {
-        public string FileId { get; set; }
-        public string ShareWithUserId { get; set; }
+        public string FileId { get; }
+        public string ShareWithUserId { get; }
+
+        public ShareFileRequest(string fileId, string shareWithUserId)
+        {
+            FileId = fileId;
+            ShareWithUserId = shareWithUserId;
+        }
     }
 }

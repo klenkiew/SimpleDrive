@@ -4,7 +4,13 @@ namespace FileService.Commands
 {
     public class UpdateFileContentCommand
     {
-        public string FileId { get; set; }
-        public Stream Content { get; set; }
+        public string FileId { get; }
+        public Stream Content { get; }
+
+        public UpdateFileContentCommand(string fileId, Stream content)
+        {
+            FileId = fileId;
+            Content = content;
+        }
     }
 }

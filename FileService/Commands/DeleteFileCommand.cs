@@ -2,6 +2,11 @@
 {
     public class DeleteFileCommand
     {
-        public string FileId { get; set; }
+        public string FileId { get; }
+
+        public DeleteFileCommand(string fileId)
+        {
+            FileId = fileId;
+        }
     }
 }

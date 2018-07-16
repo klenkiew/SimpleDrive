@@ -12,7 +12,13 @@ namespace FileService.Events
 
     public class FileLockChangedMessage
     {
-        public string FileId { get; set; }
-        public FileLockDto NewLock { get; set; } 
+        public string FileId { get; }
+        public FileLockDto NewLock { get; }
+
+        public FileLockChangedMessage(string fileId, FileLockDto newLock)
+        {
+            FileId = fileId;
+            NewLock = newLock;
+        }
     }
 }

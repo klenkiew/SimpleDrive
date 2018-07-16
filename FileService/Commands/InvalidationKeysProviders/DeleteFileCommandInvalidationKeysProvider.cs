@@ -18,9 +18,9 @@ namespace FileService.Commands.InvalidationKeysProviders
             return new object[]
             {
                 // TODO it only works because a file can be deleted only by the owner
-                new FindFilesByUserQuery() {UserId = currentUser.Id}, 
-                new FindFileByIdQuery() {FileId = command.FileId},
-                new FindUsersBySharedFileQuery() {FileId = command.FileId}
+                new FindFilesByUserQuery(currentUser.Id), 
+                new FindFileByIdQuery(command.FileId),
+                new FindUsersBySharedFileQuery(command.FileId)
             };
         }
     }

@@ -2,7 +2,6 @@
 using System.Linq;
 using FileService.Database;
 using FileService.Dto;
-using FileService.Model;
 
 namespace FileService.Queries
 {

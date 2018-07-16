@@ -9,8 +9,8 @@ namespace FileService.Commands.InvalidationKeysProviders
         {
             return new object[]
             {
-                new FindFilesByUserQuery() {UserId = command.UserId},
-                new FindUsersBySharedFileQuery() {FileId = command.FileId}
+                new FindFilesByUserQuery(command.UserId),
+                new FindUsersBySharedFileQuery(command.FileId)
             };
         }
     }

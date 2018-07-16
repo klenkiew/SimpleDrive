@@ -19,14 +19,7 @@ namespace FileService.Requests
 
         private ShareFileCommand MapRequestToCommand(ShareFileRequest request)
         {
-            if (request == null)
-                return null;
-
-            return new ShareFileCommand()
-            {
-                FileId = request.FileId,
-                ShareWithUserId = request.ShareWithUserId
-            };
+            return request == null ? null : new ShareFileCommand(request.FileId, request.ShareWithUserId);
         }
     }
 }

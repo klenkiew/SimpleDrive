@@ -26,11 +26,7 @@ namespace FileService.Queries
                 .FirstOrDefault();
 
             var content = fileStorage.ReadFile(file).Result;
-            return new FileContentDto()
-            {
-                Content = content,
-                MimeType = file.MimeType
-            };
+            return new FileContentDto(file.MimeType, content);
         }
     }
 }

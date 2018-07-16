@@ -4,7 +4,13 @@ namespace FileService.Dto
 {
     public class FileContentDto
     {
-        public string MimeType { get; set; }
-        public Stream Content { get; set; }
+        public string MimeType { get; }
+        public Stream Content { get; }
+
+        public FileContentDto(string mimeType, Stream content)
+        {
+            MimeType = mimeType;
+            Content = content;
+        }
     }
 }

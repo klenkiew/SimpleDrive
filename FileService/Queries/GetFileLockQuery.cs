@@ -4,6 +4,11 @@ namespace FileService.Queries
 {
     public class GetFileLockQuery : IQuery<FileLockDto>
     {
-        public string FileId { get; set; }
+        public GetFileLockQuery(string fileId)
+        {
+            FileId = fileId;
+        }
+
+        public string FileId { get; }
     }
 }
