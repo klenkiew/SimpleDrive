@@ -1,7 +1,7 @@
 <div class="row">
 
 <div [ngClass]="showOutlet ? 'col-sm-8' : 'col-sm-12'">
-  <p-dataGrid [value]="files">
+  <p-dataGrid [value]="files" emptyMessage="You don't have any files yet.">
     <ng-template let-file pTemplate="gridItem">
       <app-file-grid-item [file]="file" [contextMenu]="cm" [icon]="iconClassForFile(file)" (fileSelected)="fileSelected($event)">
       </app-file-grid-item>

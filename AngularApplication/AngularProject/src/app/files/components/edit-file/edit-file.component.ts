@@ -120,7 +120,6 @@ export class EditFileComponent implements OnInit, BeforeUnload {
   }
 
   private handleFileLock() {
-    console.log('Current lock: %o', this.currentLock);
     if (this.currentLock.isLockPresent) {
       const ownerByCurentUser: boolean = this.fileService.isLockOwnedByCurrentUser(this.currentLock);
       this.toggleLockText = 'Locked by ' + this.currentLock.lockOwner.username;
@@ -138,7 +137,11 @@ export class EditFileComponent implements OnInit, BeforeUnload {
 
   submitEdit() {
     this.fileService.updateContent(this.file.id, this.textAreaNativeElement.value)
-      .subscribe(value => this.router.navigate(['browse', 'details', this.file.id], {relativeTo: this.activatedRoute.parent}));
+      .subscribe(value => {
+        this.lockActive = false;
+        this.currentLock = {isLockPresent: false};
+        this.router.navigate(['browse', 'details', this.file.id], {relativeTo: this.activatedRoute.parent});
+      });
   }
 
   toggleLock(event) {
