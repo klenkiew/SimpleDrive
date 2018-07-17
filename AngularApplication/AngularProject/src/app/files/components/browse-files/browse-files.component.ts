@@ -43,10 +43,10 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     });
 
     this.items = [
-      { label: 'Details', icon: 'fa-search', command: (event) => this.showDetails(this.selectedFile) },
-      { label: 'Edit', icon: 'fa-edit', command: (event) => this.editFile(this.selectedFile) },
-      { label: 'Download', icon: 'fa-download', command: (event) => this.download(this.selectedFile) },
-      { label: 'Delete', icon: 'fa-close', command: (event) => this.deleteFile(this.selectedFile) }
+      { label: 'Details', icon: 'fa fa-info-circle', command: (event) => this.showDetails(this.selectedFile) },
+      { label: 'Edit', icon: 'fa fa-align-left', command: (event) => this.editFile(this.selectedFile) },
+      { label: 'Download', icon: 'fa fa-download', command: (event) => this.download(this.selectedFile) },
+      { label: 'Delete', icon: 'fa fa-close', command: (event) => this.deleteFile(this.selectedFile) }
     ];
   }
 
