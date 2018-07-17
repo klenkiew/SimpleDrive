@@ -38,7 +38,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     this.fileChangedSub = this.fileService.onFileChanged().subscribe(f =>
     {
       const changedFile = this.files.find(file => file.id == f.id);
-      changedFile.name = f.name;
+      changedFile.fileName = f.fileName;
       changedFile.description = f.description;
     });
 
@@ -55,11 +55,9 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     this.fileChangedSub.unsubscribe();
   }
 
-  getFiles(): Observable<any>
+  getFiles(): Observable<File[]>
   {
-    return this.fileService.getFiles().map(files => {
-      return files.map(f => new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.owner.id, f.owner.username), f.dateCreated));
-    });
+    return this.fileService.getFiles();
   }
 
   onActivate(event : any) {
@@ -106,7 +104,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
       document.body.appendChild(a);
       a.setAttribute('style', 'display: none');
       a.href = url;
-      a.download = this.selectedFile.name;
+      a.download = this.selectedFile.fileName;
       a.click();
       window.URL.revokeObjectURL(url);
       a.remove(); // remove the element
@@ -128,7 +126,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     {
       this.files.forEach((item, index) =>
       {
-        if (item.name === selectedFile.name)
+        if (item.fileName === selectedFile.fileName)
           this.files.splice(index, 1);
       });
     });

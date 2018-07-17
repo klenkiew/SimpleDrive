@@ -18,8 +18,8 @@ namespace FileService.Queries
         {
             return fileDb.Files
                 .Where(file => file.Owner.Id == query.UserId || file.SharedWith.Any(sw => sw.UserId == query.UserId))
-                .Select(file => new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, file.DateCreated, 
-                    new UserDto(file.Owner.Id, file.Owner.Username, "N/A")))
+                .Select(file => new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, 
+                    file.DateCreated, file.DateModified, new UserDto(file.Owner.Id, file.Owner.Username, "N/A")))
                 .ToList();
         }
     }

@@ -5,14 +5,15 @@
 <div *ngIf="file; let file; else loading">
   <p-card>
     <div class="ui-card-title">
-      {{file.name}}
+      {{file.fileName}}
       <i class="fa fa-edit edit-icon" pTooltip="Edit the filename or description" tooltipPosition="left"
          (click)="op.toggle($event)"></i>
     </div>
-    <p><strong>Owner:</strong> {{file.ownerName}} </p>
+    <p><strong>Owner:</strong> {{file.owner.username}} </p>
     <p><strong>Size:</strong> {{file.size | sizeFormat}} </p>
     <p><strong>Content type:</strong> {{file.mimeType || 'unknown'}} </p>
     <p><strong>Created:</strong> {{file.dateCreated | date:'medium'}} </p>
+    <p><strong>Last modified:</strong> {{file.dateModified | date:'medium'}} </p>
     <p-accordion>
       <p-accordionTab header="Description">
         {{file.description}}
@@ -45,7 +46,7 @@
   <form #editForm="ngForm" (ngSubmit)="onEditSubmit(editForm)" novalidate>
     <div class="form-group">
       <label for="filename">File name</label>
-      <input type="text" class="form-control" name="fileName" ngModel required #filename="ngModel" [ngModel]="file?.name">
+      <input type="text" class="form-control" name="fileName" ngModel required #filename="ngModel" [ngModel]="file?.fileName">
     </div>
 
     <div *ngIf="!filename?.valid && (filename?.dirty || filename?.touched)" class="alert alert-danger">

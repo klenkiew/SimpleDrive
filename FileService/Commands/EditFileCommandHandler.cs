@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FileService.Database;
 using FileService.Exceptions;
 using FileService.Services;
@@ -29,6 +30,7 @@ namespace FileService.Commands
 
             file.FileName = command.FileName;
             file.Description = command.Description;
+            file.DateModified = DateTime.UtcNow;
             fileDb.SaveChanges();
         }
     }

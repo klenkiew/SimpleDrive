@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FileService.Database;
 using FileService.Exceptions;
 using FileService.Model;
@@ -34,7 +35,9 @@ namespace FileService.Commands
             if (!HasPermissionToModifyContent(file))
                 throw new PermissionException($"The user doesn't have a permission to update the content of the file with id {command.FileId}");
 
+            file.DateModified = DateTime.UtcNow;
             fileStorage.UpdateFile(file, command.Content);
+            dbContext.SaveChanges();
         }
         
         private bool HasPermissionToModifyContent(File file)

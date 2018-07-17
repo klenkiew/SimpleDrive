@@ -16,8 +16,8 @@ namespace FileService.Queries
         public FileDto Handle(FindFileByIdQuery query)
         {
             var file = fileDb.Files.FirstOrDefault(f => f.Id == query.FileId);
-            return new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, file.DateCreated, 
-                new UserDto(file.OwnerId, file.OwnerName, "N/A"));
+            return new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, 
+                file.DateCreated, file.DateModified, new UserDto(file.OwnerId, file.OwnerName, "N/A"));
         }
     }
 }

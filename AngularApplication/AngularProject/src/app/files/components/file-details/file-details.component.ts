@@ -32,7 +32,7 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
       const id: string = params['id'];
       this.fileService.getFile(id).subscribe(f =>
       {
-        this.file = new File(f.id, f.fileName, f.size, f.description, f.mimeType, new User(f.owner.id, f.owner.username), f.dateCreated);
+        this.file = f;
       });
       this.fileService.getSharedWith(id).subscribe(users =>
       {
@@ -74,8 +74,9 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
   {
     this.fileService.editFile(this.file.id, editForm.value).subscribe(value =>
     {
-      this.file.name = editForm.value.fileName;
+      this.file.fileName = editForm.value.fileName;
       this.file.description = editForm.value.description;
+      this.file.dateModified = new Date();
       this.fileService.fileChanged(this.file);
       this.overlayPanel.hide();
     });
