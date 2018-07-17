@@ -1,3 +1,20 @@
 .edit-icon {
   cursor: pointer;
 }
+
+.remove-share-button {
+  float: right;
+}
+
+.remove-share-button::after {
+  clear: both;
+}
+
+.share-username {
+  margin-left: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 60%;
+  display: inline-block;
+}

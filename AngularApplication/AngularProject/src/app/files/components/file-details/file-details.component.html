@@ -29,13 +29,9 @@
         <button class="btn btn-xs btn-primary" (click)="share()">Share</button>
       </p-header>
       <ng-template let-user pTemplate="item" let-i="index">
-        <div class="row" style="margin-bottom: 5px;">
-          <div class="col-9 col-md-9">
-            {{user.username}}
-          </div>
-          <div class="col-3 col-md-3">
-            <button class="btn btn-xs btn-danger" (click)="unshare(user.id, index)">Remove</button>
-          </div>
+        <div style="margin-bottom: 10px;">
+            <span class="share-username">{{user.username}}</span>
+            <button class="btn btn-xs btn-danger remove-share-button" (click)="unshare(user.id, index)">Remove</button>
         </div>
       </ng-template>
     </p-dataScroller>

@@ -1,6 +1,6 @@
 <div class="row">
 
-<div [ngClass]="showOutlet ? 'col-sm-8' : 'col-sm-12'">
+<div [ngClass]="showOutlet ? 'col-md-8' : 'col-md-12'">
   <p-dataGrid [value]="files" emptyMessage="You don't have any files yet.">
     <ng-template let-file pTemplate="gridItem">
       <app-file-grid-item [file]="file" [contextMenu]="cm" [icon]="iconClassForFile(file)" (fileSelected)="fileSelected($event)">
@@ -11,7 +11,7 @@
 
 <p-contextMenu #cm [target]="griditem" [model]="items" appendTo="body"></p-contextMenu>
 
-<div [hidden]="!showOutlet" class="col-sm-4">
+<div [hidden]="!showOutlet" class="col-md-4 details-container">
   <!--style="border-left-style: solid;"-->
   <router-outlet (activate)="onActivate($event)" (deactivate)="onDeactivate($event)"></router-outlet>
 </div>

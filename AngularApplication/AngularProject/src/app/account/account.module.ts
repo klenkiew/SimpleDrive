@@ -16,12 +16,16 @@ import {MessageModule} from "primeng/message";
 import {CardModule} from "primeng/card";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { ChangeEmailComponent } from './components/change-email/change-email.component';
 
 @NgModule({
   declarations: [
     AccountComponent,
     AccountDetailsComponent,
-    AccountManageComponent
+    AccountManageComponent,
+    ChangePasswordComponent,
+    ChangeEmailComponent
   ],
   imports: [
     CommonModule,

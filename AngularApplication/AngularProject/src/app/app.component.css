@@ -3,3 +3,13 @@
   display: table;
   margin: 0 auto;
 }
+
+.main-outlet {
+  margin-right: 20px;
+}
+
+@media screen and (max-width: 992px) {
+  .main-outlet {
+    margin-left: 20px;
+  }
+}

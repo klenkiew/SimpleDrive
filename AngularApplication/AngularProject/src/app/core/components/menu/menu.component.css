@@ -7,3 +7,11 @@
 {
   color: aliceblue;
 }
+
+.toggle-menu-button {
+  float: right;
+}
+
+.toggle-menu-button::after {
+  clear: both;
+}

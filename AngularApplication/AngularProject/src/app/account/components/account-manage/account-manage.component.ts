@@ -1,8 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from "@angular/core";
-import {Message} from "primeng/api";
-import {MessageSink, ResultService, ResultServiceFactory} from "../../../shared/services/result.service";
-import {AccountService} from "../../../shared/services/account.service";
-import {OperationResult} from "../../../shared/models/operation-result";
+import {Component, OnInit} from "@angular/core";
 
 @Component({
   selector: 'app-account-manage',
@@ -11,58 +7,9 @@ import {OperationResult} from "../../../shared/models/operation-result";
 })
 export class AccountManageComponent implements OnInit {
 
-  private resultService: ResultService;
-  private messageSink: MessageSink = {messages: <Message[]>[]};
-
-  passwordsDontMatch: boolean = false;
-
-  constructor(
-    private accountService: AccountService,
-    private ref: ChangeDetectorRef,
-    resultServiceFactory: ResultServiceFactory)
-  {
-    this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
+  constructor() {
   }
 
   ngOnInit() {
-  }
-
-  onEmailChangeSubmit(changeEmailForm) {
-    this.messageSink.messages = [];
-    this.accountService.changeEmail(changeEmailForm.value).subscribe(
-      value => {
-        const result = new OperationResult(true, `Your e-mail has been changed successfully.`);
-        this.resultService.handle(result);
-      },
-      err => {
-        const errorMessage = "The operation failed. Try again later.";
-        const result = new OperationResult(false, errorMessage, err);
-        this.resultService.handle(result);
-      });
-  }
-
-
-  onPasswordChangeSubmit(changePasswordForm) {
-    this.messageSink.messages = [];
-    if (changePasswordForm.value.newPassword !== changePasswordForm.value.passwordConfirmation) {
-      this.passwordsDontMatch = true;
-      this.ref.detectChanges();
-      return;
-    }
-
-    this.accountService.changePassword(changePasswordForm.value).subscribe(
-      value => {
-        const result = new OperationResult(true, `Your password has been changed successfully.`);
-        this.resultService.handle(result);
-      },
-      err => {
-        const errorMessage = "The operation failed. Try again later.";
-        const result = new OperationResult(false, errorMessage, err);
-        this.resultService.handle(result);
-      });
-  }
-
-  onPasswordChange(event: any): void {
-    this.passwordsDontMatch = false;
   }
 }
