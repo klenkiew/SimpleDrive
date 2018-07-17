@@ -1,4 +1,4 @@
-<div class="file-edit-title">Edit '<strong>{{file?.name}}</strong>'</div>
+<div class="file-edit-title">Edit '<strong>{{file?.fileName}}</strong>'</div>
 <div class="lock-file-button">
   <p-toggleButton onLabel="File locked" offLabel="Lock file" onIcon="pi pi-check" offIcon="fa fa-lock"
                   (onChange)="toggleLock($event)" [disabled]="disableLockButton" [(ngModel)]="checked"></p-toggleButton>

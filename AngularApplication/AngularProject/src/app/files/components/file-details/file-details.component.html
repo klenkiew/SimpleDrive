@@ -16,7 +16,7 @@
     <p><strong>Last modified:</strong> {{file.dateModified | date:'medium'}} </p>
     <p-accordion>
       <p-accordionTab header="Description">
-        {{file.description}}
+        <div style="white-space: pre-line">{{file.description}}</div>
       </p-accordionTab>
     </p-accordion>
     <br>
@@ -57,7 +57,8 @@
 
     <div class="form-group">
       <label for="description">Description</label>
-      <textarea form="editForm" class="form-control" name="description" ngModel #description="ngModel" [ngModel]="file?.description"></textarea>
+      <textarea pInputTextarea form="editForm" class="form-control" name="description" ngModel #description="ngModel"
+                [ngModel]="file?.description"></textarea>
     </div>
 
     <div class="form-group">
