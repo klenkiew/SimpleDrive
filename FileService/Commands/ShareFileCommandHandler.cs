@@ -28,6 +28,12 @@ namespace FileService.Commands
             if (currentUser.Id != file.OwnerId)
                 throw new PermissionException($"The user doesn't have a permission to share the file with id {command.FileId}");
 
+            if (command.ShareWithUserId == file.OwnerId)
+                throw new PermissionException($"A file can't be shared with the owner.");
+            
+            if (!fileDb.Users.Any(u => u.Id == command.ShareWithUserId))
+                throw new NotFoundException($"A user with id {command.ShareWithUserId} doesn't exist in the database.");
+            
             file.SharedWith.Add(new FileShare() {FileId = command.FileId, UserId = command.ShareWithUserId});
             fileDb.SaveChanges();
         }

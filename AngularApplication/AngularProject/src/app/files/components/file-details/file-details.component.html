@@ -24,7 +24,7 @@
       <p-header>
         Share with:
         <p-autoComplete [(ngModel)]="currentUser" [suggestions]="results" (completeMethod)="search($event)"
-                        field="username">
+                        [forceSelection]="true" field="username">
         </p-autoComplete>
         <button class="btn btn-xs btn-primary" (click)="share()">Share</button>
       </p-header>

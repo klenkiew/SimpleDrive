@@ -6,6 +6,8 @@ import {UsersService} from "../../../shared/users.service";
 import {User} from "../../../shared/models/user";
 import {File} from "../../../shared/models/file";
 import {OverlayPanel} from "primeng/primeng";
+import {AccountService} from "../../../shared/services/account.service";
+import {MessageService} from "primeng/components/common/messageservice";
 
 @Component({
   selector: 'app-file-details',
@@ -23,8 +25,8 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
   results: User[] = [];
   sharedWith: User[] = [];
 
-  constructor(private fileService: FilesService, private usersService: UsersService,
-              private activatedRoute: ActivatedRoute, private router: Router) { }
+  constructor(private fileService: FilesService, private usersService: UsersService, private accountService: AccountService,
+              private messageService: MessageService, private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     this.sub = this.activatedRoute.params.subscribe(params =>
@@ -46,6 +48,23 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
   }
 
   share(): void {
+    if (!this.currentUser)
+    {
+      this.shareError("A user with such name doesn't exist.");
+      return;
+    }
+
+    if (this.currentUser.id === this.accountService.getToken().id) {
+      this.shareError("You can't share a file with yourself.");
+      return;
+    }
+
+    if (this.sharedWith.find(u => u.id === this.currentUser.id))
+    {
+      this.shareError("You've already shared this file with this user.");
+      return;
+    }
+
     this.fileService.shareFile(this.file.id, this.currentUser.id).subscribe(() =>
     {
       this.sharedWith.push(this.currentUser);
@@ -88,6 +107,14 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
       {
         return new User(d.id, d.username);
       });
+    });
+  }
+
+  private shareError(message: string) {
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Operation failed',
+      detail: message
     });
   }
 }
