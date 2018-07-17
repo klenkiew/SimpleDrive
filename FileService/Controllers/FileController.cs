@@ -17,6 +17,7 @@ namespace FileService.Controllers
     {
         private readonly ICurrentUser currentUser;
         private readonly ICommandHandler<AddFileRequest> addFileCommandHandler;
+        private readonly ICommandHandler<EditFileCommand> editFileCommandHandler;
         private readonly ICommandHandler<DeleteFileCommand> deleteFileCommandHandler;
         private readonly ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler;
         private readonly IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>> findFilesQueryHandler;
@@ -26,6 +27,7 @@ namespace FileService.Controllers
         public FileController(
             ICurrentUser currentUser,
             ICommandHandler<AddFileRequest> addFileCommandHandler,
+            ICommandHandler<EditFileCommand> editFileCommandHandler, 
             ICommandHandler<DeleteFileCommand> deleteFileCommandHandler, 
             ICommandHandler<UpdateFileContentCommand> updateFileContentCommandHandler, 
             IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>> findFilesQueryHandler, 
@@ -37,7 +39,10 @@ namespace FileService.Controllers
             ;
             this.addFileCommandHandler =
                 addFileCommandHandler ?? throw new ArgumentNullException(nameof(addFileCommandHandler));
-            
+
+            this.editFileCommandHandler = 
+                editFileCommandHandler ?? throw new ArgumentNullException(nameof(editFileCommandHandler));
+
             this.deleteFileCommandHandler = 
                 deleteFileCommandHandler ?? throw new ArgumentNullException(nameof(addFileCommandHandler));;
 
@@ -94,6 +99,13 @@ namespace FileService.Controllers
         public void Post([FromForm] AddFileRequest addFileRequest)
         {
             addFileCommandHandler.Handle(addFileRequest);
+        }
+        
+        // PATCH api/files/5
+        [HttpPatch("{fileId}")]
+        public void Patch([FromRoute] string fileId, [FromBody] EditFileRequest editFileRequest)
+        {
+            editFileCommandHandler.Handle(new EditFileCommand(fileId, editFileRequest.FileName, editFileRequest.Description));
         }
         
         // DELETE api/files/5

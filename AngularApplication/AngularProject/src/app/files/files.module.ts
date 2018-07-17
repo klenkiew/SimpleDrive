@@ -13,11 +13,16 @@ import {GrowlModule} from "primeng/growl";
 import {
   AccordionModule,
   AutoCompleteModule,
-  ContextMenuModule, DataGridModule, DataScrollerModule,
+  ContextMenuModule,
+  DataGridModule,
+  DataScrollerModule,
   FieldsetModule,
-  FileUploadModule, InputTextareaModule,
-  InputTextModule,
-  PasswordModule, ToggleButtonModule
+  FileUploadModule,
+  InputTextareaModule,
+  InputTextModule, OverlayPanelModule,
+  PasswordModule,
+  ToggleButtonModule,
+  TooltipModule
 } from "primeng/primeng";
 import {PanelModule} from "primeng/panel";
 import {TableModule} from "primeng/table";
@@ -27,10 +32,10 @@ import {CardModule} from "primeng/card";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {UsersService} from "../shared/users.service";
-import { EditFileComponent } from './components/edit-file/edit-file.component';
+import {EditFileComponent} from './components/edit-file/edit-file.component';
 import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.service";
 import {DataViewModule} from "primeng/dataview";
-import { FileGridItemComponent } from './components/file-grid-item/file-grid-item.component';
+import {FileGridItemComponent} from './components/file-grid-item/file-grid-item.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +57,8 @@ import { FileGridItemComponent } from './components/file-grid-item/file-grid-ite
     AccordionModule,
     DataGridModule,
     DataViewModule,
+    TooltipModule,
+    OverlayPanelModule,
 
     FormsModule,
     TableModule,

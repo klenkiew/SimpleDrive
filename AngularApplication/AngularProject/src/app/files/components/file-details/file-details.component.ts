@@ -1,10 +1,11 @@
-import {ChangeDetectorRef, Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FilesService} from "../../files.service";
 import {Subscription} from "rxjs/Rx";
 import {UsersService} from "../../../shared/users.service";
 import {User} from "../../../shared/models/user";
 import {File} from "../../../shared/models/file";
+import {OverlayPanel} from "primeng/primeng";
 
 @Component({
   selector: 'app-file-details',
@@ -16,15 +17,17 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
   private file: File = null;
   private sub: Subscription;
 
+  @ViewChild("op") overlayPanel: OverlayPanel;
+
   currentUser: User;
   results: User[] = [];
   sharedWith: User[] = [];
 
   constructor(private fileService: FilesService, private usersService: UsersService,
-              private activatetRoute: ActivatedRoute, private router: Router) { }
+              private activatedRoute: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.sub = this.activatetRoute.params.subscribe(params =>
+    this.sub = this.activatedRoute.params.subscribe(params =>
     {
       const id: string = params['id'];
       this.fileService.getFile(id).subscribe(f =>
@@ -64,7 +67,18 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
 
   close()
   {
-    this.router.navigate(['../../..'], {relativeTo: this.activatetRoute});
+    this.router.navigate(['../../..'], {relativeTo: this.activatedRoute});
+  }
+
+  onEditSubmit(editForm)
+  {
+    this.fileService.editFile(this.file.id, editForm.value).subscribe(value =>
+    {
+      this.file.name = editForm.value.fileName;
+      this.file.description = editForm.value.description;
+      this.fileService.fileChanged(this.file);
+      this.overlayPanel.hide();
+    });
   }
 
   search(event) {

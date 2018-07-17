@@ -2,8 +2,13 @@
   <button class="btn btn-sm btn-info" (click)="close()">X</button>
 </div>
 <ng-template #loading>Loading the file details...</ng-template>
-  <div *ngIf="file; let file; else loading">
-    <p-card [title]="file.name">
+<div *ngIf="file; let file; else loading">
+  <p-card>
+    <div class="ui-card-title">
+      {{file.name}}
+      <i class="fa fa-edit edit-icon" pTooltip="Edit the filename or description" tooltipPosition="left"
+         (click)="op.toggle($event)"></i>
+    </div>
     <p><strong>Owner:</strong> {{file.ownerName}} </p>
     <p><strong>Size:</strong> {{file.size | sizeFormat}} </p>
     <p><strong>Content type:</strong> {{file.mimeType || 'unknown'}} </p>
@@ -33,5 +38,30 @@
         </div>
       </ng-template>
     </p-dataScroller>
-    </p-card>
-  </div>
+  </p-card>
+</div>
+
+<p-overlayPanel #op appendTo="body">
+  <form #editForm="ngForm" (ngSubmit)="onEditSubmit(editForm)" novalidate>
+    <div class="form-group">
+      <label for="filename">File name</label>
+      <input type="text" class="form-control" name="fileName" ngModel required #filename="ngModel" [ngModel]="file?.name">
+    </div>
+
+    <div *ngIf="!filename?.valid && (filename?.dirty || filename?.touched)" class="alert alert-danger">
+      <div [hidden]="!filename.errors.required">
+        File name is required
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea form="editForm" class="form-control" name="description" ngModel #description="ngModel" [ngModel]="file?.description"></textarea>
+    </div>
+
+    <div class="form-group">
+      <button class="btn btn-primary btn-sm" value="Submit" type="submit" [disabled]="!editForm.valid">Submit</button>
+    </div>
+  </form>
+
+</p-overlayPanel>

@@ -16,7 +16,10 @@ namespace FileService.Commands.InvalidationKeysProviders
         public IEnumerable<object> GetCacheKeysToInvalidate(AddFileCommand command)
         {
             // TODO it only works because a file can be deleted only by the owner
-            return new[] { new FindFilesByUserQuery(currentUser.Id) };
+            return new[]
+            {
+                new FindFilesByUserQuery(currentUser.Id),
+            };
         }
     }
 }

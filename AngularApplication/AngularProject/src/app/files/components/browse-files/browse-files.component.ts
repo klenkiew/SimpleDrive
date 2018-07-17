@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild} from "@angular/core";
+import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {MenuItem} from "primeng/api";
 import {File} from "../../../shared/models/file";
 import {FilesService} from "../../files.service";
@@ -7,22 +7,24 @@ import "rxjs/add/operator/map";
 import {ActivatedRoute, Router} from "@angular/router";
 import {User} from "../../../shared/models/user";
 import {MessageService} from "primeng/components/common/messageservice";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'app-browse-files',
   templateUrl: './browse-files.component.html',
   styleUrls: ['./browse-files.component.css']
 })
-export class BrowseFilesComponent implements OnInit {
+export class BrowseFilesComponent implements OnInit, OnDestroy {
 
   files: File[];
-  cols: any[];
   selectedFile: File;
   items: MenuItem[];
 
   @ViewChild('cm') contextMenu: ElementRef;
 
   showOutlet: boolean = false;
+  private getFilesSub: Subscription;
+  private fileChangedSub: Subscription;
 
   constructor(
     private fileService: FilesService,
@@ -32,14 +34,13 @@ export class BrowseFilesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getFiles().subscribe(f => { this.files = f });
-
-    this.cols = [
-      { field: 'name', header: 'Name' },
-      { field: 'size', header: 'Size', type: 'size' },
-      { field: 'ownerName', header: 'Owner'},
-      { field: 'dateCreated', header: 'Created', type: 'date' },
-    ];
+    this.getFilesSub = this.getFiles().subscribe(f => { this.files = f });
+    this.fileChangedSub = this.fileService.onFileChanged().subscribe(f =>
+    {
+      const changedFile = this.files.find(file => file.id == f.id);
+      changedFile.name = f.name;
+      changedFile.description = f.description;
+    });
 
     this.items = [
       { label: 'Details', icon: 'fa-search', command: (event) => this.showDetails(this.selectedFile) },
@@ -47,6 +48,11 @@ export class BrowseFilesComponent implements OnInit {
       { label: 'Download', icon: 'fa-download', command: (event) => this.download(this.selectedFile) },
       { label: 'Delete', icon: 'fa-close', command: (event) => this.deleteFile(this.selectedFile) }
     ];
+  }
+
+  ngOnDestroy(): void {
+    this.getFilesSub.unsubscribe();
+    this.fileChangedSub.unsubscribe();
   }
 
   getFiles(): Observable<any>
@@ -66,6 +72,7 @@ export class BrowseFilesComponent implements OnInit {
 
   @HostListener('contextmenu', ['$event'])
   onContextMenu(event: Event) {
+    event.preventDefault();
   }
 
   iconClassForFile(file): string

@@ -5,12 +5,15 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {User} from "../shared/models/user";
 import {File} from "../shared/models/file";
 import {AccountService} from "../shared/services/account.service";
+import {Subject} from "rxjs/Subject";
 
 @Injectable()
 export class FilesService {
 
   private filesApiUrl = 'http://localhost:5001/api/files/';
   private sharesApiUrl = 'http://localhost:5001/api/shares/';
+
+  private fileChangedEvent: Subject<File> = new Subject<File>();
 
   constructor(private http: HttpClient, private accountService: AccountService) {
   }
@@ -83,5 +86,19 @@ export class FilesService {
 
   isLockOwnedByCurrentUser(fileLock: any) {
     return this.accountService.getCurrentUserName() == fileLock.lockOwner.username;
+  }
+
+  editFile(fileId: string, data: any) {
+    const apiUrl = this.filesApiUrl + fileId;
+    return this.http.patch(apiUrl, data);
+  }
+
+  onFileChanged() {
+    return this.fileChangedEvent.asObservable();
+  }
+
+  fileChanged(file: File) {
+    console.log('File changed: %o', file);
+    this.fileChangedEvent.next(file);
   }
 }
