@@ -13,7 +13,7 @@ import {GrowlModule} from "primeng/growl";
 import {
   AccordionModule,
   AutoCompleteModule,
-  ContextMenuModule, DataScrollerModule,
+  ContextMenuModule, DataGridModule, DataScrollerModule,
   FieldsetModule,
   FileUploadModule, InputTextareaModule,
   InputTextModule,
@@ -29,7 +29,8 @@ import {CommonModule} from "@angular/common";
 import {UsersService} from "../shared/users.service";
 import { EditFileComponent } from './components/edit-file/edit-file.component';
 import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.service";
-import {SizeFormatPipe} from "../shared/pipes/size-format.pipe";
+import {DataViewModule} from "primeng/dataview";
+import { FileGridItemComponent } from './components/file-grid-item/file-grid-item.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import {SizeFormatPipe} from "../shared/pipes/size-format.pipe";
     BrowseFilesComponent,
     AddFileComponent,
     FileDetailsComponent,
-    EditFileComponent
+    EditFileComponent,
+    FileGridItemComponent
   ],
   imports: [
     CommonModule,
@@ -48,6 +50,8 @@ import {SizeFormatPipe} from "../shared/pipes/size-format.pipe";
     InputTextareaModule,
     ToggleButtonModule,
     AccordionModule,
+    DataGridModule,
+    DataViewModule,
 
     FormsModule,
     TableModule,

@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component, ElementRef, HostListener, OnInit, ViewChild} from "@angular/core";
 import {MenuItem} from "primeng/api";
 import {File} from "../../../shared/models/file";
 import {FilesService} from "../../files.service";
@@ -19,6 +19,8 @@ export class BrowseFilesComponent implements OnInit {
   cols: any[];
   selectedFile: File;
   items: MenuItem[];
+
+  @ViewChild('cm') contextMenu: ElementRef;
 
   showOutlet: boolean = false;
 
@@ -60,6 +62,30 @@ export class BrowseFilesComponent implements OnInit {
 
   onDeactivate(event : any) {
     this.showOutlet = false;
+  }
+
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: Event) {
+  }
+
+  iconClassForFile(file): string
+  {
+    if (file.mimeType === null)
+      return 'fa-file';
+    else if (file.mimeType.startsWith('text/'))
+      return 'fa-file-text';
+    else if (file.mimeType.startsWith('image/'))
+      return 'fa-file-image-o';
+    else if (file.mimeType.startsWith('audio/'))
+      return 'fa-file-audio-o';
+    else if (file.mimeType.startsWith('video/'))
+      return 'fa-file-video-o';
+    return 'fa-file';
+  }
+
+  fileSelected(file)
+  {
+    this.selectedFile = file;
   }
 
   private showDetails(selectedFile: File) {

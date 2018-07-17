@@ -1,0 +1,12 @@
+.grid-item {
+  padding: 2em;
+  text-align: center;
+}
+
+.icon-holder {
+  margin-bottom: .5em;
+}
+
+.file-icon {
+  color: rgba(8, 8, 255, 0.66);
+}
