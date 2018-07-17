@@ -7,9 +7,13 @@ import {Component, OnInit} from "@angular/core";
 })
 export class AccountManageComponent implements OnInit {
 
+  collapsed: boolean = true;
+
   constructor() {
   }
 
   ngOnInit() {
+    if (window.innerWidth > 992)
+      this.collapsed = false;
   }
 }
