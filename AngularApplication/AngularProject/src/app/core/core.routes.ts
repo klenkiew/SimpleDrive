@@ -5,11 +5,13 @@ import {AuthorizationGuardService} from "./infrastructure/authorization-guard.se
 import {AboutComponent} from "./components/about/about.component";
 import {NotAuthorizedComponent} from "../shared/components/not-authorized/not-authorized.component";
 import {ErrorComponent} from "../shared/components/error/error.component";
+import {EmailConfirmationComponent} from "./components/email-confirmation/email-confirmation.component";
 
 export const routes: Routes =
   [
     {path: 'login', component: LoginComponent},
     {path: 'register', component: RegistrationComponent},
+    {path: 'confirm-email', component: EmailConfirmationComponent},
     {
       path: 'account', canActivate: [AuthorizationGuardService], loadChildren: '../account/account.module#AccountModule'
     },

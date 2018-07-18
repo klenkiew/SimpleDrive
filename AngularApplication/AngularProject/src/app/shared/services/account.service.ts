@@ -110,6 +110,16 @@ export class AccountService {
     return this.getToken().username;
   }
 
+  confirmEmail(userId: string, token: string) {
+    const apiUrl = 'http://localhost:5000/api/authentication/confirmEmail';
+    return this.http.post(apiUrl, {userId: userId, token: token});
+  }
+
+  resendConfirmationEmail(data: any) {
+    const apiUrl = 'http://localhost:5000/api/authentication/resendConfirmationEmail';
+    return this.http.post(apiUrl, data);
+  }
+
   private downloadToken(apiUrl: string, requestBody: any) {
     let sub = this.http.post<string>(apiUrl, requestBody);
     sub = sub.do(value => this.saveToken(value));

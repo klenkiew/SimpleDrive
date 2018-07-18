@@ -48,7 +48,7 @@ namespace AuthenticationService
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
-                options.SignIn.RequireConfirmedEmail = false; // TODO: !HostingEnvironment.IsDevelopment();
+                options.SignIn.RequireConfirmedEmail = Convert.ToBoolean(Configuration["Registration:RequireEmailConfirmation"]);
             }).AddDefaultTokenProviders();
 
             services
@@ -91,6 +91,9 @@ namespace AuthenticationService
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUsersService, UsersService>();
+            
+            services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+            services.AddSingleton(provider => Configuration.GetSection("Registration").Get<RegistrationConfiguration>());
             
             services.AddSingleton<IRedisConfiguration, RedisConfiguration>(
                 provider => new RedisConfiguration(Configuration["Redis:Host"]));

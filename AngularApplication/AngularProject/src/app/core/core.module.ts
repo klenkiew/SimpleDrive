@@ -6,7 +6,14 @@ import {RouterModule} from '@angular/router';
 import {FormsModule} from "@angular/forms";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {TableModule} from "primeng/table";
-import {ContextMenuModule, FieldsetModule, FileUploadModule, InputTextModule, PasswordModule} from "primeng/primeng";
+import {
+  ContextMenuModule,
+  FieldsetModule,
+  FileUploadModule,
+  InputTextModule,
+  PasswordModule,
+  SplitButtonModule
+} from "primeng/primeng";
 import {CardModule} from "primeng/card";
 import {MessageModule} from "primeng/message";
 import {MessagesModule} from "primeng/messages";
@@ -25,6 +32,7 @@ import {TokenInterceptor} from "./infrastructure/token-interceptor";
 import {AccountService} from "../shared/services/account.service";
 import {SharedModule} from "../shared/shared.module";
 import {CommonModule} from "@angular/common";
+import { EmailConfirmationComponent } from './components/email-confirmation/email-confirmation.component';
 
 const messageSink: MessageSink = {messages: growlMessages};
 
@@ -33,6 +41,7 @@ const messageSink: MessageSink = {messages: growlMessages};
     RegistrationComponent,
     LoginComponent,
     AboutComponent,
+    EmailConfirmationComponent,
   ],
   imports: [
     CommonModule,
@@ -50,6 +59,7 @@ const messageSink: MessageSink = {messages: growlMessages};
     GrowlModule,
     PanelModule,
     FieldsetModule,
+    SplitButtonModule,
     SharedModule,
     RouterModule.forRoot(routes)
   ],

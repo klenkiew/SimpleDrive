@@ -32,7 +32,8 @@
   </div>
 
   <div class="form-group">
-    <button class="btn btn-primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+    <p-splitButton label="Login" icon="fa fa-check" (onClick)="onSubmit(loginForm)" [model]="items" [disabled]="!loginForm.valid">
+    </p-splitButton>
   </div>
 
 </form>
