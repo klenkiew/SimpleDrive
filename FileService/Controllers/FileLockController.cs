@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileService.Controllers
 {
     [Route("api/files/{id}/lock")]
-    public class FileLockController : Controller
+    public class FileLockController : ControllerBase
     {
         private readonly ICommandHandler<AcquireFileLockCommand> acquireFileLockCommandHandler;
         private readonly ICommandHandler<RemoveFileLockCommand> removeFileLockCommandHandler;

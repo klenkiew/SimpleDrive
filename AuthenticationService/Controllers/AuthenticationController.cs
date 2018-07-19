@@ -18,7 +18,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace AuthenticationService.Controllers
 {
     [Route("api/[controller]/[action]")]
-    public class AuthenticationController : Controller
+    public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;

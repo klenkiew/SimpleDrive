@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileService.Controllers
 {
     [Route("api/[controller]s")]
-    public class ShareController : Controller
+    public class ShareController : ControllerBase
     {
         private readonly ICommandHandler<ShareFileRequest> shareFileCommandHandler;
         private readonly ICommandHandler<UnshareFileCommand> unshareFileCommandHandler;

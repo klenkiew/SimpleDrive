@@ -13,7 +13,7 @@ using File = FileService.Model.File;
 namespace FileService.Controllers
 {
     [Route("api/[controller]s")]
-    public class FileController : Controller
+    public class FileController : ControllerBase
     {
         private readonly ICurrentUser currentUser;
         private readonly ICommandHandler<AddFileRequest> addFileCommandHandler;
