@@ -27,18 +27,10 @@ namespace AuthenticationService.Services
         }
 
 
-        public async Task SendConfirmationEmail(User user)
+        public Task SendConfirmationEmail(User user)
         {
-            // Normally do nothing - this implementation is used when the e-mail confirmation feature is disabled.
-            if (user.EmailConfirmed)
-                return;
-            
-            // If the appriopriate feature is not disabled in the configuration ('options.SignIn.RequireConfirmedEmail')
-            // then a token is generated and used immediately to confirm the e-mail address.
-            logger.LogWarning("The e-mail confirmation feature is disabled and the mock implementation of the " +
-                              "service is used, but the 'RequireConfirmedEmail' identity option is set to 'true'.");
-            string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            await this.userManager.ConfirmEmailAsync(user, token);
+            // Do nothing - this implementation is used when the e-mail confirmation feature is disabled.
+            return Task.CompletedTask;
         }
 
         public Task<IdentityResult> ConfirmEmail(User user, string token)
