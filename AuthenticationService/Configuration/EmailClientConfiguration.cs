@@ -1,12 +1,5 @@
 ﻿namespace AuthenticationService.Configuration
 {
-    public class RegistrationConfiguration
-    {
-        public bool RequireEmailConfirmation { get; set; }
-        public string CallbackUrl { get; set; }
-        public EmailClientConfiguration EmailClient { get; set; }
-    }
-
     public class EmailClientConfiguration
     {
         public string Address { get; set; }

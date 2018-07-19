@@ -11,7 +11,7 @@ import {
   FieldsetModule,
   FileUploadModule,
   InputTextModule,
-  PasswordModule,
+  PasswordModule, ProgressSpinnerModule,
   SplitButtonModule
 } from "primeng/primeng";
 import {CardModule} from "primeng/card";
@@ -60,6 +60,7 @@ const messageSink: MessageSink = {messages: growlMessages};
     PanelModule,
     FieldsetModule,
     SplitButtonModule,
+    ProgressSpinnerModule,
     SharedModule,
     RouterModule.forRoot(routes)
   ],

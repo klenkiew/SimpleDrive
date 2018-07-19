@@ -8,5 +8,7 @@ namespace AuthenticationService.Services
     {
         Task SendConfirmationEmail(User user);
         Task<IdentityResult> ConfirmEmail(User user, string token);
+        Task ProcessEmailChange(User user, string newEmail);
+        Task<IdentityResult> ConfirmEmailChange(User user, string newEmail, string token);
     }
 }

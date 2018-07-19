@@ -62,9 +62,7 @@ export class AccountService {
   public changeEmail(data: any): Observable<any>
   {
     const apiUrl = 'http://localhost:5000/api/authentication/changeEmail';
-    let sub = this.http.post<string>(apiUrl, data);
-    sub = sub.do(value => this.saveToken(value));
-    return sub;
+    return this.http.post<string>(apiUrl, data);
   }
 
   public changePassword(data: any): Observable<any>
@@ -113,6 +111,13 @@ export class AccountService {
   confirmEmail(userId: string, token: string) {
     const apiUrl = 'http://localhost:5000/api/authentication/confirmEmail';
     return this.http.post(apiUrl, {userId: userId, token: token});
+  }
+
+  confirmEmailChange(email: string, token: string) {
+    const apiUrl = 'http://localhost:5000/api/authentication/confirmEmailChange';
+    let sub = this.http.post(apiUrl, {email: email, token: token});
+    sub = sub.do(value => this.saveToken(value));
+    return sub;
   }
 
   resendConfirmationEmail(data: any) {

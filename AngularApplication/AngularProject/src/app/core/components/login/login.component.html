@@ -40,4 +40,7 @@
 
 Don't have an account yet? <a [routerLink]="['/register']">Register</a>
 
+<div *ngIf="operationPending">
+<p-progressSpinner></p-progressSpinner>
+</div>
 <p-messages [(value)]="messageSink.messages"></p-messages>

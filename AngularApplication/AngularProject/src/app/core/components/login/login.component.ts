@@ -16,6 +16,8 @@ export class LoginComponent implements OnInit {
   private resultService: ResultService;
   private messageSink: MessageSink = {messages: <Message[]>[]};
 
+  operationPending: boolean = false;
+
   @ViewChild("loginForm") form;
 
   items: MenuItem[];
@@ -31,14 +33,18 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.items = [
-      {label: 'Resend e-mail confirmation', icon: 'fa-refresh', command: () => {
+      {
+        label: 'Resend e-mail confirmation', icon: 'fa-refresh', command: () => {
           this.resendConfirmationEmail(this.form);
-        }},
+        }
+      },
     ];
   }
 
   onSubmit(loginForm) {
+    this.operationPending = true;
     this.accountService.login(loginForm.value)
+      .finally(() => this.operationPending = false)
       .subscribe(
         value => {
           this.router.navigate(['files']);
@@ -50,7 +56,9 @@ export class LoginComponent implements OnInit {
   }
 
   private resendConfirmationEmail(loginForm) {
+    this.operationPending = true;
     this.accountService.resendConfirmationEmail(loginForm.value)
+      .finally(() => this.operationPending = false)
       .subscribe(
         value => {
           const result = new OperationResult(true, "Confirmation e-mail resend successfully.", value);

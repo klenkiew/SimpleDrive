@@ -14,10 +14,11 @@ export class ChangeEmailComponent implements OnInit {
   private resultService: ResultService;
   private messageSink: MessageSink = {messages: <Message[]>[]};
 
+  operationPending: boolean = false;
+
   constructor(
     private accountService: AccountService,
-    resultServiceFactory: ResultServiceFactory)
-  {
+    resultServiceFactory: ResultServiceFactory) {
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
@@ -26,15 +27,17 @@ export class ChangeEmailComponent implements OnInit {
 
   onEmailChangeSubmit(changeEmailForm) {
     this.messageSink.messages = [];
-    this.accountService.changeEmail(changeEmailForm.value).subscribe(
-      value => {
-        const result = new OperationResult(true, `Your e-mail has been changed successfully.`);
-        this.resultService.handle(result);
-      },
-      err => {
-        const errorMessage = "The operation failed. Try again later.";
-        const result = new OperationResult(false, errorMessage, err);
-        this.resultService.handle(result);
-      });
+    this.operationPending = true;
+    this.accountService.changeEmail(changeEmailForm.value)
+      .finally(() => this.operationPending = false)
+      .subscribe(value => {
+          const result = new OperationResult(true, `A confirmation link has been sent to your new e-mail.`);
+          this.resultService.handle(result);
+        },
+        err => {
+          const errorMessage = "The operation failed. Try again later.";
+          const result = new OperationResult(false, errorMessage, err);
+          this.resultService.handle(result);
+        });
   }
 }

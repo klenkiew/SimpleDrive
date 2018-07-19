@@ -1,8 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AuthenticationService.Dto;
-using AuthenticationService.Extensions;
 using AuthenticationService.Model;
 using AuthenticationService.Requests;
 using AuthenticationService.Services;
@@ -22,7 +22,7 @@ namespace AuthenticationService.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly SignInManager<User> signInManager;
-        private readonly EmailConfirmationService emailConfirmationService;
+        private readonly IEmailConfirmationService emailConfirmationService;
         private readonly ITokenService tokenService;
         private readonly IEventBusWrapper eventBus;
         private readonly ILogger<AuthenticationController> logger;
@@ -30,7 +30,7 @@ namespace AuthenticationService.Controllers
         public AuthenticationController(
             UserManager<User> userManager, 
             SignInManager<User> signInManager,
-            EmailConfirmationService emailConfirmationService, 
+            IEmailConfirmationService emailConfirmationService, 
             ITokenService tokenService, 
             IEventBusWrapper eventBus,
             ILoggerFactory loggerFactory)
@@ -58,9 +58,20 @@ namespace AuthenticationService.Controllers
             
             eventBus.Publish<IEvent<UserInfo>, UserInfo>(
                 new UserRegisteredEvent(new UserInfo(user.Id, user.Username, user.Email)));
-            
-            emailConfirmationService.SendConfirmationEmail(user).LogErrors(logger, "Sending e-mail confirmation e-mail failed");
-            
+
+            try
+            {
+                await emailConfirmationService.SendConfirmationEmail(user);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to send a confirmation e-mail.");
+                var errorMessage = "The account has been successfully created, but the server failed to deliver " +
+                                   "an account confirmation e-mail. Please try to use the resend option later" +
+                                   " to activate your account.";
+                return StatusCode(500, new BasicError(errorMessage));
+            }
+
             return Ok();
         }
         
@@ -117,8 +128,8 @@ namespace AuthenticationService.Controllers
             
             if (!passwordResult) 
                 return BadRequest(new BasicError("Cannot resend confirmation e-mail: invalid password"));
-            
-            emailConfirmationService.SendConfirmationEmail(user).LogErrors(logger, "Sending e-mail confirmation e-mail failed");;
+
+            await emailConfirmationService.SendConfirmationEmail(user);
             
             return Ok();
         }
@@ -138,9 +149,21 @@ namespace AuthenticationService.Controllers
 
             if (!await userManager.CheckPasswordAsync(user, request.Password))
                 return BadRequest(new BasicError("Invalid password."));
+
+            if (user.Email == request.Email)
+                return BadRequest(new BasicError("The new e-mail address cannot be the same as your current e-mail."));                
             
-            var token = await userManager.GenerateChangeEmailTokenAsync(user, request.Email);
-            var result = await userManager.ChangeEmailAsync(user, request.Email, token);
+            await emailConfirmationService.ProcessEmailChange(user, request.Email);
+            
+            return Ok();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmailChange([FromBody] ConfirmEmailChangeRequest request)
+        {
+            var user = await userManager.FindByIdAsync(GetCurrentUserId());
+
+            var result = await emailConfirmationService.ConfirmEmailChange(user, request.Email, request.Token);
             
             if (!result.Succeeded) return BadRequest(new BasicError(result.Errors.First().Description));
             

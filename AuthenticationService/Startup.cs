@@ -42,13 +42,15 @@ namespace AuthenticationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var requireEmailConfirmation = Convert.ToBoolean(Configuration["Security:EmailConfirmation:RequireEmailConfirmation"]);
+            
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
-                options.SignIn.RequireConfirmedEmail = Convert.ToBoolean(Configuration["Registration:RequireEmailConfirmation"]);
+                options.SignIn.RequireConfirmedEmail = requireEmailConfirmation;
             }).AddDefaultTokenProviders();
 
             services
@@ -92,8 +94,16 @@ namespace AuthenticationService
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUsersService, UsersService>();
             
-            services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
-            services.AddSingleton(provider => Configuration.GetSection("Registration").Get<RegistrationConfiguration>());
+            if (requireEmailConfirmation)
+                services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+            else
+                services.AddScoped<IEmailConfirmationService, EmptyEmailConfirmationService>();            
+            
+            services.AddSingleton<IEmailService, EmailService>();
+
+            services.AddSingleton(provider => Configuration.GetSection("Security").GetSection("EmailConfirmation")
+                .Get<EmailConfirmationConfiguration>());
+            services.AddSingleton(provider => Configuration.GetSection("EmailClient").Get<EmailClientConfiguration>());
             
             services.AddSingleton<IRedisConfiguration, RedisConfiguration>(
                 provider => new RedisConfiguration(Configuration["Redis:Host"]));

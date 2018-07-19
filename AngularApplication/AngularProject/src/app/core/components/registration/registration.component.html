@@ -55,4 +55,6 @@
 
 </form>
 
+<p-progressSpinner *ngIf="operationPending"></p-progressSpinner>
+
 <p-messages [(value)]="messageSink.messages"></p-messages>
