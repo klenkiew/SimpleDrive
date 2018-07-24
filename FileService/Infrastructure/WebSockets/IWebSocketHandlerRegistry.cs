@@ -4,7 +4,11 @@ namespace FileService.Infrastructure.WebSockets
 {
     public interface IWebSocketHandlerRegistry
     {
-        void RegisterHandler(PathString path, IWebSocketHandler<byte[]> handler);
         IWebSocketHandler<byte[]> GetHandler(PathString path);
+    }
+
+    public interface IWebSocketHandlerRegistrar
+    {
+        void RegisterHandler<T>(PathString path, IWebSocketHandler<T> handler);
     }
 }

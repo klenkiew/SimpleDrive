@@ -153,11 +153,10 @@ namespace FileService
             });
             
             app.UseMiddleware<WebSocketsMiddleware>(container);
-            var webSocketHandlerRegistry = container.GetInstance<IWebSocketHandlerRegistry>();
             
-            webSocketHandlerRegistry.RegisterHandler("/ws/fileLocks", 
-                new BinaryWebSocketHandler(new SerializingWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>(
-                    container.GetInstance<FileLockChangedNotificator>(), container.GetInstance<ISerializer>())));
+            var webSocketHandlerRegistry = container.GetInstance<IWebSocketHandlerRegistrar>();
+            var webSocketHandler = container.GetInstance<IWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>>();
+            webSocketHandlerRegistry.RegisterHandler("/ws/fileLocks", webSocketHandler);
             
             app.UseMvc();
             
@@ -229,14 +228,18 @@ namespace FileService
             container.Register<IScopedServiceFactory<FileDbContext>, ScopedServiceFactory<FileDbContext>>(Lifestyle.Singleton);
             container.Register<IUsersIntegrationService, UsersIntegrationService>(Lifestyle.Singleton);
             
-            container.Register<IWebSocketHandlerRegistry, WebSocketHandlerRegistry>(Lifestyle.Singleton);
+            var registration = Lifestyle.Singleton.CreateRegistration<WebSocketHandlerRegistry>(container);
+            container.AddRegistration(typeof(IWebSocketHandlerRegistry), registration);
+            container.AddRegistration(typeof(IWebSocketHandlerRegistrar), registration);
+            
             container.Register<IWebSocketManager, WebSocketManager>(Lifestyle.Singleton);
             container.Register<IWebSocketObjectMessageSender, WebSocketObjectMessageSender>(Lifestyle.Singleton);
             container.Register<IWebSocketBinaryMessageSender, WebSocketBinaryMessageSender>(Lifestyle.Singleton);
             container.Register<IWebSocketTextMessageSender, WebSocketTextMessageSender>(Lifestyle.Singleton);
             container.Register<IClientGroupsManager, ClientGroupsManager>(Lifestyle.Singleton);
                         
-            container.Register<FileLockChangedNotificator>(Lifestyle.Singleton);
+            container.Register<IWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>,
+                FileLockChangedNotificator>(Lifestyle.Singleton);
             
             AddRedis();
             ConfigureCache();
