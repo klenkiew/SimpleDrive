@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Cache;
 using CommonEvents;
@@ -38,6 +39,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Npgsql.Logging;
 using Redis;
 using Redis.Cache;
 using Serialization;
@@ -52,12 +54,14 @@ namespace FileService
     public class Startup
     {
         private readonly Container container = new Container();
+        private readonly ILoggerFactory loggerFactory;
         private ILogger Logger { get; }                         
         private IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             Configuration = configuration;
+            this.loggerFactory = loggerFactory;
             Logger = loggerFactory.CreateLogger(typeof(Startup));
         }
 
@@ -110,7 +114,10 @@ namespace FileService
 
             services.AddSignalR();
             
-            services.AddDbContext<FileDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb")); 
+            services.AddEntityFrameworkNpgsql().AddDbContext<FileDbContext>(options => options
+                    .UseNpgsql("Host=localhost;Database=FileServiceDb;Username=dotnetUser;Pooling=true;"));
+            NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Info, true, true);
+            
             services.AddSingleton<JsonSerializer>();
             
             IntegrateSimpleInjector(services);

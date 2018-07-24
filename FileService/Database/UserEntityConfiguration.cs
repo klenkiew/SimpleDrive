@@ -8,7 +8,7 @@ namespace FileService.Database
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(user => user.Id).HasName("Id");
+            builder.HasKey(user => user.Id).HasName("UserId");
             builder.Property(user => user.Username).IsRequired();
             
             builder.HasIndex(user => user.Username);

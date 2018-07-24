@@ -8,7 +8,7 @@ namespace FileService.Database
     {
         public void Configure(EntityTypeBuilder<File> builder)
         {
-            builder.HasKey(file => file.Id).HasName("Id");
+            builder.HasKey(file => file.Id).HasName("FileId");
             
             builder.Property(file => file.FileName).IsRequired();
             builder.Property(file => file.DateCreated).IsRequired();

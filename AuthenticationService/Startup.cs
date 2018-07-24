@@ -22,6 +22,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql.Logging;
 using Redis;
 using Serialization;
 using UserStore = AuthenticationService.Authentication.UserStore;
@@ -87,8 +88,12 @@ namespace AuthenticationService
                 return Task.CompletedTask;
             });
 
-            services.AddDbContext<UserDbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
-            services.AddDbContext<DbContext>(builder => builder.UseInMemoryDatabase("InMemoryDb"));
+
+            services.AddEntityFrameworkNpgsql().AddDbContext<UserDbContext>(options => options
+                .UseNpgsql("Host=localhost;Database=UsersDb;Username=dotnetUser;Pooling=true;"));
+            services.AddDbContext<DbContext>();
+            NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Info, true, true);
+            
             services.AddTransient<IUserStore<User>, UserStore>();
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
             services.AddTransient<ITokenService, TokenService>();
