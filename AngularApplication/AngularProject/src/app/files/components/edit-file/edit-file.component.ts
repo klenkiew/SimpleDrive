@@ -8,6 +8,7 @@ import {Observable} from "rxjs/Observable";
 import {BeforeUnload} from "../../../shared/before-unload";
 import {TimerObservable} from "rxjs/observable/TimerObservable";
 import {HubConnectionBuilder, HubConnection} from '@aspnet/signalr';
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-edit-file',
@@ -67,7 +68,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
   }
 
   private setupFileContentChangeNotifications() {
-    this.connection = new HubConnectionBuilder().withUrl("http://localhost:5001/contentChangesHub").build();
+    this.connection = new HubConnectionBuilder().withUrl(environment.baseFilesApiUrl + 'contentChangesHub').build();
 
     this.connection.on("OnContentChange", (contentChangeInfo) => {
       console.log('Content change: %o', contentChangeInfo);
@@ -90,7 +91,11 @@ export class EditFileComponent implements OnInit, BeforeUnload {
   }
 
   private setupFileLockNotifications() {
-    this.socket = new WebSocket("ws://127.0.0.1:5001/ws/fileLocks");
+    const baseWsUrl = environment.baseFilesApiUrl
+      .replace('http', 'ws')
+      .replace('localhost', '127.0.0.1');
+
+    this.socket = new WebSocket(baseWsUrl + "ws/fileLocks");
     this.socket.onopen = event => {
       console.log('open');
       this.socket.send(JSON.stringify({fileId: this.file.id}));

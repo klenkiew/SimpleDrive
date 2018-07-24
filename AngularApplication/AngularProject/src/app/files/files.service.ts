@@ -6,12 +6,13 @@ import {User} from "../shared/models/user";
 import {File} from "../shared/models/file";
 import {AccountService} from "../shared/services/account.service";
 import {Subject} from "rxjs/Subject";
+import {environment} from "../../environments/environment";
 
 @Injectable()
 export class FilesService {
 
-  private filesApiUrl = 'http://localhost:5001/api/files/';
-  private sharesApiUrl = 'http://localhost:5001/api/shares/';
+  private filesApiUrl = environment.baseFilesApiUrl + 'api/files/';
+  private sharesApiUrl = environment.baseFilesApiUrl + 'api/shares/';
 
   private fileChangedEvent: Subject<File> = new Subject<File>();
 

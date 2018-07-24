@@ -6,6 +6,7 @@ import {HttpClient} from "@angular/common/http";
 import {ReplaySubject} from "rxjs/Rx";
 import * as jwtDecode from "jwt-decode"
 import {JwtToken} from "../models/jwt-token";
+import {environment} from "../../../environments/environment";
 
 
 @Injectable()
@@ -14,6 +15,8 @@ export class AccountService {
   private static readonly usernameClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
   private static readonly emailClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
   private static readonly idClaim: string = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier';
+
+  private static readonly baseUrl: string = environment.baseUsersApiUrl;
 
   private decodedToken: JwtToken = null;
   private loggedIn: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
@@ -43,31 +46,32 @@ export class AccountService {
 
   public register(data: RegistrationData): Observable<any>
   {
-    const apiUrl = 'http://localhost:5000/api/authentication/register';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/register';
     return this.http.post<string>(apiUrl, data);
   }
 
   public login(data: any): Observable<any>
   {
-    const apiUrl = 'http://localhost:5000/api/authentication/createToken';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/createToken';
+    console.log('Url: %o', apiUrl);
     return this.downloadToken(apiUrl, data);
   }
 
   public refreshToken(): Observable<any>
   {
-    const apiUrl = 'http://localhost:5000/api/authentication/refreshToken';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/refreshToken';
     return this.downloadToken(apiUrl, null);
   }
 
   public changeEmail(data: any): Observable<any>
   {
-    const apiUrl = 'http://localhost:5000/api/authentication/changeEmail';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/changeEmail';
     return this.http.post<string>(apiUrl, data);
   }
 
   public changePassword(data: any): Observable<any>
   {
-    const apiUrl = 'http://localhost:5000/api/authentication/changePassword';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/changePassword';
     return this.http.post<string>(apiUrl, data);
   }
 
@@ -109,19 +113,19 @@ export class AccountService {
   }
 
   confirmEmail(userId: string, token: string) {
-    const apiUrl = 'http://localhost:5000/api/authentication/confirmEmail';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/confirmEmail';
     return this.http.post(apiUrl, {userId: userId, token: token});
   }
 
   confirmEmailChange(email: string, token: string) {
-    const apiUrl = 'http://localhost:5000/api/authentication/confirmEmailChange';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/confirmEmailChange';
     let sub = this.http.post(apiUrl, {email: email, token: token});
     sub = sub.do(value => this.saveToken(value));
     return sub;
   }
 
   resendConfirmationEmail(data: any) {
-    const apiUrl = 'http://localhost:5000/api/authentication/resendConfirmationEmail';
+    const apiUrl = AccountService.baseUrl + 'api/authentication/resendConfirmationEmail';
     return this.http.post(apiUrl, data);
   }
 

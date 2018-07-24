@@ -13,7 +13,7 @@ namespace AngularApplication
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:4200")
+                .UseUrls("http://*:4200")
                 .Build();
     }
 }
