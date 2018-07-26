@@ -1,6 +1,9 @@
 ﻿using System.Linq;
+using EventBus;
 using FileService.Database;
+using FileService.Events;
 using FileService.Exceptions;
+using FileService.Model;
 using FileService.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,12 +14,18 @@ namespace FileService.Commands
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
         private readonly FileDbContext fileDb;
+        private readonly IEventBusWrapper eventBus;
 
-        public DeleteFileCommandHandler(IFileStorage fileStorage, ICurrentUser currentUser, FileDbContext fileDb)
+        public DeleteFileCommandHandler(
+            IFileStorage fileStorage, 
+            ICurrentUser currentUser, 
+            FileDbContext fileDb, 
+            IEventBusWrapper eventBus)
         {
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
             this.fileDb = fileDb;
+            this.eventBus = eventBus;
         }
 
         public void Handle(DeleteFileCommand command)
@@ -36,6 +45,8 @@ namespace FileService.Commands
             fileDb.Files.Remove(file);
             fileStorage.DeleteFile(file);
             fileDb.SaveChanges();
+            
+            eventBus.Publish<FileDeletedEvent, File>(file);
         }
     }
 }

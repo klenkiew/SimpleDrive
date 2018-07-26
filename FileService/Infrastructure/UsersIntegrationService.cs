@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FileService.Infrastructure
 {
-    public class UsersIntegrationService : IUsersIntegrationService
+    public class UsersIntegrationService
     {
         private readonly IScopedServiceFactory<FileDbContext> dbContextScopeFactory;
         private readonly IHttpClientWrapper httpClientWrapper;

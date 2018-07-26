@@ -9,7 +9,7 @@ using SimpleInjector.Lifestyles;
 
 namespace FileService.Infrastructure
 {
-    public class EventDispatcher : IEventDispatcher
+    public class EventDispatcher
     {
         private readonly Container container;
         private readonly ILogger<EventDispatcher> logger;

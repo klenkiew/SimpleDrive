@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using EventBus;
 using FileService.Database;
+using FileService.Events;
 using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
@@ -12,12 +14,18 @@ namespace FileService.Commands
         private readonly FileDbContext fileDb;
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
+        private readonly IEventBusWrapper eventBus;
 
-        public AddFileCommandHandler(FileDbContext fileDb, IFileStorage fileStorage, ICurrentUser currentUser)
+        public AddFileCommandHandler(
+            FileDbContext fileDb, 
+            IFileStorage fileStorage, 
+            ICurrentUser currentUser, 
+            IEventBusWrapper eventBus)
         {
             this.fileDb = fileDb;
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
+            this.eventBus = eventBus;
         }
 
         public void Handle(AddFileCommand command)
@@ -45,6 +53,8 @@ namespace FileService.Commands
             fileDb.SaveChanges();
 
             fileStorage.SaveFile(file, command.Content);
+            
+            eventBus.Publish<FileAddedEvent, File>(file);
         }
     }
 }

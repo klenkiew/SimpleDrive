@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Cache;
 using CommonEvents;
 using EventBus;
 using FileService.Commands;
-using FileService.Commands.InvalidationKeysProviders;
 using FileService.Configuration;
 using FileService.Database;
 using FileService.Dto;
+using FileService.Events;
+using FileService.Events.Handlers;
 using FileService.Infrastructure;
 using FileService.Infrastructure.HttpClient;
 using FileService.Infrastructure.Middlewares;
@@ -19,7 +19,6 @@ using FileService.Infrastructure.ScopedServices;
 using FileService.Infrastructure.WebSockets;
 using FileService.Model;
 using FileService.Queries;
-using FileService.Requests;
 using FileService.Services;
 using FileService.Validation;
 using FileService.WebSocketHandlers;
@@ -160,8 +159,8 @@ namespace FileService
             
             app.UseMvc();
             
-            container.GetInstance<IEventDispatcher>().SubscribeToEvents();
-            container.GetInstance<IUsersIntegrationService>().Run();
+            container.GetInstance<EventDispatcher>().SubscribeToEvents();
+            container.GetInstance<UsersIntegrationService>().Run();
         }
 
         private bool UsingInMemoryDb(IApplicationBuilder app)
@@ -223,12 +222,12 @@ namespace FileService
             
             container.Register<IEventHandler<UserRegisteredEvent, UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
             
-            container.Register<IEventDispatcher, EventDispatcher>(Lifestyle.Singleton);
+            container.Register<EventDispatcher>(Lifestyle.Singleton);
+            container.Register<UsersIntegrationService>(Lifestyle.Singleton);
             container.Register<IHttpClientAccessor, HttpClientAccessor>(Lifestyle.Singleton);
             container.Register<IHttpClientWrapper, HttpClientWrapper>(Lifestyle.Singleton);
             container.Register<IScopedServiceFactory<FileDbContext>, ScopedServiceFactory<FileDbContext>>(Lifestyle.Singleton);
-            container.Register<IUsersIntegrationService, UsersIntegrationService>(Lifestyle.Singleton);
-            
+
             var registration = Lifestyle.Singleton.CreateRegistration<WebSocketHandlerRegistry>(container);
             container.AddRegistration(typeof(IWebSocketHandlerRegistry), registration);
             container.AddRegistration(typeof(IWebSocketHandlerRegistrar), registration);
@@ -267,10 +266,9 @@ namespace FileService
                 return;
             
             container.Register<IUniversalCache, UniversalCache>(Lifestyle.Singleton);
-            container.Register(typeof(IInvalidationKeysProvider<>), typeof(IInvalidationKeysProvider<>).Assembly);
             
-            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(CacheInvalidationHandler<>), 
-                context => ShouldCommandInvalidateCache(context.ServiceType));
+            RegisterCacheInvalidationHandlers();
+
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(CachedQuery<,>),
                 context => ShouldQueryHandlerBeCached(context.ServiceType));
             
@@ -292,18 +290,28 @@ namespace FileService
             container.Register<ICache, ObjectCache>(Lifestyle.Singleton);
         }
 
-        private bool ShouldCommandInvalidateCache(Type serviceType)
+        private void RegisterCacheInvalidationHandlers()
         {
-            return !(serviceType == typeof(ICommandHandler<AddFileRequest>)
-                   || serviceType == typeof(ICommandHandler<ShareFileRequest>)
-                   || serviceType == typeof(ICommandHandler<UpdateFileContentCommand>)
-                   || serviceType == typeof(ICommandHandler<RemoveFileLockCommand>)
-                   || serviceType == typeof(ICommandHandler<AcquireFileLockCommand>));
+            container.Register<IEventHandler<FileAddedEvent, File>, FileAddedEventHandler>(Lifestyle.Scoped);
+
+            var fileEditedRegistration = Lifestyle.Singleton.CreateRegistration<FileEditedEventHandler>(container);
+            container.AddRegistration(typeof(IEventHandler<FileEditedEvent, File>), fileEditedRegistration);
+            container.AddRegistration(typeof(IEventHandler<FileDeletedEvent, File>), fileEditedRegistration);
+            
+            var fileSharesChangedRegistration = Lifestyle.Singleton
+                .CreateRegistration<FileSharesChangedEventHandler>(container);
+            
+            container.AddRegistration(
+                typeof(IEventHandler<FileSharedEvent, FileSharesChangedMessage>), fileSharesChangedRegistration);
+            container.AddRegistration(
+                typeof(IEventHandler<FileUnsharedEvent, FileSharesChangedMessage>), fileSharesChangedRegistration);
         }
 
         private bool ShouldQueryHandlerBeCached(Type serviceType)
         {
-            return serviceType == typeof(IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>>);
+            return serviceType == typeof(IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>>)
+                   || serviceType == typeof(IQueryHandler<FindFileByIdQuery, FileDto>)
+                   || serviceType == typeof(IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<UserDto>>);
         }
     }
 }

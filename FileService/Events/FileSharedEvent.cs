@@ -1,11 +1,10 @@
 ﻿using EventBus;
-using FileService.Model;
 
 namespace FileService.Events
 {
-    public class FileSharedEvent : EventBase<File>
+    public class FileSharedEvent : EventBase<FileSharesChangedMessage>
     {
-        public FileSharedEvent(File message) : base(message)
+        public FileSharedEvent(FileSharesChangedMessage message) : base(message)
         {}
     }
 }

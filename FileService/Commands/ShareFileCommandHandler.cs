@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using EventBus;
 using FileService.Database;
+using FileService.Events;
 using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
@@ -11,11 +13,13 @@ namespace FileService.Commands
     {
         private readonly ICurrentUser currentUser;
         private readonly FileDbContext fileDb;
+        private readonly IEventBusWrapper eventBus;
 
-        public ShareFileCommandHandler(ICurrentUser currentUser, FileDbContext fileDb)
+        public ShareFileCommandHandler(ICurrentUser currentUser, FileDbContext fileDb, IEventBusWrapper eventBus)
         {
             this.currentUser = currentUser;
             this.fileDb = fileDb;
+            this.eventBus = eventBus;
         }
 
         public void Handle(ShareFileCommand command)
@@ -33,9 +37,12 @@ namespace FileService.Commands
             
             if (!fileDb.Users.Any(u => u.Id == command.ShareWithUserId))
                 throw new NotFoundException($"A user with id {command.ShareWithUserId} doesn't exist in the database.");
-            
-            file.SharedWith.Add(new FileShare() {FileId = command.FileId, UserId = command.ShareWithUserId});
+
+            var fileShare = new FileShare() {FileId = command.FileId, UserId = command.ShareWithUserId};
+            file.SharedWith.Add(fileShare);
             fileDb.SaveChanges();
+            
+            eventBus.Publish<FileSharedEvent, FileSharesChangedMessage>(new FileSharesChangedMessage(file, fileShare));
         }
     }
 }
