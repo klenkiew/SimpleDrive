@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FileService.Services
 {
-    public class UserRegisteredEventHandler : IMessageHandler<UserInfo>, IDisposable
+    public class UserRegisteredEventHandler : IEventHandler<UserRegisteredEvent, UserInfo>, IDisposable
     {
         private readonly FileDbContext fileDb;
         private readonly ILogger<UserRegisteredEventHandler> logger;

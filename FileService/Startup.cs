@@ -221,7 +221,8 @@ namespace FileService
             container.Register<ITypedEventBus<string>, RedisEventBus>(Lifestyle.Singleton);
             container.Register<IEventBusWrapper, EventBusWrapper>(Lifestyle.Singleton);
             
-            container.Register<IMessageHandler<UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
+            container.Register<IEventHandler<UserRegisteredEvent, UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
+            
             container.Register<IEventDispatcher, EventDispatcher>(Lifestyle.Singleton);
             container.Register<IHttpClientAccessor, HttpClientAccessor>(Lifestyle.Singleton);
             container.Register<IHttpClientWrapper, HttpClientWrapper>(Lifestyle.Singleton);

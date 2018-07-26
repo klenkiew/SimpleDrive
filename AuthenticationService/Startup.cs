@@ -143,7 +143,7 @@ namespace AuthenticationService
             app.UseMvc();
 
             var eventBus = app.ApplicationServices.GetService<IEventBusWrapper>();
-            eventBus.Publish<IEvent<AuthenticationServiceStarted>, AuthenticationServiceStarted>(AuthenticationServiceStartedEvent.Create());
+            eventBus.Publish<AuthenticationServiceStartedEvent, AuthenticationServiceStarted>(AuthenticationServiceStartedEvent.Create());
         }
 
         private void InitializeDatabase(IApplicationBuilder app, IHostingEnvironment env, UserDbContext context)

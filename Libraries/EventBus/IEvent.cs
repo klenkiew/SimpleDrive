@@ -2,15 +2,14 @@
 {
     public interface IEvent<TMessage>
     {
-        string Name { get; }
         TMessage Message { get; }
     }
 
     internal static class EventExtensions
     {
-        public static string GetName<T>(this IEvent<T> @this)
+        public static string GetName<TMessage>(this IEvent<TMessage> @this)
         {
-            return Events.GetName<IEvent<T>, T>();
+            return @this.GetType().Name;
         }
     }
 
@@ -18,7 +17,7 @@
     {
         public static string GetName<TEvent, TMessage>() where TEvent : IEvent<TMessage>
         {
-            return typeof(IEvent<TMessage>).Name;
+            return typeof(TEvent).Name;
         }
     }
 }

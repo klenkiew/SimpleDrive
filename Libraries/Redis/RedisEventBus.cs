@@ -15,7 +15,7 @@ namespace Redis
             this.logger = loggerFactory.CreateLogger<RedisEventBus>();
         }
 
-        public void Subscribe(string topic, IMessageHandler<string> messageHandler)
+        public void Subscribe<T>(string topic, IEventHandler<T, string> eventHandler) where T : IEvent<string>
         {
             logger.LogDebug("[Redis] Subscribing: " + topic);
             var subscriber = connectionFactory.Connection.GetSubscriber();
@@ -24,7 +24,7 @@ namespace Redis
                 try
                 {
                     logger.LogTrace("[Redis] Handler for: " + channel);
-                    messageHandler.Handle(message);
+                    eventHandler.Handle(message);
                 }
                 catch (Exception ex)
                 {

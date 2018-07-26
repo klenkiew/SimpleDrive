@@ -23,9 +23,9 @@ namespace FileService.WebSocketHandlers
             this.clientGroupsManager = clientGroupsManager;
             this.logger = loggerFactory.CreateLogger<FileLockChangedNotificator>();
             
-            eventBus.Subscribe<IEvent<FileLockChangedMessage>, FileLockChangedMessage>(message =>
+            eventBus.Subscribe<FileLockChangedEvent, FileLockChangedMessage>(message =>
             {
-                Console.WriteLine("Event: " + message.FileId);
+                logger.LogTrace("Event: " + message.FileId);
                 clientGroupsManager.SendToGroup(message.FileId, message);
             });
         }

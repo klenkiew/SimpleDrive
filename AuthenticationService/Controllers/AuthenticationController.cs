@@ -56,7 +56,7 @@ namespace AuthenticationService.Controllers
             
             if (!result.Succeeded) return BadRequest(new BasicError(result.Errors.First().Description));
             
-            eventBus.Publish<IEvent<UserInfo>, UserInfo>(
+            eventBus.Publish<UserRegisteredEvent, UserInfo>(
                 new UserRegisteredEvent(new UserInfo(user.Id, user.Username, user.Email)));
 
             try

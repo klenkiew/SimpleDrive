@@ -2,6 +2,7 @@
 {
     public interface ISubscriber
     {
-        void Subscribe<T>(string topic, IMessageHandler<T> messageHandler);
+        void Subscribe<TEvent, TMessage>(string topic, IEventHandler<TEvent, TMessage> eventHandler)
+            where TEvent : IEvent<TMessage>;
     }
 }

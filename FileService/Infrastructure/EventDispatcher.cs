@@ -24,7 +24,7 @@ namespace FileService.Infrastructure
         {
             List<Type> messageHandlers = container.GetCurrentRegistrations()
                 .Where(producer => producer.ServiceType.IsGenericType && 
-                                   producer.ServiceType.GetGenericTypeDefinition() == typeof(IMessageHandler<>))
+                                   producer.ServiceType.GetGenericTypeDefinition() == typeof(IEventHandler<,>))
                 .Select(producer => producer.ServiceType)
                 .ToList();
 
@@ -33,8 +33,8 @@ namespace FileService.Infrastructure
             var eventBus = container.GetService<IEventBusWrapper>();
             foreach (var @interface in messageHandlers)
             {
-                Type messageType = @interface.GetGenericArguments()[0];
-                Type eventType = typeof(IEvent<>).MakeGenericType(messageType);
+                Type eventType = @interface.GetGenericArguments()[0];
+                Type messageType = @interface.GetGenericArguments()[1];
 
                 var dispatchHelper = new DispatcherHelper(container, @interface);
 

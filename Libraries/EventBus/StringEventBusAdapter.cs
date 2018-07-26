@@ -18,18 +18,18 @@ namespace EventBus
             adaptee.Publish(topic, serializer.Serialize(message));
         }
 
-        public void Subscribe<T>(string topic, IMessageHandler<T> messageHandler)
+        public void Subscribe<TEvent, TMessage>(string topic, IEventHandler<TEvent, TMessage> eventHandler) where TEvent : IEvent<TMessage>
         {
-            adaptee.Subscribe(topic, new StringMessageHandler<T>(messageHandler, serializer));
+            adaptee.Subscribe(topic, new StringEventHandler<TEvent, TMessage>(eventHandler, serializer));
         }
     }
 
-    internal class StringMessageHandler<TOut> : IMessageHandler<string>
+    internal class StringEventHandler<TEvent, TMessage> : IEventHandler<StringEvent, string> where TEvent : IEvent<TMessage>
     {
-        private readonly IMessageHandler<TOut> adaptee;
+        private readonly IEventHandler<TEvent, TMessage> adaptee;
         private readonly ISerializer serializer;
         
-        public StringMessageHandler(IMessageHandler<TOut> adaptee, ISerializer serializer)
+        public StringEventHandler(IEventHandler<TEvent, TMessage> adaptee, ISerializer serializer)
         {
             this.adaptee = adaptee;
             this.serializer = serializer;
@@ -37,7 +37,12 @@ namespace EventBus
 
         public void Handle(string message)
         {
-            adaptee.Handle(serializer.Deserialize<TOut>(message));
+            adaptee.Handle(serializer.Deserialize<TMessage>(message));
         }
+    }
+
+    internal class StringEvent : IEvent<string>
+    {
+        public string Message { get; }
     }
 }
