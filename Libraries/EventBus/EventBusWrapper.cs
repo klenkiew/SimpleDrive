@@ -11,9 +11,9 @@ namespace EventBus
             this.eventBus = eventBus;
         }
 
-        public void Publish<TEvent, TMessage>(TEvent @event) where TEvent : IEvent<TMessage>
+        public void Publish<TEvent, TMessage>(TMessage message) where TEvent : IEvent<TMessage>
         {
-            eventBus.Publish(@event.GetName(), @event.Message);
+            eventBus.Publish(Events.GetName<TEvent, TMessage>(), message);
         }
 
         public void Subscribe<TEvent, TMessage>(IEventHandler<TEvent, TMessage> eventHandler) where TEvent : IEvent<TMessage>

@@ -2,17 +2,9 @@
 
 namespace CommonEvents
 {
-    public class AuthenticationServiceStartedEvent : EventBase<AuthenticationServiceStarted>
+    public class AuthenticationServiceStartedEvent : EventBase<EmptyMessage>
     {
-        private static readonly AuthenticationServiceStartedEvent instance =
-            new AuthenticationServiceStartedEvent(new AuthenticationServiceStarted());
-        
-        private AuthenticationServiceStartedEvent(AuthenticationServiceStarted message) : base(message)
+        private AuthenticationServiceStartedEvent(EmptyMessage message) : base(message)
         { }
-
-        public static AuthenticationServiceStartedEvent Create()
-        {
-            return instance;
-        }
     }
 }

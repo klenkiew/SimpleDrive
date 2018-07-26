@@ -4,7 +4,7 @@ namespace EventBus
 {
     public interface IEventBusWrapper
     {
-        void Publish<TEvent, TMessage>(TEvent @event) where TEvent : IEvent<TMessage>;
+        void Publish<TEvent, TMessage>(TMessage message) where TEvent : IEvent<TMessage>;
         void Subscribe<TEvent, TMessage>(IEventHandler<TEvent, TMessage> eventHandler) where TEvent : IEvent<TMessage>;
     }
 

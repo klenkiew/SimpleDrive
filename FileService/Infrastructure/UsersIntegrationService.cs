@@ -42,7 +42,7 @@ namespace FileService.Infrastructure
             {
                 logger.LogInformation(ex, "Failed to connect to the Authentication Service. " +
                                           "Subscribing to the OnAuthenticationServiceStarted event.");
-                eventBus.Subscribe<AuthenticationServiceStartedEvent, AuthenticationServiceStarted>(started => 
+                eventBus.Subscribe<AuthenticationServiceStartedEvent, EmptyMessage>(started => 
                     FetchExistingUsers());
             }
         }
