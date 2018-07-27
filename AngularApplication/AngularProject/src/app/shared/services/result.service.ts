@@ -8,8 +8,7 @@ export class ResultService {
 
   constructor(private resultConsumer: ResultConsumer) { }
 
-  handle(result: OperationResult)
-  {
+  handle(result: OperationResult): void {
     if (!result.success) {
       console.log('%o', result);
     }
@@ -37,7 +36,7 @@ export class DefaultResultConsumer implements ResultConsumer{
     }
   }
 
-  private handleError(result: OperationResult) {
+  private handleError(result: OperationResult): void {
     if (!result.fullResponse || !result.fullResponse.error || !result.fullResponse.error.message) {
       this.messageSink.messages.push({severity: 'error', summary: 'Error', detail: result.message});
       return;
@@ -72,7 +71,7 @@ export class ResultServiceFactory {
     return this.createService(this.growlMessageSink);
   }
 
-  private createService(messageSink: MessageSink) {
+  private createService(messageSink: MessageSink): ResultService {
     return new ResultService(new DefaultResultConsumer(messageSink));
   }
 }

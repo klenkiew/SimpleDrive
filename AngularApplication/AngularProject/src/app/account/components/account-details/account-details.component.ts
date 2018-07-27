@@ -24,12 +24,8 @@ export class AccountDetailsComponent implements OnInit {
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.updateAccountInfo();
-
-    // let convertedDateString = token.expirationDate.toLocaleString();
-    // convertedDateString = convertedDateString.replace('at ', '');
-    // this.expirationDate = new Date(convertedDateString);
   }
 
   logout(): void {
@@ -48,7 +44,7 @@ export class AccountDetailsComponent implements OnInit {
     });
   }
 
-  private updateAccountInfo() {
+  private updateAccountInfo(): void {
     const token: JwtToken = this.accountService.getToken();
     this.username = token.username;
     this.email = token.email;

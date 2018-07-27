@@ -17,11 +17,11 @@ export class FileGridItemComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   @HostListener('contextmenu', ['$event'])
-  onContextMenu(event: MouseEvent) {
+  onContextMenu(event: MouseEvent): void {
     event.preventDefault();
     this.contextMenu && this.contextMenu.show(event);
   }

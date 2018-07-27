@@ -24,10 +24,10 @@ export class ChangePasswordComponent implements OnInit {
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
-  onPasswordChangeSubmit(changePasswordForm) {
+  onPasswordChangeSubmit(changePasswordForm): void {
     this.messageSink.messages = [];
     if (changePasswordForm.value.newPassword !== changePasswordForm.value.passwordConfirmation) {
       this.passwordsDontMatch = true;

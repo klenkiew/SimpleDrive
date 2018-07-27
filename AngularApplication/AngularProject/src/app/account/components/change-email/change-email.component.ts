@@ -16,16 +16,15 @@ export class ChangeEmailComponent implements OnInit {
 
   operationPending: boolean = false;
 
-  constructor(
-    private accountService: AccountService,
-    resultServiceFactory: ResultServiceFactory) {
+  constructor(private accountService: AccountService, resultServiceFactory: ResultServiceFactory) {
+
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
-  onEmailChangeSubmit(changeEmailForm) {
+  onEmailChangeSubmit(changeEmailForm): void {
     this.messageSink.messages = [];
     this.operationPending = true;
     this.accountService.changeEmail(changeEmailForm.value)

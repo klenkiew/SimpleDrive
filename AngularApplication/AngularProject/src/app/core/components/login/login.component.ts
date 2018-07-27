@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit {
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.items = [
       {
         label: 'Resend e-mail confirmation', icon: 'fa-refresh', command: () => {
@@ -41,7 +41,7 @@ export class LoginComponent implements OnInit {
     ];
   }
 
-  onSubmit(loginForm) {
+  onSubmit(loginForm): void {
     this.operationPending = true;
     this.accountService.login(loginForm.value)
       .finally(() => this.operationPending = false)
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
         });
   }
 
-  private resendConfirmationEmail(loginForm) {
+  private resendConfirmationEmail(loginForm): void {
     this.operationPending = true;
     this.accountService.resendConfirmationEmail(loginForm.value)
       .finally(() => this.operationPending = false)

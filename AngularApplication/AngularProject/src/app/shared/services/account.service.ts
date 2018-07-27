@@ -22,124 +22,112 @@ export class AccountService {
   private loggedIn: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
   constructor(private http: HttpClient) {
+
     this.loggedIn.next(this.getEncodedToken() != null);
     if (this.getEncodedToken() != null)
       this.decodeCurrentToken();
   }
 
-  public loggedInChange(): Observable<boolean>
-  {
+  public loggedInChange(): Observable<boolean> {
     return this.loggedIn.asObservable();
   }
 
-  public checkTokenValidity()
-  {
+  public checkTokenValidity(): void {
     if (this.decodedToken && this.decodedToken.expirationDate < new Date()) {
       this.decodedToken = null;
       this.loggedIn.next(false);
     }
   }
 
-  public isLoggedIn() {
+  public isLoggedIn(): boolean {
     return this.decodedToken && this.decodedToken.expirationDate > new Date();
   }
 
-  public register(data: RegistrationData): Observable<any>
-  {
+  public register(data: RegistrationData): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/register';
     return this.http.post<string>(apiUrl, data);
   }
 
-  public login(data: any): Observable<any>
-  {
+  public login(data: any): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/createToken';
     console.log('Url: %o', apiUrl);
     return this.downloadToken(apiUrl, data);
   }
 
-  public refreshToken(): Observable<any>
-  {
+  public refreshToken(): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/refreshToken';
     return this.downloadToken(apiUrl, null);
   }
 
-  public changeEmail(data: any): Observable<any>
-  {
+  public changeEmail(data: any): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/changeEmail';
     return this.http.post<string>(apiUrl, data);
   }
 
-  public changePassword(data: any): Observable<any>
-  {
+  public changePassword(data: any): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/changePassword';
     return this.http.post<string>(apiUrl, data);
   }
 
-  public saveToken(tokenObj: any): void
-  {
+  public saveToken(tokenObj: any): void {
     localStorage['token'] = tokenObj.token;
     this.decodeCurrentToken();
     this.loggedIn.next(true);
   }
 
-  public deleteToken(): void
-  {
+  public deleteToken(): void {
     localStorage.removeItem('token');
     this.decodedToken = null;
     this.loggedIn.next(false);
   }
 
-  public getEncodedToken(): string
-  {
+  public getEncodedToken(): string {
     return localStorage['token'];
   }
 
-  public getValidEncodedToken(): string
-  {
+  public getValidEncodedToken(): string {
     const token = this.getEncodedToken();
     if (!token)
       throw new Error("You don't have a valid token. Please try logging in.");
     return token;
   }
 
-  public getToken(): JwtToken
-  {
+  public getToken(): JwtToken {
     return this.getJwtToken();
   }
 
-  public getCurrentUserName(): string
-  {
+  public getCurrentUserName(): string {
     return this.getToken().username;
   }
 
-  confirmEmail(userId: string, token: string) {
+  confirmEmail(userId: string, token: string): Observable<Object> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/confirmEmail';
     return this.http.post(apiUrl, {userId: userId, token: token});
   }
 
-  confirmEmailChange(email: string, token: string) {
+  confirmEmailChange(email: string, token: string): Observable<Object> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/confirmEmailChange';
     let sub = this.http.post(apiUrl, {email: email, token: token});
     sub = sub.do(value => this.saveToken(value));
     return sub;
   }
 
-  resendConfirmationEmail(data: any) {
+  resendConfirmationEmail(data: any): Observable<Object> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/resendConfirmationEmail';
     return this.http.post(apiUrl, data);
   }
 
-  private downloadToken(apiUrl: string, requestBody: any) {
+  private downloadToken(apiUrl: string, requestBody: any): Observable<string> {
     let sub = this.http.post<string>(apiUrl, requestBody);
     sub = sub.do(value => this.saveToken(value));
     return sub;
   }
 
-  private decodeCurrentToken() {
+  private decodeCurrentToken(): void {
     this.decodedToken = this.toJwtToken(jwtDecode(this.getValidEncodedToken()));
   }
 
-  private getJwtToken() {
+  private getJwtToken(): JwtToken {
     if (this.decodedToken)
       return this.decodedToken;
 
@@ -147,7 +135,7 @@ export class AccountService {
     return this.decodedToken;
   }
 
-  private toJwtToken(serverToken: any) {
+  private toJwtToken(serverToken: any): JwtToken {
     const id = serverToken[AccountService.idClaim];
     const username = serverToken[AccountService.usernameClaim];
     const email = serverToken[AccountService.emailClaim];

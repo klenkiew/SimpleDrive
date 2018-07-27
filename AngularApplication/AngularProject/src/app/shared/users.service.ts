@@ -8,8 +8,8 @@ export class UsersService {
 
   constructor(private http: HttpClient) { }
 
-  getUsersByPrefix(prefix: string): Observable<any[]>
-  {
+  getUsersByPrefix(prefix: string): Observable<any[]> {
+
     const apiUrl = environment.baseUsersApiUrl + 'api/users/getUsersByNamePrefix';
     const params = new HttpParams({fromObject: {prefix: prefix}});
     return this.http.get<any[]>(apiUrl, {params: params});

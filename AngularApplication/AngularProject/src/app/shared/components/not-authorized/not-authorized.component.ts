@@ -9,7 +9,7 @@ export class NotAuthorizedComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

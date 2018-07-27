@@ -12,7 +12,7 @@ export class DefaultErrorHandler implements ErrorHandler {
     this.resultService = resultServiceFactory.default();
   }
 
-  handleError(error) {
+  handleError(error): void {
     const errorMessage = error && error.status && error.status === 401
       ? 'You are not authorized to perform this operation (401 Forbidden)'
       : 'An unexpected error occured' + (error.message ? ': ' + error.message : '');

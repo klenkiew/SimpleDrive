@@ -27,7 +27,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   constructor(private accountService: AccountService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loginStateSub = this.accountService.loggedInChange().subscribe(logged => this.loggedIn = logged);
 
     // Checks if screen size is less than 768 pixels
@@ -38,7 +38,7 @@ export class MenuComponent implements OnInit, OnDestroy {
     this.screenSizeSub = screenSizeChanged$.subscribe(value => this.smallScreen = value);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.loginStateSub.unsubscribe();
     this.screenSizeSub.unsubscribe();
   }

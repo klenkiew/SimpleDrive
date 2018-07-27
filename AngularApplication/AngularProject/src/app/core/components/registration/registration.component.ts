@@ -25,13 +25,14 @@ export class RegistrationComponent implements OnInit {
     private router: Router,
     private ref: ChangeDetectorRef,
     resultServiceFactory: ResultServiceFactory) {
+
     this.resultService = resultServiceFactory.withMessageSink(this.messageSink);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
-  onSubmit(registerForm) {
+  onSubmit(registerForm): void {
     this.messageSink.messages = [];
     if (registerForm.value.password !== registerForm.value.passwordConfirmation) {
       this.passwordsDontMatch = true;

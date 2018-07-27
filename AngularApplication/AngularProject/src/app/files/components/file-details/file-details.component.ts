@@ -28,7 +28,7 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
   constructor(private fileService: FilesService, private usersService: UsersService, private accountService: AccountService,
               private messageService: MessageService, private activatedRoute: ActivatedRoute, private router: Router) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sub = this.activatedRoute.params.subscribe(params =>
     {
       const id: string = params['id'];
@@ -84,13 +84,11 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  close()
-  {
+  close(): void {
     this.router.navigate(['../../..'], {relativeTo: this.activatedRoute});
   }
 
-  onEditSubmit(editForm)
-  {
+  onEditSubmit(editForm): void {
     this.fileService.editFile(this.file.id, editForm.value).subscribe(value =>
     {
       this.file.fileName = editForm.value.fileName;
@@ -101,7 +99,7 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  search(event) {
+  search(event): void {
     this.usersService.getUsersByPrefix(event.query).subscribe(data => {
       this.results = data.map(d =>
       {
@@ -110,7 +108,7 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  private shareError(message: string) {
+  private shareError(message: string): void {
     this.messageService.add({
       severity: 'error',
       summary: 'Operation failed',

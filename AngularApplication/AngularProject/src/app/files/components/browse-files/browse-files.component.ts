@@ -33,7 +33,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     private messageService: MessageService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getFilesSub = this.getFiles().subscribe(f => { this.files = f });
     this.fileChangedSub = this.fileService.onFileChanged().subscribe(f =>
     {
@@ -60,16 +60,16 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     return this.fileService.getFiles();
   }
 
-  onActivate(event : any) {
+  onActivate(event : any): void {
     this.showOutlet = true;
   }
 
-  onDeactivate(event : any) {
+  onDeactivate(event : any): void {
     this.showOutlet = false;
   }
 
   @HostListener('contextmenu', ['$event'])
-  onContextMenu(event: Event) {
+  onContextMenu(event: Event): void {
     event.preventDefault();
   }
 
@@ -88,16 +88,15 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     return 'fa-file';
   }
 
-  fileSelected(file)
-  {
+  fileSelected(file): void {
     this.selectedFile = file;
   }
 
-  private showDetails(selectedFile: File) {
+  private showDetails(selectedFile: File): void {
     this.router.navigate(['details', this.selectedFile.id], {relativeTo: this.route});
   }
 
-  private download(selectedFile: File) {
+  private download(selectedFile: File): void {
     this.fileService.downloadFile(this.selectedFile.id).subscribe(content => {
       const url = window.URL.createObjectURL(content);
       const a = document.createElement('a');
@@ -132,7 +131,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     });
   }
 
-  private editFile(selectedFile: File) {
+  private editFile(selectedFile: File): void {
     if (selectedFile.mimeType !== 'text/plain')
       {
         const message = {severity: 'info', summary: 'No editor for this file',

@@ -19,7 +19,7 @@ export class ChangeEmailConfirmationComponent implements OnInit, OnDestroy {
   constructor(private accountSerivce: AccountService, private activatedRoute: ActivatedRoute) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sub = this.activatedRoute.queryParams.subscribe(params => {
 
       const email: string = params.email;

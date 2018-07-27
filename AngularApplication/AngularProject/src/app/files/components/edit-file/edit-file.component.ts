@@ -36,7 +36,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
 
   private connection: HubConnection;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.textAreaNativeElement = this.textArea.nativeElement;
     this.sub = this.activatedRoute.params.subscribe(params => {
       const id: string = params['id'];
@@ -67,7 +67,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     })
   }
 
-  private setupFileContentChangeNotifications() {
+  private setupFileContentChangeNotifications(): void {
     this.connection = new HubConnectionBuilder().withUrl(environment.baseFilesApiUrl + 'contentChangesHub').build();
 
     this.connection.on("OnContentChange", (contentChangeInfo) => {
@@ -90,7 +90,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
       .catch(err => console.error(err.toString()));
   }
 
-  private setupFileLockNotifications() {
+  private setupFileLockNotifications(): void {
     const baseWsUrl = environment.baseFilesApiUrl
       .replace('http', 'ws')
       .replace('localhost', '127.0.0.1');
@@ -108,12 +108,12 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     this.socket.onclose = event => console.log('close');
   }
 
-  textareaInputChange(event) {
+  textareaInputChange(event): void {
     const newContent: string = this.textAreaNativeElement.value;
     this.connection.invoke("Notify", {FileId: this.file.id, ContentChange: {NewContent: newContent}});
   }
 
-  textareaCaretChange(event) {
+  textareaCaretChange(event): void {
     if (this.textareaDisabled)
       return;
     const selectionStart: number = this.textAreaNativeElement.selectionStart;
@@ -124,7 +124,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     });
   }
 
-  private handleFileLock() {
+  private handleFileLock(): void {
     if (this.currentLock.isLockPresent) {
       const ownerByCurentUser: boolean = this.fileService.isLockOwnedByCurrentUser(this.currentLock);
       this.toggleLockText = 'Locked by ' + this.currentLock.lockOwner.username;
@@ -140,7 +140,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     }
   }
 
-  submitEdit() {
+  submitEdit(): void {
     this.fileService.updateContent(this.file.id, this.textAreaNativeElement.value)
       .subscribe(value => {
         this.lockActive = false;
@@ -149,7 +149,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
       });
   }
 
-  toggleLock(event) {
+  toggleLock(event): void {
     this.disableLockButton = true;
     if (event.checked) {
       this.lockActive = true;

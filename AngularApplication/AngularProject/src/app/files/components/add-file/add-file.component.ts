@@ -13,7 +13,7 @@ export class AddFileComponent implements OnInit {
 
   constructor(private fileService: FilesService, private router: Router) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   fileChange(event): void
@@ -25,8 +25,7 @@ export class AddFileComponent implements OnInit {
       this.selectedFile = null;
   }
 
-  clear(event)
-  {
+  clear(event): void {
     this.selectedFile = null;
   }
 

@@ -12,7 +12,7 @@ export class AccountManageComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (window.innerWidth > 992)
       this.collapsed = false;
   }
