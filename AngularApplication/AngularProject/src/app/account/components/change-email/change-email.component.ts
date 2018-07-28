@@ -3,6 +3,7 @@ import {OperationResult} from "../../../shared/models/operation-result";
 import {MessageSink, ResultService, ResultServiceFactory} from "../../../shared/services/result.service";
 import {Message} from "primeng/api";
 import {AccountService} from "../../../shared/services/account.service";
+import {Form, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-change-email',
@@ -24,7 +25,7 @@ export class ChangeEmailComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onEmailChangeSubmit(changeEmailForm): void {
+  onEmailChangeSubmit(changeEmailForm: FormGroup): void {
     this.messageSink.messages = [];
     this.operationPending = true;
     this.accountService.changeEmail(changeEmailForm.value)

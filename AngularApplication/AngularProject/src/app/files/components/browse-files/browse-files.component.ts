@@ -73,7 +73,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     event.preventDefault();
   }
 
-  iconClassForFile(file): string
+  iconClassForFile(file: File): string
   {
     if (file.mimeType === null)
       return 'fa-file';
@@ -88,7 +88,7 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
     return 'fa-file';
   }
 
-  fileSelected(file): void {
+  fileSelected(file: File): void {
     this.selectedFile = file;
   }
 
@@ -115,13 +115,13 @@ export class BrowseFilesComponent implements OnInit, OnDestroy {
   }
 
   private deleteFile(selectedFile: File): void {
-    let sub: Observable<any>;
+    let sub: Observable<Object>;
     if (this.fileService.isOwnedByCurrentUser(selectedFile))
       sub = this.fileService.deleteFile(selectedFile.id);
     else
       sub = this.fileService.unshareFile(selectedFile.id);
 
-    sub.subscribe(value =>
+    sub.subscribe(() =>
     {
       this.files.forEach((item, index) =>
       {

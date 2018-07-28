@@ -49,7 +49,7 @@ export class DefaultResultConsumer implements ResultConsumer{
 
     const summary = result.fullResponse.error.message;
     this.messageSink.messages.push({severity: 'error', summary: summary, detail: ''});
-    result.fullResponse.error.errors.forEach(err =>
+    result.fullResponse.error.errors.forEach((err: any)=>
       this.messageSink.messages.push({severity: 'error', summary: err.field + ':', detail: err.error})
     )
   }

@@ -14,6 +14,7 @@ export class BeforeUnloadGuardService implements CanDeactivate<BeforeUnload> {
     currentState: RouterStateSnapshot,
     nextState: RouterStateSnapshot
   ): Observable<boolean>|Promise<boolean>|boolean {
+
     return component.beforeUnload();
   }
 }

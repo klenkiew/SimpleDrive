@@ -28,75 +28,75 @@ export class AccountService {
       this.decodeCurrentToken();
   }
 
-  public loggedInChange(): Observable<boolean> {
+  loggedInChange(): Observable<boolean> {
     return this.loggedIn.asObservable();
   }
 
-  public checkTokenValidity(): void {
+  checkTokenValidity(): void {
     if (this.decodedToken && this.decodedToken.expirationDate < new Date()) {
       this.decodedToken = null;
       this.loggedIn.next(false);
     }
   }
 
-  public isLoggedIn(): boolean {
+  isLoggedIn(): boolean {
     return this.decodedToken && this.decodedToken.expirationDate > new Date();
   }
 
-  public register(data: RegistrationData): Observable<any> {
+  register(data: RegisterRequest): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/register';
-    return this.http.post<string>(apiUrl, data);
+    return this.http.post(apiUrl, data);
   }
 
-  public login(data: any): Observable<any> {
+  login(data: LoginRequest): Observable<string> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/createToken';
     console.log('Url: %o', apiUrl);
     return this.downloadToken(apiUrl, data);
   }
 
-  public refreshToken(): Observable<any> {
+  refreshToken(): Observable<Object> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/refreshToken';
     return this.downloadToken(apiUrl, null);
   }
 
-  public changeEmail(data: any): Observable<any> {
+  changeEmail(data: ChangeEmailRequest): Observable<Object> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/changeEmail';
-    return this.http.post<string>(apiUrl, data);
+    return this.http.post(apiUrl, data);
   }
 
-  public changePassword(data: any): Observable<any> {
+  changePassword(data: ChangePasswordRequest): Observable<any> {
     const apiUrl = AccountService.baseUrl + 'api/authentication/changePassword';
-    return this.http.post<string>(apiUrl, data);
+    return this.http.post(apiUrl, data);
   }
 
-  public saveToken(tokenObj: any): void {
+  saveToken(tokenObj: any): void {
     localStorage['token'] = tokenObj.token;
     this.decodeCurrentToken();
     this.loggedIn.next(true);
   }
 
-  public deleteToken(): void {
+  deleteToken(): void {
     localStorage.removeItem('token');
     this.decodedToken = null;
     this.loggedIn.next(false);
   }
 
-  public getEncodedToken(): string {
+  getEncodedToken(): string {
     return localStorage['token'];
   }
 
-  public getValidEncodedToken(): string {
+  getValidEncodedToken(): string {
     const token = this.getEncodedToken();
     if (!token)
       throw new Error("You don't have a valid token. Please try logging in.");
     return token;
   }
 
-  public getToken(): JwtToken {
+  getToken(): JwtToken {
     return this.getJwtToken();
   }
 
-  public getCurrentUserName(): string {
+  getCurrentUserName(): string {
     return this.getToken().username;
   }
 

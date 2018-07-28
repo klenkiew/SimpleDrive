@@ -2,12 +2,13 @@ import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {ActivatedRoute, Router} from "@angular/router";
 import {FilesService} from "../../files.service";
 import {Subscription} from "rxjs/Rx";
-import {UsersService} from "../../../shared/users.service";
+import {UsersService} from "../../../shared/services/users.service";
 import {User} from "../../../shared/models/user";
 import {File} from "../../../shared/models/file";
 import {OverlayPanel} from "primeng/primeng";
 import {AccountService} from "../../../shared/services/account.service";
 import {MessageService} from "primeng/components/common/messageservice";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-file-details',
@@ -88,8 +89,8 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['../../..'], {relativeTo: this.activatedRoute});
   }
 
-  onEditSubmit(editForm): void {
-    this.fileService.editFile(this.file.id, editForm.value).subscribe(value =>
+  onEditSubmit(editForm: FormGroup): void {
+    this.fileService.editFile(this.file.id, editForm.value).subscribe(() =>
     {
       this.file.fileName = editForm.value.fileName;
       this.file.description = editForm.value.description;
@@ -99,13 +100,8 @@ export class FileDetailsComponent implements OnInit, OnDestroy {
     });
   }
 
-  search(event): void {
-    this.usersService.getUsersByPrefix(event.query).subscribe(data => {
-      this.results = data.map(d =>
-      {
-        return new User(d.id, d.username);
-      });
-    });
+  search(event: any): void {
+    this.usersService.getUsersByPrefix(event.query).subscribe(data => this.results = data);
   }
 
   private shareError(message: string): void {

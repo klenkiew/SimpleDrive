@@ -5,6 +5,7 @@ import {MenuItem, Message} from "primeng/api";
 import {MessageSink, ResultService, ResultServiceFactory} from "../../../shared/services/result.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {OperationResult} from "../../../shared/models/operation-result";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
 
   operationPending: boolean = false;
 
-  @ViewChild("loginForm") form;
+  @ViewChild("loginForm") form: FormGroup;
 
   items: MenuItem[];
 
@@ -41,7 +42,7 @@ export class LoginComponent implements OnInit {
     ];
   }
 
-  onSubmit(loginForm): void {
+  onSubmit(loginForm: FormGroup): void {
     this.operationPending = true;
     this.accountService.login(loginForm.value)
       .finally(() => this.operationPending = false)
@@ -55,7 +56,7 @@ export class LoginComponent implements OnInit {
         });
   }
 
-  private resendConfirmationEmail(loginForm): void {
+  private resendConfirmationEmail(loginForm: FormGroup): void {
     this.operationPending = true;
     this.accountService.resendConfirmationEmail(loginForm.value)
       .finally(() => this.operationPending = false)

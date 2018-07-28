@@ -7,6 +7,7 @@ import {File} from "../shared/models/file";
 import {AccountService} from "../shared/services/account.service";
 import {Subject} from "rxjs/Subject";
 import {environment} from "../../environments/environment";
+import {FileLock} from "../shared/models/file-lock";
 
 @Injectable()
 export class FilesService {
@@ -19,32 +20,32 @@ export class FilesService {
   constructor(private http: HttpClient, private accountService: AccountService) {
   }
 
-  public addFile(file: any): Observable<any> {
+  addFile(file: any): Observable<Object> {
     const apiUrl = this.filesApiUrl;
     return this.http.post(apiUrl, file);
   }
 
-  public deleteFile(fileId: string): Observable<any> {
+  deleteFile(fileId: string): Observable<Object> {
     const apiUrl = this.filesApiUrl + fileId;
     return this.http.delete(apiUrl);
   }
 
-  public downloadFile(fileId: string): Observable<any> {
+  downloadFile(fileId: string): Observable<any> {
     const apiUrl = this.filesApiUrl + fileId + "/content";
     return this.http.get(apiUrl, {responseType: 'blob' as 'json'});
   }
 
-  public getFiles(): Observable<any> {
+  getFiles(): Observable<File[]> {
     const apiUrl = this.filesApiUrl;
     return this.http.get<any>(apiUrl);
   }
 
-  public getFile(id: string): Observable<any> {
+  getFile(id: string): Observable<File> {
     const apiUrl = this.filesApiUrl + id;
     return this.http.get<any>(apiUrl);
   }
 
-  public getSharedWith(fileId: string): Observable<User[]> {
+  getSharedWith(fileId: string): Observable<User[]> {
     const apiUrl = this.sharesApiUrl + fileId;
     return this.http.get<User[]>(apiUrl).map(users => users.map(u => new User(u.id, u.username)));
   }
@@ -60,19 +61,15 @@ export class FilesService {
     return this.http.delete(apiUrl, {params: params});
   }
 
-  isOwnedByCurrentUser(file: File): boolean {
-    return this.accountService.getCurrentUserName() == file.owner.username;
-  }
-
   updateContent(fileId: string, content: string): Observable<Object> {
     const apiUrl = this.filesApiUrl + fileId + "/content";
     return this.http.put(apiUrl, {fileId: fileId, content: content});
 
   }
 
-  getFileLock(fileId: string): Observable<Object> {
+  getFileLock(fileId: string): Observable<FileLock> {
     const apiUrl = this.filesApiUrl + fileId + "/lock";
-    return this.http.get(apiUrl);
+    return this.http.get<FileLock>(apiUrl);
   }
 
   lockFile(fileId: string): Observable<Object> {
@@ -85,13 +82,17 @@ export class FilesService {
     return this.http.delete(apiUrl);
   }
 
-  isLockOwnedByCurrentUser(fileLock: any): boolean {
-    return this.accountService.getCurrentUserName() == fileLock.lockOwner.username;
-  }
-
-  editFile(fileId: string, data: any): Observable<Object> {
+  editFile(fileId: string, data: string): Observable<Object> {
     const apiUrl = this.filesApiUrl + fileId;
     return this.http.patch(apiUrl, data);
+  }
+
+  isOwnedByCurrentUser(file: File): boolean {
+    return this.accountService.getCurrentUserName() === file.owner.username;
+  }
+
+  isLockOwnedByCurrentUser(fileLock: FileLock): boolean {
+    return this.accountService.getCurrentUserName() === fileLock.lockOwner.username;
   }
 
   onFileChanged(): Observable<File> {
@@ -99,7 +100,6 @@ export class FilesService {
   }
 
   fileChanged(file: File): void {
-    console.log('File changed: %o', file);
     this.fileChangedEvent.next(file);
   }
 }

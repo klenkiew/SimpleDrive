@@ -31,7 +31,7 @@ import {MessageModule} from "primeng/message";
 import {CardModule} from "primeng/card";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
-import {UsersService} from "../shared/users.service";
+import {UsersService} from "../shared/services/users.service";
 import {EditFileComponent} from './components/edit-file/edit-file.component';
 import {BeforeUnloadGuardService} from "../shared/services/before-unload-guard.service";
 import {DataViewModule} from "primeng/dataview";

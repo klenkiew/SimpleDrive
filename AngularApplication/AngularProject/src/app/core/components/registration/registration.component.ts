@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {MessageSink, ResultService, ResultServiceFactory} from "../../../shared/services/result.service";
 import {Message} from "primeng/api";
 import {OperationResult} from "../../../shared/models/operation-result";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-registration',
@@ -32,7 +33,7 @@ export class RegistrationComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onSubmit(registerForm): void {
+  onSubmit(registerForm: FormGroup): void {
     this.messageSink.messages = [];
     if (registerForm.value.password !== registerForm.value.passwordConfirmation) {
       this.passwordsDontMatch = true;

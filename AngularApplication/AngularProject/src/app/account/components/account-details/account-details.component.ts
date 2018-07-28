@@ -34,7 +34,7 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   refreshToken(): void {
-    this.accountService.refreshToken().subscribe(value => {
+    this.accountService.refreshToken().subscribe(() => {
       this.updateAccountInfo();
       const result = new OperationResult(true, "The token has been successfully refreshed", {});
       this.resultService.handle(result);

@@ -1,7 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FilesService} from "../../files.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {User} from "../../../shared/models/user";
 import {File} from "../../../shared/models/file";
 import {Subscription} from "rxjs/Subscription";
 import {Observable} from "rxjs/Observable";
@@ -9,6 +8,8 @@ import {BeforeUnload} from "../../../shared/before-unload";
 import {TimerObservable} from "rxjs/observable/TimerObservable";
 import {HubConnectionBuilder, HubConnection} from '@aspnet/signalr';
 import {environment} from "../../../../environments/environment";
+import {FileLock} from "../../../shared/models/file-lock";
+import {Observer} from "rxjs/Observer";
 
 @Component({
   selector: 'app-edit-file',
@@ -22,30 +23,34 @@ export class EditFileComponent implements OnInit, BeforeUnload {
   toggleLockText: string;
   disableLockButton: boolean;
   textareaDisabled: boolean = true;
-  currentLock: any;
+  currentLock: FileLock;
   checked: boolean;
   content: string;
-  private lockActive: boolean = false;
+
   @ViewChild('file_content_area') textArea: ElementRef;
   textAreaNativeElement: HTMLInputElement;
+
+  private lockActive: boolean = false;
   private sub: Subscription;
   private socket: WebSocket;
+  private connection: HubConnection;
+  private signalRConnected: boolean;
 
   constructor(private fileService: FilesService, private activatedRoute: ActivatedRoute, private router: Router) {
   }
 
-  private connection: HubConnection;
-
   ngOnInit(): void {
     this.textAreaNativeElement = this.textArea.nativeElement;
+
     this.sub = this.activatedRoute.params.subscribe(params => {
+
       const id: string = params['id'];
       const fileDownloaded: Observable<any> = this.fileService.getFile(id).flatMap(f => {
         this.file = f;
         return this.fileService.downloadFile(f.id);
       });
 
-      fileDownloaded.flatMap(value => Observable.create(observer => {
+      fileDownloaded.flatMap(value => Observable.create((observer: Observer<any>) => {
         const reader = new FileReader();
         reader.addEventListener("loadend", () => {
           // reader.result contains the contents of blob as a typed array
@@ -53,7 +58,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
           this.textAreaNativeElement.focus();
         });
         reader.readAsText(value);
-        observer.next();
+        observer.next(undefined);
       }))
         .flatMap(value => {
           return this.fileService.getFileLock(this.file.id);
@@ -71,7 +76,6 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     this.connection = new HubConnectionBuilder().withUrl(environment.baseFilesApiUrl + 'contentChangesHub').build();
 
     this.connection.on("OnContentChange", (contentChangeInfo) => {
-      console.log('Content change: %o', contentChangeInfo);
       if (!contentChangeInfo)
         return;
 
@@ -86,7 +90,10 @@ export class EditFileComponent implements OnInit, BeforeUnload {
     });
 
     this.connection.start()
-      .then(() => this.connection.invoke('Subscribe', this.file.id))
+      .then(() => {
+        this.signalRConnected = true;
+        return this.connection.invoke('Subscribe', this.file.id);
+      })
       .catch(err => console.error(err.toString()));
   }
 
@@ -97,23 +104,22 @@ export class EditFileComponent implements OnInit, BeforeUnload {
 
     this.socket = new WebSocket(baseWsUrl + "ws/fileLocks");
     this.socket.onopen = event => {
-      console.log('open');
+      console.log('Web Socket opened');
       this.socket.send(JSON.stringify({fileId: this.file.id}));
     };
     this.socket.onmessage = event => {
-      console.log('message: ' + event.data);
       this.currentLock = JSON.parse(event.data).newLock;
       this.handleFileLock()
     };
-    this.socket.onclose = event => console.log('close');
+    this.socket.onclose = event => console.log('Web Socket closed');
   }
 
-  textareaInputChange(event): void {
+  textareaInputChange(event: any): void {
     const newContent: string = this.textAreaNativeElement.value;
     this.connection.invoke("Notify", {FileId: this.file.id, ContentChange: {NewContent: newContent}});
   }
 
-  textareaCaretChange(event): void {
+  textareaCaretChange(event: any): void {
     if (this.textareaDisabled)
       return;
     const selectionStart: number = this.textAreaNativeElement.selectionStart;
@@ -149,7 +155,7 @@ export class EditFileComponent implements OnInit, BeforeUnload {
       });
   }
 
-  toggleLock(event): void {
+  toggleLock(event: any): void {
     this.disableLockButton = true;
     if (event.checked) {
       this.lockActive = true;
@@ -169,6 +175,9 @@ export class EditFileComponent implements OnInit, BeforeUnload {
   beforeUnload(): Observable<boolean> | Promise<boolean> | boolean {
     if (this.socket && this.socket.OPEN)
       this.socket.close();
+
+    if (this.signalRConnected)
+      this.connection.stop().then(() => {}, err => console.log(err.toString()));
 
     this.lockActive = false;
     if (this.currentLock && this.currentLock.isLockPresent && this.fileService.isLockOwnedByCurrentUser(this.currentLock))

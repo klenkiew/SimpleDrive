@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {FilesService} from "../../files.service";
 import {Router} from "@angular/router";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-add-file',
@@ -16,7 +17,7 @@ export class AddFileComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  fileChange(event): void
+  fileChange(event: any): void
   {
     const files: FileList = event.files;
     if (files.length > 0)
@@ -25,17 +26,17 @@ export class AddFileComponent implements OnInit {
       this.selectedFile = null;
   }
 
-  clear(event): void {
+  clear(event: any): void {
     this.selectedFile = null;
   }
 
-  onSubmit(data): void
+  onSubmit(data: FormGroup): void
   {
     const formData: FormData = new FormData();
     formData.append('fileName', data.value.fileName);
     formData.append('description', data.value.description);
     formData.append('file', this.selectedFile, this.selectedFile.name);
 
-    this.fileService.addFile(formData).subscribe(value => this.router.navigate(['files']));
+    this.fileService.addFile(formData).subscribe(() => this.router.navigate(['files']));
   }
 }
