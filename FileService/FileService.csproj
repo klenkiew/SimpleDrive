@@ -27,6 +27,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Libraries\CommonEvents\CommonEvents.csproj" />
+    <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\Redis\Redis.csproj" />
     <ProjectReference Include="..\Libraries\Serialization\Serialization.csproj" />
   </ItemGroup>

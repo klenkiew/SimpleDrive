@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace FileService.Validation
+namespace Common.Validation
 {
     public class ValidationFilter : ActionFilterAttribute
     {

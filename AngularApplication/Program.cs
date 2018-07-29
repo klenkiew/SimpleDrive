@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore;
+﻿using Common;
 using Microsoft.AspNetCore.Hosting;
 
 namespace AngularApplication
@@ -10,10 +10,12 @@ namespace AngularApplication
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return new WebHostBuilder()
+                .UseDefaults(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://*:4200")
                 .Build();
+        }
     }
 }

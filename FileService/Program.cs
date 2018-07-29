@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore;
+﻿using Common;
 using Microsoft.AspNetCore.Hosting;
 
 namespace FileService
@@ -11,9 +11,9 @@ namespace FileService
         }
 
         private static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+            new WebHostBuilder()
+                .UseDefaults(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://*:5001")
                 .Build();
     }
 }

@@ -7,7 +7,7 @@ using AuthenticationService.Configuration;
 using AuthenticationService.Database;
 using AuthenticationService.Model;
 using AuthenticationService.Services;
-using AuthenticationService.Validation;
+using Common.Validation;
 using CommonEvents;
 using EventBus;
 using FluentValidation.AspNetCore;

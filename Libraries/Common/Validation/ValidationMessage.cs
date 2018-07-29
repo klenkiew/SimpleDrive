@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace FileService.Validation
+namespace Common.Validation
 {
     public class ValidationMessage
     {
