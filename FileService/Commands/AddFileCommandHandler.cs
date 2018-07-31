@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using EventBus;
 using FileService.Database;
 using FileService.Events;
@@ -11,50 +10,48 @@ namespace FileService.Commands
 {
     internal class AddFileCommandHandler : ICommandHandler<AddFileCommand>
     {
-        private readonly FileDbContext fileDb;
+        private readonly IRepository<File> fileRepository;
+        private readonly IRepository<User> userRepository;
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IEventBusWrapper eventBus;
 
         public AddFileCommandHandler(
-            FileDbContext fileDb, 
-            IFileStorage fileStorage, 
-            ICurrentUser currentUser, 
+            IRepository<File> fileRepository,
+            IRepository<User> userRepository,
+            IFileStorage fileStorage,
+            ICurrentUser currentUser,
+            IUnitOfWork unitOfWork,
             IEventBusWrapper eventBus)
         {
-            this.fileDb = fileDb;
+            this.fileRepository = fileRepository;
+            this.userRepository = userRepository;
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
+            this.unitOfWork = unitOfWork;
             this.eventBus = eventBus;
         }
 
         public void Handle(AddFileCommand command)
         {
-            var owner = fileDb.Users.FirstOrDefault(u => u.Id == currentUser.Id);
+            User owner = userRepository.GetById(currentUser.Id);
 
             if (owner == null)
                 throw new NotFoundException("The current user cannot be found in the database.");
 
-            var now = DateTime.UtcNow;
-            var file = new File()
-            {
-                FileName = command.FileName,
-                Description = command.Description,
-                MimeType = command.MimeType,
-                DateCreated = now,
-                DateModified = now,
-                PhysicalPath = "N/A",
-                Size = command.Content.Length,
-                OwnerId = owner.Id,
-                OwnerName = owner.Username,
-                Owner = owner
-            };
-            fileDb.Files.Add(file);
-            fileDb.SaveChanges();
+            var dateCreated = DateTime.UtcNow;
+            var size = command.Content.Length;
+            var file = new File(command.FileName, command.Description, size, command.MimeType, dateCreated, owner);
 
-            fileStorage.SaveFile(file, command.Content);
+            fileRepository.Save(file);
             
+            // commit the transaction now so we don't end up with a file on disk but no entity in the database
+            // which would mean there isn't a safe way to delete it
+            unitOfWork.Commit();
             eventBus.Publish<FileAddedEvent, File>(file);
+            
+            fileStorage.SaveFile(file, command.Content);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace FileService.Events.Handlers
 
         public void Handle(File file)
         {
-            cache.Remove(new FindFilesByUserQuery(file.OwnerId));
+            cache.Remove(new FindFilesByUserQuery(file.Owner.Id));
             cache.Remove(new FindFileByIdQuery(file.Id));
             cache.Remove(new FindUsersBySharedFileQuery(file.Id));
             

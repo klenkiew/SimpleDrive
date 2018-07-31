@@ -9,7 +9,7 @@
 
   <div class="form-group">
     <label for="filename">File name</label>
-    <input type="text" class="form-control" name="fileName" ngModel required #filename="ngModel">
+    <input type="text" class="form-control" name="fileName" ngModel #filename="ngModel">
   </div>
 
   <div *ngIf="!filename?.valid && (filename?.dirty || filename?.touched)" class="alert alert-danger">

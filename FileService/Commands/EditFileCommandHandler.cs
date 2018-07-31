@@ -1,47 +1,43 @@
-﻿using System;
-using System.Linq;
-using EventBus;
+﻿using EventBus;
 using FileService.Database;
 using FileService.Events;
 using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Commands
 {
     internal class EditFileCommandHandler : ICommandHandler<EditFileCommand>
     {
-        private readonly FileDbContext fileDb;
+        private readonly IRepository<File> fileRepository;
         private readonly ICurrentUser currentUser;
         private readonly IEventBusWrapper eventBus;
-
-        public EditFileCommandHandler(FileDbContext fileDb, ICurrentUser currentUser, IEventBusWrapper eventBus)
+        private readonly IPostCommitRegistrator registrator;
+        
+        public EditFileCommandHandler(
+            IRepository<File> fileRepository, 
+            ICurrentUser currentUser, 
+            IEventBusWrapper eventBus, 
+            IPostCommitRegistrator registrator)
         {
-            this.fileDb = fileDb;
+            this.fileRepository = fileRepository;
             this.currentUser = currentUser;
             this.eventBus = eventBus;
+            this.registrator = registrator;
         }
 
         public void Handle(EditFileCommand command)
         {
-            File file = fileDb.Files
-                .Include(f => f.Owner)
-                .Include(f => f.SharedWith)
-                .FirstOrDefault(f => f.Id == command.FileId);
-
-            if (file == null)
-                throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
+            File file = fileRepository.GetById(command.FileId).EnsureFound(command.FileId);
             
-            if (currentUser.Id != file.OwnerId)
+            if (!file.IsOwnedBy(currentUser.ToDomainUser()))
                 throw new PermissionException($"The user doesn't have a permission to edit the file with id {command.FileId}");
 
-            file.FileName = command.FileName;
-            file.Description = command.Description;
-            file.DateModified = DateTime.UtcNow;
-            fileDb.SaveChanges();
+            file.Edit(command.FileName, command.Description);
+            fileRepository.Update(file);
+//            fileDb.SaveChanges();
             
-            eventBus.Publish<FileEditedEvent, File>(file);
+            registrator.Committed += () => eventBus.Publish<FileEditedEvent, File>(file);
         }
     }
 }

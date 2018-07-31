@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using EventBus;
+﻿using EventBus;
 using FileService.Database;
 using FileService.Dto;
 using FileService.Events;
-using FileService.Exceptions;
+using FileService.Model;
 using FileService.Services;
 
 namespace FileService.Commands
@@ -11,28 +10,34 @@ namespace FileService.Commands
     public class AcquireFileLockCommandHandler : ICommandHandler<AcquireFileLockCommand>
     {
         private readonly IFileLockingService fileLockingService;
-        private readonly FileDbContext dbContext;
+        private readonly IRepository<File> fileRepository;
         private readonly IEventBusWrapper eventBus;
+        private readonly IPostCommitRegistrator registrator;
 
-        public AcquireFileLockCommandHandler(IFileLockingService fileLockingService, FileDbContext dbContext, IEventBusWrapper eventBus)
+        public AcquireFileLockCommandHandler(
+            IFileLockingService fileLockingService, 
+            IRepository<File> fileRepository, 
+            IEventBusWrapper eventBus,
+            IPostCommitRegistrator registrator)
         {
             this.fileLockingService = fileLockingService;
-            this.dbContext = dbContext;
             this.eventBus = eventBus;
+            this.registrator = registrator;
+            this.fileRepository = fileRepository;
         }
 
         public void Handle(AcquireFileLockCommand command)
         {
-            var file = dbContext.Files.FirstOrDefault(f => f.Id == command.FileId);
-
-            if (file == null)
-                throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
+            File file = fileRepository.GetById(command.FileId).EnsureFound(command.FileId);
 
             fileLockingService.Lock(file);
-            var lockOwner = fileLockingService.GetLockOwner(file);
-            
-            eventBus.Publish<FileLockChangedEvent, FileLockChangedMessage>(
-                new FileLockChangedMessage(command.FileId, FileLockDto.ForUser(lockOwner)));
+            UserDto lockOwner = fileLockingService.GetLockOwner(file);
+
+            registrator.Committed += () =>
+            {
+                eventBus.Publish<FileLockChangedEvent, FileLockChangedMessage>(
+                    new FileLockChangedMessage(command.FileId, FileLockDto.ForUser(lockOwner)));
+            };
         }
     }
 }

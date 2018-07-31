@@ -63,7 +63,7 @@ namespace FileService.Infrastructure
                 {
                     if (existingUsers.Contains(userDto))
                         continue;
-                    dbContext.Users.Add(new User() {Id = userDto.Id, Username = userDto.Username});
+                    dbContext.Users.Add(new User(userDto.Id, userDto.Username));
                     ++newUsersCount;
                 }
 

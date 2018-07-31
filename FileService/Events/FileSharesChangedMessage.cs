@@ -5,12 +5,12 @@ namespace FileService.Events
     public class FileSharesChangedMessage
     {
         public File File { get; }
-        public FileShare Share { get; }
+        public string UserId { get; }
 
-        public FileSharesChangedMessage(File file, FileShare share)
+        public FileSharesChangedMessage(File file, string userId)
         {
             File = file;
-            Share = share;
+            UserId = userId;
         }
     }
 }

@@ -16,7 +16,6 @@ namespace FileService.Database
             builder
                 .HasMany(user => user.OwnedFiles)
                 .WithOne(file => file.Owner)
-                .HasForeignKey(file => file.OwnerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder

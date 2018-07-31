@@ -15,9 +15,9 @@ namespace FileService.Events.Handlers
             this.fileDb = fileDb ?? throw new ArgumentNullException(nameof(fileDb));
         }
 
-        public void Handle(UserInfo message)
+        public void Handle(UserInfo userInfo)
         {
-            fileDb.Users.Add(new User() {Id = message.Id, Username = message.Username});
+            fileDb.Users.Add(new User(userInfo.Id, userInfo.Username));
             fileDb.SaveChanges();
         }
 

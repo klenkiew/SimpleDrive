@@ -11,38 +11,32 @@ namespace FileService.Commands
     public class UpdateFileContentCommandHandler : ICommandHandler<UpdateFileContentCommand>
     {
         private readonly IFileStorage fileStorage;
-        private readonly FileDbContext dbContext;
+        private readonly IRepository<File> fileRepository;
         private readonly ICurrentUser currentUser;
+        private readonly IPostCommitRegistrator registrator;
 
-        public UpdateFileContentCommandHandler(IFileStorage fileStorage, FileDbContext dbContext, ICurrentUser currentUser)
+        public UpdateFileContentCommandHandler(
+            IFileStorage fileStorage, 
+            IRepository<File> fileRepository, 
+            ICurrentUser currentUser, 
+            IPostCommitRegistrator registrator)
         {
             this.fileStorage = fileStorage;
-            this.dbContext = dbContext;
+            this.fileRepository = fileRepository;
             this.currentUser = currentUser;
+            this.registrator = registrator;
         }
 
         public void Handle(UpdateFileContentCommand command)
         {
-            var file = dbContext.Files
-                .Where(f => f.Id == command.FileId)
-                .Include(f => f.SharedWith).ThenInclude(sh => sh.User)
-                .Include(f => f.Owner)
-                .FirstOrDefault();
+            File file = fileRepository.GetById(command.FileId).EnsureFound(command.FileId);
             
-            if (file == null)
-                throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
-            
-            if (!HasPermissionToModifyContent(file))
+            if (!file.CanBeModifiedBy(currentUser.ToDomainUser()))
                 throw new PermissionException($"The user doesn't have a permission to update the content of the file with id {command.FileId}");
 
-            file.DateModified = DateTime.UtcNow;
+            file.ContentChanged(DateTime.Now);
             fileStorage.UpdateFile(file, command.Content);
-            dbContext.SaveChanges();
-        }
-        
-        private bool HasPermissionToModifyContent(File file)
-        {
-            return currentUser.Id == file.OwnerId || file.SharedWith.Any(sh => sh.UserId == currentUser.Id);
+//            dbContext.SaveChanges();
         }
     }
 }

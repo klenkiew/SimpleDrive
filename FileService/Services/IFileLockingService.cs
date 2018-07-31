@@ -1,4 +1,5 @@
 ﻿using FileService.Dto;
+using FileService.Exceptions;
 using FileService.Model;
 
 namespace FileService.Services
@@ -16,6 +17,12 @@ namespace FileService.Services
         public static FileLock CreateLock(this IFileLockingService fileLockingService, File fileToLock)
         {
             return new FileLock(fileToLock, fileLockingService);
+        }
+
+        public static UserDto GetRequiredLockOwner(this IFileLockingService fileLockingService, File file)
+        {
+            return fileLockingService.GetLockOwner(file) 
+                   ?? throw new NotFoundException($"The file with id {file.Id} is not locked.");;
         }
     }
 }

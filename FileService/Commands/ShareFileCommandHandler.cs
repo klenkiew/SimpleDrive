@@ -1,48 +1,56 @@
-﻿using System.Linq;
-using EventBus;
+﻿using EventBus;
 using FileService.Database;
 using FileService.Events;
 using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Commands
 {
     internal class ShareFileCommandHandler : ICommandHandler<ShareFileCommand>
     {
         private readonly ICurrentUser currentUser;
-        private readonly FileDbContext fileDb;
+        private readonly IRepository<File> fileRepository;
+        private readonly IRepository<User> userRepository;
         private readonly IEventBusWrapper eventBus;
+        private readonly IPostCommitRegistrator registrator;
 
-        public ShareFileCommandHandler(ICurrentUser currentUser, FileDbContext fileDb, IEventBusWrapper eventBus)
+        public ShareFileCommandHandler(
+            ICurrentUser currentUser, 
+            IRepository<File> fileRepository, 
+            IRepository<User> userRepository, 
+            IEventBusWrapper eventBus, 
+            IPostCommitRegistrator registrator)
         {
             this.currentUser = currentUser;
-            this.fileDb = fileDb;
+            this.fileRepository = fileRepository;
             this.eventBus = eventBus;
+            this.registrator = registrator;
+            this.userRepository = userRepository;
         }
 
         public void Handle(ShareFileCommand command)
         {
-            var file = fileDb.Files.Where(f => f.Id == command.FileId).Include(f => f.SharedWith).FirstOrDefault();
+            File file = fileRepository.GetById(command.FileId).EnsureFound(command.FileId);
             
-            if (file == null)
-                throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
             
-            if (currentUser.Id != file.OwnerId)
+            if (!file.IsOwnedBy(currentUser.ToDomainUser()))
                 throw new PermissionException($"The user doesn't have a permission to share the file with id {command.FileId}");
 
-            if (command.ShareWithUserId == file.OwnerId)
-                throw new PermissionException($"A file can't be shared with the owner.");
+            User shareWith = userRepository.GetById(command.ShareWithUserId);
             
-            if (!fileDb.Users.Any(u => u.Id == command.ShareWithUserId))
+            if (shareWith == null)
                 throw new NotFoundException($"A user with id {command.ShareWithUserId} doesn't exist in the database.");
-
-            var fileShare = new FileShare() {FileId = command.FileId, UserId = command.ShareWithUserId};
-            file.SharedWith.Add(fileShare);
-            fileDb.SaveChanges();
             
-            eventBus.Publish<FileSharedEvent, FileSharesChangedMessage>(new FileSharesChangedMessage(file, fileShare));
+
+            file.ShareWith(shareWith);
+//            fileDb.SaveChanges();
+
+            registrator.Committed += () =>
+            {
+                eventBus.Publish<FileSharedEvent, FileSharesChangedMessage>(
+                    new FileSharesChangedMessage(file, command.ShareWithUserId));
+            };
         }
     }
 }

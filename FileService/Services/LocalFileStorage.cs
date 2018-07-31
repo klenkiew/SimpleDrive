@@ -55,7 +55,7 @@ namespace FileService.Services
 
         public Task DeleteFile(FileModel file)
         {
-            var filePath = Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
+            var filePath = Path.Combine(rootPath, EscapeName(file.Owner.Username), EscapeName(file.FileName));
             File.Delete(filePath);
             
             // clear the parent directory if it's empty after deleting the file
@@ -78,7 +78,7 @@ namespace FileService.Services
 
         private string GetFilePath(FileModel file)
         {
-            return Path.Combine(rootPath, EscapeName(file.OwnerName), EscapeName(file.FileName));
+            return Path.Combine(rootPath, EscapeName(file.Owner.Username), EscapeName(file.FileName));
         }
 
         private string EscapeName(string name)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Cache;
@@ -8,6 +9,7 @@ using Common.Validation;
 using CommonEvents;
 using EventBus;
 using FileService.Commands;
+using FileService.Commands.Validators;
 using FileService.Configuration;
 using FileService.Database;
 using FileService.Dto;
@@ -22,6 +24,7 @@ using FileService.Model;
 using FileService.Queries;
 using FileService.Services;
 using FileService.WebSocketHandlers;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -200,10 +203,26 @@ namespace FileService
 
             // Add application services:
             container.Register(typeof(ICommandHandler<>), typeof(ICommandHandler<>).Assembly);
+            
+            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(TransactionCommandHandlerDecorator<>));
+            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(PostCommitCommandHandlerDecorator<>));
+            container.RegisterDecorator(typeof(ICommandHandler<>), typeof(CommandValidatorDecorator<>));
 
             container.Register(typeof(IQueryHandler<,>), typeof(IQueryHandler<,>).Assembly);
             container.RegisterDecorator(typeof(IQueryHandler<,>), typeof(LoggedQuery<,>));
 
+            container.Register<PostCommitRegistratorImpl>(Lifestyle.Scoped);
+            container.Register<IPostCommitRegistrator>(() => container.GetInstance<PostCommitRegistratorImpl>());
+
+            container.Register(typeof(AbstractValidator<>), typeof(NullCommandValidator<>).Assembly);
+            container.RegisterConditional(typeof(AbstractValidator<>), typeof(NullCommandValidator<>),
+                context => !context.Handled);
+
+            container.Register(typeof(IRepository<>), typeof(IRepository<>).Assembly, Lifestyle.Scoped);
+
+            container.Register<ITransactionProvider, TransactionProvider>(Lifestyle.Scoped);
+            container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);
+            
             container.Register<IFileLockingService, FileLockingService>(Lifestyle.Singleton);
             container.Register<IFileLockExpiryNotificator, FileLockExpiryNotificator>(Lifestyle.Singleton);
             container.Register<IFileStorage, LocalFileStorage>(Lifestyle.Singleton);

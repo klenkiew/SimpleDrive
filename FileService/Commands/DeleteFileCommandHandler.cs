@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using EventBus;
+﻿using EventBus;
 using FileService.Database;
 using FileService.Events;
 using FileService.Exceptions;
 using FileService.Model;
 using FileService.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Commands
 {
@@ -13,40 +11,37 @@ namespace FileService.Commands
     {
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
-        private readonly FileDbContext fileDb;
+        private readonly IRepository<File> fileRepository;
         private readonly IEventBusWrapper eventBus;
-
+        private readonly IPostCommitRegistrator registrator;
+        
         public DeleteFileCommandHandler(
             IFileStorage fileStorage, 
             ICurrentUser currentUser, 
-            FileDbContext fileDb, 
-            IEventBusWrapper eventBus)
+            IRepository<File> fileRepository,
+            IEventBusWrapper eventBus, 
+            IPostCommitRegistrator registrator)
         {
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
-            this.fileDb = fileDb;
+            this.fileRepository = fileRepository;
             this.eventBus = eventBus;
+            this.registrator = registrator;
         }
 
         public void Handle(DeleteFileCommand command)
         {
-            var file = fileDb.Files
-                .Where(f => f.Id == command.FileId)
-                .Include(f => f.SharedWith).ThenInclude(sh => sh.User)
-                .Include(f => f.Owner)
-                .FirstOrDefault();
+            File file = fileRepository.GetById(command.FileId)
+                .EnsureFound(command.FileId);
             
-            if (file == null)
-                throw new NotFoundException($"A file with id {command.FileId} doesn't exist in the database.");
-            
-            if (currentUser.Id != file.OwnerId)
+            if (!file.IsOwnedBy(currentUser.ToDomainUser()))
                 throw new PermissionException($"The user doesn't have a permission to delete the file with id {command.FileId}");
-            
-            fileDb.Files.Remove(file);
+
+            // ensure that the file is deleted from disk before deleting the entity 
+            fileRepository.Delete(file);
             fileStorage.DeleteFile(file);
-            fileDb.SaveChanges();
             
-            eventBus.Publish<FileDeletedEvent, File>(file);
+            registrator.Committed += () => eventBus.Publish<FileDeletedEvent, File>(file);
         }
     }
 }
