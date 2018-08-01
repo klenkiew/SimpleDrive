@@ -2,9 +2,9 @@
 using FileService.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileService.Database
+namespace FileService.Database.EntityFramework
 {
-    public class UserRepository : IRepository<User>
+    public class UserRepository : IUserRepository
     {
         private readonly FileDbContext dbContext;
 

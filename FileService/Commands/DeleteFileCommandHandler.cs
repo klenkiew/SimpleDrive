@@ -11,14 +11,14 @@ namespace FileService.Commands
     {
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
         
         public DeleteFileCommandHandler(
             IFileStorage fileStorage, 
             ICurrentUser currentUser, 
-            IRepository<File> fileRepository,
+            IFileRepository fileRepository,
             IEventBusWrapper eventBus, 
             IPostCommitRegistrator registrator)
         {

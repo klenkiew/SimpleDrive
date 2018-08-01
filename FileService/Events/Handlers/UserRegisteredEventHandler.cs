@@ -1,7 +1,7 @@
 ﻿using System;
 using CommonEvents;
 using EventBus;
-using FileService.Database;
+using FileService.Database.EntityFramework;
 using FileService.Model;
 
 namespace FileService.Events.Handlers

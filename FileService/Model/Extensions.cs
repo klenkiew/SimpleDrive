@@ -1,7 +1,6 @@
 ﻿using FileService.Exceptions;
-using FileService.Model;
 
-namespace FileService.Database
+namespace FileService.Model
 {
     public static class FileExtensions
     {

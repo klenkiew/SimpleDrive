@@ -10,16 +10,16 @@ namespace FileService.Commands
 {
     internal class AddFileCommandHandler : ICommandHandler<AddFileCommand>
     {
-        private readonly IRepository<File> fileRepository;
-        private readonly IRepository<User> userRepository;
+        private readonly IFileRepository fileRepository;
+        private readonly IUserRepository userRepository;
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
         private readonly IUnitOfWork unitOfWork;
         private readonly IEventBusWrapper eventBus;
 
         public AddFileCommandHandler(
-            IRepository<File> fileRepository,
-            IRepository<User> userRepository,
+            IFileRepository fileRepository,
+            IUserRepository userRepository,
             IFileStorage fileStorage,
             ICurrentUser currentUser,
             IUnitOfWork unitOfWork,

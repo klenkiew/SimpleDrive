@@ -1,7 +1,8 @@
-﻿using FileService.Model;
+﻿using FileService.Database.EntityFramework.Configuration;
+using FileService.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FileService.Database
+namespace FileService.Database.EntityFramework
 {
     public class FileDbContext : DbContext
     {

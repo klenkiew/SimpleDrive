@@ -12,6 +12,7 @@ using FileService.Commands;
 using FileService.Commands.Validators;
 using FileService.Configuration;
 using FileService.Database;
+using FileService.Database.EntityFramework;
 using FileService.Dto;
 using FileService.Events;
 using FileService.Events.Handlers;
@@ -218,7 +219,8 @@ namespace FileService
             container.RegisterConditional(typeof(AbstractValidator<>), typeof(NullCommandValidator<>),
                 context => !context.Handled);
 
-            container.Register(typeof(IRepository<>), typeof(IRepository<>).Assembly, Lifestyle.Scoped);
+            container.Register<IFileRepository, FileRepository>(Lifestyle.Scoped);
+            container.Register<IUserRepository, UserRepository>(Lifestyle.Scoped);
 
             container.Register<ITransactionProvider, TransactionProvider>(Lifestyle.Scoped);
             container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);

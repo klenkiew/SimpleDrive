@@ -10,13 +10,13 @@ namespace FileService.Commands
     public class AcquireFileLockCommandHandler : ICommandHandler<AcquireFileLockCommand>
     {
         private readonly IFileLockingService fileLockingService;
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
 
         public AcquireFileLockCommandHandler(
             IFileLockingService fileLockingService, 
-            IRepository<File> fileRepository, 
+            IFileRepository fileRepository, 
             IEventBusWrapper eventBus,
             IPostCommitRegistrator registrator)
         {

@@ -12,14 +12,14 @@ namespace FileService.Commands
     public class RemoveFileLockCommandHandler : ICommandHandler<RemoveFileLockCommand>
     {
         private readonly IFileLockingService fileLockingService;
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly ICurrentUser currentUser;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
         
         public RemoveFileLockCommandHandler(
             IFileLockingService fileLockingService, 
-            IRepository<File> fileRepository, 
+            IFileRepository fileRepository, 
             ICurrentUser currentUser, 
             IEventBusWrapper eventBus, 
             IPostCommitRegistrator registrator)

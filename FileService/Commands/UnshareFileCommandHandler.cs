@@ -10,13 +10,13 @@ namespace FileService.Commands
     internal class UnshareFileCommandHandler : ICommandHandler<UnshareFileCommand>
     {
         private readonly ICurrentUser currentUser;
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
 
         public UnshareFileCommandHandler(
             ICurrentUser currentUser, 
-            IRepository<File> fileRepository, 
+            IFileRepository fileRepository, 
             IEventBusWrapper eventBus, 
             IPostCommitRegistrator registrator)
         {
@@ -34,7 +34,6 @@ namespace FileService.Commands
                 throw new PermissionException($"The user doesn't have a permission to unshare the file with id {command.FileId}");
             
             file.Unshare(new User(command.UserId, "N/A"));
-//            fileDb.SaveChanges();
 
             registrator.Committed += () =>
             {

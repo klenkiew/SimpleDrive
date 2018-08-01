@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using CommonEvents;
 using EventBus;
 using FileService.Database;
+using FileService.Database.EntityFramework;
 using FileService.Dto;
 using FileService.Infrastructure.HttpClient;
 using FileService.Infrastructure.ScopedServices;

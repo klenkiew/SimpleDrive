@@ -9,13 +9,13 @@ namespace FileService.Commands
 {
     internal class EditFileCommandHandler : ICommandHandler<EditFileCommand>
     {
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly ICurrentUser currentUser;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
         
         public EditFileCommandHandler(
-            IRepository<File> fileRepository, 
+            IFileRepository fileRepository, 
             ICurrentUser currentUser, 
             IEventBusWrapper eventBus, 
             IPostCommitRegistrator registrator)
@@ -35,7 +35,6 @@ namespace FileService.Commands
 
             file.Edit(command.FileName, command.Description);
             fileRepository.Update(file);
-//            fileDb.SaveChanges();
             
             registrator.Committed += () => eventBus.Publish<FileEditedEvent, File>(file);
         }

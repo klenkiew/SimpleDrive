@@ -11,20 +11,17 @@ namespace FileService.Commands
     public class UpdateFileContentCommandHandler : ICommandHandler<UpdateFileContentCommand>
     {
         private readonly IFileStorage fileStorage;
-        private readonly IRepository<File> fileRepository;
+        private readonly IFileRepository fileRepository;
         private readonly ICurrentUser currentUser;
-        private readonly IPostCommitRegistrator registrator;
 
         public UpdateFileContentCommandHandler(
             IFileStorage fileStorage, 
-            IRepository<File> fileRepository, 
-            ICurrentUser currentUser, 
-            IPostCommitRegistrator registrator)
+            IFileRepository fileRepository, 
+            ICurrentUser currentUser)
         {
             this.fileStorage = fileStorage;
             this.fileRepository = fileRepository;
             this.currentUser = currentUser;
-            this.registrator = registrator;
         }
 
         public void Handle(UpdateFileContentCommand command)
@@ -36,7 +33,6 @@ namespace FileService.Commands
 
             file.ContentChanged(DateTime.Now);
             fileStorage.UpdateFile(file, command.Content);
-//            dbContext.SaveChanges();
         }
     }
 }

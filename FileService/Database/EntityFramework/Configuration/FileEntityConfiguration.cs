@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FileService.Database
+namespace FileService.Database.EntityFramework.Configuration
 {
     public class FileEntityConfiguration : IEntityTypeConfiguration<File>
     {

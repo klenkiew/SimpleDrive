@@ -10,15 +10,15 @@ namespace FileService.Commands
     internal class ShareFileCommandHandler : ICommandHandler<ShareFileCommand>
     {
         private readonly ICurrentUser currentUser;
-        private readonly IRepository<File> fileRepository;
-        private readonly IRepository<User> userRepository;
+        private readonly IFileRepository fileRepository;
+        private readonly IUserRepository userRepository;
         private readonly IEventBusWrapper eventBus;
         private readonly IPostCommitRegistrator registrator;
 
         public ShareFileCommandHandler(
             ICurrentUser currentUser, 
-            IRepository<File> fileRepository, 
-            IRepository<User> userRepository, 
+            IFileRepository fileRepository, 
+            IUserRepository userRepository, 
             IEventBusWrapper eventBus, 
             IPostCommitRegistrator registrator)
         {
@@ -44,7 +44,6 @@ namespace FileService.Commands
             
 
             file.ShareWith(shareWith);
-//            fileDb.SaveChanges();
 
             registrator.Committed += () =>
             {
