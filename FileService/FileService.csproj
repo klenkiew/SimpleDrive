@@ -31,4 +31,7 @@
     <ProjectReference Include="..\Libraries\Redis\Redis.csproj" />
     <ProjectReference Include="..\Libraries\Serialization\Serialization.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Persistence\obj\project.assets.json" />
+  </ItemGroup>
 </Project>
