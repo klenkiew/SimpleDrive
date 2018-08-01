@@ -2,6 +2,7 @@
 using FileService.Database.EntityFramework;
 using FileService.Dto;
 using FileService.Model;
+using FileService.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Queries
@@ -9,10 +10,12 @@ namespace FileService.Queries
     public class FindFileByIdQueryHandler : IQueryHandler<FindFileByIdQuery, FileDto>
     {
         private readonly FileDbContext fileDb;
-
-        public FindFileByIdQueryHandler(FileDbContext fileDb)
+        private readonly IMapper<File, FileDto> fileMapper;
+        
+        public FindFileByIdQueryHandler(FileDbContext fileDb, IMapper<File, FileDto> fileMapper)
         {
             this.fileDb = fileDb;
+            this.fileMapper = fileMapper;
         }
 
         public FileDto Handle(FindFileByIdQuery query)
@@ -22,8 +25,7 @@ namespace FileService.Queries
                 .FirstOrDefault(f => f.Id == query.FileId)
                 .EnsureFound(query.FileId);
             
-            return new FileDto(file.Id, file.FileName, file.Description, file.Size, file.MimeType, 
-                file.DateCreated, file.DateModified, new UserDto(file.Owner.Id, file.Owner.Username, "N/A"));
+            return fileMapper.Map(file);
         }
     }
 }

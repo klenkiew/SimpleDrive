@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Cache;
 using Common.Validation;
 using CommonEvents;
@@ -131,7 +131,7 @@ namespace FileService
         {
             InitializeContainer(app);
             container.Verify();
-
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -261,12 +261,26 @@ namespace FileService
                         
             container.Register<IWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>,
                 FileLockChangedNotificator>(Lifestyle.Singleton);
+
+            AddAutoMapper();
+            container.RegisterSingleton(typeof(IMapper<,>), typeof(Mapper<,>));
             
             AddRedis();
             ConfigureCache();
             
             // Allow Simple Injector to resolve services from ASP.NET Core.
             container.AutoCrossWireAspNetComponents(app);
+        }
+
+        private void AddAutoMapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<File, FileDto>();
+                cfg.CreateMap<User, UserDto>().ForCtorParam("email", opt => opt.ResolveUsing(user => "N/A"));
+            });
+            config.AssertConfigurationIsValid();
+            container.RegisterSingleton<IMapper>(() => new Mapper(config));
         }
 
         private void AddRedis()
@@ -282,7 +296,7 @@ namespace FileService
         private void ConfigureCache()
         {
             var cacheConfig = Configuration.GetSection("Cache").Get<CacheConfiguration>();
-            
+                       
             if (cacheConfig.CacheType == CacheType.None)
                 return;
             
