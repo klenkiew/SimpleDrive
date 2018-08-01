@@ -14,23 +14,23 @@ namespace FileService.Commands
         private readonly IUserRepository userRepository;
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
-        private readonly IUnitOfWork unitOfWork;
         private readonly IEventBusWrapper eventBus;
-
+        private readonly IPostCommitRegistrator registrator;
+        
         public AddFileCommandHandler(
             IFileRepository fileRepository,
             IUserRepository userRepository,
             IFileStorage fileStorage,
             ICurrentUser currentUser,
-            IUnitOfWork unitOfWork,
-            IEventBusWrapper eventBus)
+            IEventBusWrapper eventBus, 
+            IPostCommitRegistrator registrator)
         {
             this.fileRepository = fileRepository;
             this.userRepository = userRepository;
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
-            this.unitOfWork = unitOfWork;
             this.eventBus = eventBus;
+            this.registrator = registrator;
         }
 
         public void Handle(AddFileCommand command)
@@ -45,13 +45,11 @@ namespace FileService.Commands
             var file = new File(command.FileName, command.Description, size, command.MimeType, dateCreated, owner);
 
             fileRepository.Save(file);
-            
-            // commit the transaction now so we don't end up with a file on disk but no entity in the database
-            // which would mean there isn't a safe way to delete it
-            unitOfWork.Commit();
             eventBus.Publish<FileAddedEvent, File>(file);
             
-            fileStorage.SaveFile(file, command.Content);
+            // save the file after commit so we don't end up with a file on disk but no entity in the database
+            // which would mean there isn't a safe way to delete it
+            registrator.Committed += () => fileStorage.SaveFile(file, command.Content);
         }
     }
 }
