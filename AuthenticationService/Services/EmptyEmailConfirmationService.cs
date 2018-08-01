@@ -15,7 +15,7 @@ namespace AuthenticationService.Services
     /// indicate that this step is necessary, e.g "Please now confirm your e-mail address" after registering an account,
     /// so the messages sometimes may be confusing when this implementation is used.
     /// </remarks>
-    internal class EmptyEmailConfirmationService : IEmailConfirmationService, IDisposable
+    internal class EmptyEmailConfirmationService : IEmailConfirmationService, IEmailConfirmationSender, IDisposable
     {
         private readonly UserManager<User> userManager;
         private readonly ILogger<EmptyEmailConfirmationService> logger;

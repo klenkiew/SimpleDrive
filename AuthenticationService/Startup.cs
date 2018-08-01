@@ -98,11 +98,25 @@ namespace AuthenticationService
             services.AddTransient<IRoleStore<IdentityRole>, RoleStore<IdentityRole>>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IUsersService, UsersService>();
-            
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
+
             if (requireEmailConfirmation)
-                services.AddScoped<IEmailConfirmationService, EmailConfirmationService>();
+            {
+                services.AddScoped<EmailConfirmationService>();
+                services.AddScoped<IEmailConfirmationService>(provider =>
+                    provider.GetService<EmailConfirmationService>());
+                services.AddScoped<IEmailConfirmationSender>(provider =>
+                    provider.GetService<EmailConfirmationService>());
+            }
             else
-                services.AddScoped<IEmailConfirmationService, EmptyEmailConfirmationService>();            
+            {
+                services.AddScoped<EmptyEmailConfirmationService>();
+                services.AddScoped<IEmailConfirmationService>(provider =>
+                    provider.GetService<EmptyEmailConfirmationService>());
+                services.AddScoped<IEmailConfirmationSender>(provider =>
+                    provider.GetService<EmptyEmailConfirmationService>());
+            }
             
             services.AddSingleton<IEmailService, EmailService>();
 

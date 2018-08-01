@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AuthenticationService.Services
 {
-    public class EmailConfirmationService : IEmailConfirmationService, IDisposable
+    public class EmailConfirmationService : IEmailConfirmationService, IEmailConfirmationSender, IDisposable
     {
         private readonly IEmailService emailService;
         private readonly UserManager<User> userManager;
