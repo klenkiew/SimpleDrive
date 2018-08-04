@@ -21,7 +21,7 @@ namespace FileService.Events.Handlers
             cache.Remove(new FindFileByIdQuery(file.Id));
             cache.Remove(new FindUsersBySharedFileQuery(file.Id));
             
-            foreach (string userId in file.SharedWith.Select(shared => shared.UserId))
+            foreach (string userId in file.SharedWith.Select(shared => shared.User.Id))
                 cache.Remove(new FindFilesByUserQuery(userId));
         }
     }

@@ -18,7 +18,7 @@ namespace FileService.Database.EntityFramework.Configuration
             builder
                 .HasMany(file => file.SharedWith)
                 .WithOne(fs => fs.File)
-                .HasForeignKey(fs => fs.FileId)
+                .HasForeignKey("FileId")
                 .OnDelete(DeleteBehavior.Cascade);
             
             builder.HasIndex(file => file.FileName);

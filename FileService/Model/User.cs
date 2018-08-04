@@ -2,7 +2,7 @@
 
 namespace FileService.Model
 {
-    public class User
+    public class User : IEntity
     {
         public virtual string Id { get; private set; }
         public virtual string Username { get; private set; }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EventBus
+﻿namespace EventBus
 {
     public class EventBusWrapper : IEventBusWrapper
     {

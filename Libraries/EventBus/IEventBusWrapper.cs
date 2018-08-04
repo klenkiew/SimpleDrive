@@ -2,11 +2,18 @@
 
 namespace EventBus
 {
-    public interface IEventBusWrapper
+    public interface IPublisherWrapper
     {
         void Publish<TEvent, TMessage>(TMessage message) where TEvent : IEvent<TMessage>;
+    }
+
+    public interface ISubscriberWrapper
+    {
         void Subscribe<TEvent, TMessage>(IEventHandler<TEvent, TMessage> eventHandler) where TEvent : IEvent<TMessage>;
     }
+
+    public interface IEventBusWrapper : IPublisherWrapper, ISubscriberWrapper
+    { }
 
     public static class EventBusWrapperExtensions
     {

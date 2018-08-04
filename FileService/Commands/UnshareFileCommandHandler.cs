@@ -1,7 +1,7 @@
 ﻿using EventBus;
-using FileService.Database;
 using FileService.Events;
 using FileService.Exceptions;
+using FileService.Infrastructure;
 using FileService.Model;
 using FileService.Services;
 
@@ -11,19 +11,16 @@ namespace FileService.Commands
     {
         private readonly ICurrentUser currentUser;
         private readonly IFileRepository fileRepository;
-        private readonly IEventBusWrapper eventBus;
-        private readonly IPostCommitRegistrator registrator;
+        private readonly IPostCommitEventPublisher eventBus;
 
         public UnshareFileCommandHandler(
             ICurrentUser currentUser, 
             IFileRepository fileRepository, 
-            IEventBusWrapper eventBus, 
-            IPostCommitRegistrator registrator)
+            IPostCommitEventPublisher eventBus)
         {
             this.currentUser = currentUser;
             this.fileRepository = fileRepository;
             this.eventBus = eventBus;
-            this.registrator = registrator;
         }
 
         public void Handle(UnshareFileCommand command)
@@ -35,11 +32,8 @@ namespace FileService.Commands
             
             file.Unshare(new User(command.UserId, "N/A"));
 
-            registrator.Committed += () =>
-            {
-                eventBus.Publish<FileSharedEvent, FileSharesChangedMessage>(
-                    new FileSharesChangedMessage(file, command.UserId));
-            };
+            eventBus.PublishAfterCommit<FileSharedEvent, FileSharesChangedMessage>(
+                new FileSharesChangedMessage(file, command.UserId));
         }
 
         private bool HasPermissionToUnshare(UnshareFileCommand command, File file)

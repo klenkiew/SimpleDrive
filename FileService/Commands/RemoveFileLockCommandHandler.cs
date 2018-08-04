@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using EventBus;
-using FileService.Database;
 using FileService.Dto;
 using FileService.Events;
 using FileService.Exceptions;
+using FileService.Infrastructure;
 using FileService.Model;
 using FileService.Services;
 
@@ -14,21 +14,18 @@ namespace FileService.Commands
         private readonly IFileLockingService fileLockingService;
         private readonly IFileRepository fileRepository;
         private readonly ICurrentUser currentUser;
-        private readonly IEventBusWrapper eventBus;
-        private readonly IPostCommitRegistrator registrator;
+        private readonly IPostCommitEventPublisher eventBus;
         
         public RemoveFileLockCommandHandler(
             IFileLockingService fileLockingService, 
             IFileRepository fileRepository, 
             ICurrentUser currentUser, 
-            IEventBusWrapper eventBus, 
-            IPostCommitRegistrator registrator)
+            IPostCommitEventPublisher eventBus)
         {
             this.fileLockingService = fileLockingService;
             this.fileRepository = fileRepository;
             this.currentUser = currentUser;
             this.eventBus = eventBus;
-            this.registrator = registrator;
         }
 
         public void Handle(RemoveFileLockCommand command)
@@ -40,15 +37,12 @@ namespace FileService.Commands
             if (lockOwner.Id != currentUser.Id)
                 throw new PermissionException("The current user is not the lock owner");
             
-            fileLockingService.Unlock(file);
+            fileLockingService.Unlock(file, currentUser.ToDomainUser());
             
             UserDto newLockOwner = fileLockingService.GetLockOwner(file);
 
-            registrator.Committed += () =>
-            {
-                eventBus.Publish<FileLockChangedEvent, FileLockChangedMessage>(
-                    new FileLockChangedMessage(command.FileId, FileLockDto.ForUser(newLockOwner)));
-            };
+            eventBus.PublishAfterCommit<FileLockChangedEvent, FileLockChangedMessage>(
+                new FileLockChangedMessage(command.FileId, FileLockDto.ForUser(newLockOwner)));
         }
     }
 }

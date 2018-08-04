@@ -1,32 +1,29 @@
 ﻿using EventBus;
-using FileService.Database;
 using FileService.Events;
 using FileService.Exceptions;
+using FileService.Infrastructure;
 using FileService.Model;
 using FileService.Services;
 
 namespace FileService.Commands
 {
-    internal class DeleteFileCommandHandler: ICommandHandler<DeleteFileCommand>
+    public class DeleteFileCommandHandler: ICommandHandler<DeleteFileCommand>
     {
         private readonly IFileStorage fileStorage;
         private readonly ICurrentUser currentUser;
         private readonly IFileRepository fileRepository;
-        private readonly IEventBusWrapper eventBus;
-        private readonly IPostCommitRegistrator registrator;
-        
+        private readonly IPostCommitEventPublisher eventBus;
+
         public DeleteFileCommandHandler(
             IFileStorage fileStorage, 
             ICurrentUser currentUser, 
             IFileRepository fileRepository,
-            IEventBusWrapper eventBus, 
-            IPostCommitRegistrator registrator)
+            IPostCommitEventPublisher eventBus)
         {
             this.fileStorage = fileStorage;
             this.currentUser = currentUser;
             this.fileRepository = fileRepository;
             this.eventBus = eventBus;
-            this.registrator = registrator;
         }
 
         public void Handle(DeleteFileCommand command)
@@ -41,7 +38,7 @@ namespace FileService.Commands
             fileRepository.Delete(file);
             fileStorage.DeleteFile(file);
             
-            registrator.Committed += () => eventBus.Publish<FileDeletedEvent, File>(file);
+            eventBus.PublishAfterCommit<FileDeletedEvent, File>(file);
         }
     }
 }

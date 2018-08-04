@@ -8,11 +8,13 @@ namespace FileService.Services
     {
         private readonly IFileStorage decorated;
         private readonly IFileLockingService fileLockingService;
+        private readonly ICurrentUser currentUser;
 
-        public LockingFileStorage(IFileStorage decorated, IFileLockingService fileLockingService)
+        public LockingFileStorage(IFileStorage decorated, IFileLockingService fileLockingService, ICurrentUser currentUser)
         {
             this.decorated = decorated;
             this.fileLockingService = fileLockingService;
+            this.currentUser = currentUser;
         }
 
         public async Task SaveFile(File file, Stream content)
@@ -22,7 +24,7 @@ namespace FileService.Services
 
         public async Task UpdateFile(File file, Stream content)
         {
-            using (fileLockingService.CreateLock(file))
+            using (fileLockingService.CreateLock(file, currentUser.ToDomainUser()))
                 await decorated.UpdateFile(file, content);
         }
 
@@ -33,7 +35,7 @@ namespace FileService.Services
 
         public async Task DeleteFile(File file)
         {
-            using (fileLockingService.CreateLock(file))
+            using (fileLockingService.CreateLock(file, currentUser.ToDomainUser()))
                 await decorated.DeleteFile(file);
         }
     }

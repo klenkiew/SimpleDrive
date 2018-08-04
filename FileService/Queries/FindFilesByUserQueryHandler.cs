@@ -21,7 +21,7 @@ namespace FileService.Queries
         public IEnumerable<FileDto> Handle(FindFilesByUserQuery query)
         {
             return fileDb.Files
-                .Where(file => file.Owner.Id == query.UserId || file.SharedWith.Any(sw => sw.UserId == query.UserId))
+                .Where(file => file.Owner.Id == query.UserId || file.SharedWith.Any(sw => sw.User.Id == query.UserId))
                 .Select(file => fileMapper.Map(file))
                 .ToList();
         }

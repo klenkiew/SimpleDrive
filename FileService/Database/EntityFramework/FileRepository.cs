@@ -18,6 +18,7 @@ namespace FileService.Database.EntityFramework
             return dbContext.Files
                 .Include(f => f.Owner)
                 .Include(f => f.SharedWith)
+                    .ThenInclude(share => share.User)
                 .FirstOrDefault(f => f.Id == id);
         }
 

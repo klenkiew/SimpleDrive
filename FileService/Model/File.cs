@@ -6,7 +6,12 @@ using FileService.Exceptions;
 
 namespace FileService.Model
 {
-    public class File
+    public interface IEntity
+    {
+        string Id { get; }
+    }
+
+    public class File : IEntity
     {
         public virtual string Id { get; private set; }
         public virtual string FileName { get; private set; }
@@ -44,14 +49,14 @@ namespace FileService.Model
 
         public bool CanBeModifiedBy(User user)
         {
-            return Owner.Equals(user) || SharedWith.Any(sh => sh.UserId == user.Id);
+            return Owner.Equals(user) || SharedWith.Any(sh => sh.User.Equals(user));
         }
         
-        public void Edit(string newFileName, string newDescription)
+        public void Edit(string newFileName, string newDescription, DateTime now)
         {
             this.FileName = newFileName;
             this.Description = newDescription;
-            this.DateModified = DateTime.UtcNow;
+            this.DateModified = now;
         }
 
         public void ContentChanged(DateTime when)
@@ -64,7 +69,7 @@ namespace FileService.Model
             if (Owner.Equals(shareWith))
                 throw new PermissionException($"A file can't be shared with the owner.");
             
-            var fileShare = new FileShare() {FileId = Id, UserId = shareWith.Id};
+            var fileShare = new FileShare() {File = this, User = shareWith};
             SharedWith.Add(fileShare);
         }
 

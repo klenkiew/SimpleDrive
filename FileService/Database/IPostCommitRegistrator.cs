@@ -7,7 +7,7 @@ namespace FileService.Database
         event Action Committed;
     }
 
-    internal sealed class PostCommitRegistratorImpl : IPostCommitRegistrator
+    public sealed class PostCommitRegistratorImpl : IPostCommitRegistrator
     {
         public event Action Committed = () => { };
  

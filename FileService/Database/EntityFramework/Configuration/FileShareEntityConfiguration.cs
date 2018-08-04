@@ -8,7 +8,9 @@ namespace FileService.Database.EntityFramework.Configuration
     {
         public void Configure(EntityTypeBuilder<FileShare> builder)
         {
-            builder.HasKey(fs => new {fs.FileId, fs.UserId});
+            builder.Property("FileId");
+            builder.Property("UserId");
+            builder.HasKey("FileId", "UserId");
         }
     }
 }

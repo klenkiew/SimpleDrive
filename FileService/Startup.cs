@@ -214,6 +214,7 @@ namespace FileService
 
             container.Register<PostCommitRegistratorImpl>(Lifestyle.Scoped);
             container.Register<IPostCommitRegistrator>(() => container.GetInstance<PostCommitRegistratorImpl>());
+            container.Register<IPostCommitEventPublisher, PostCommitEventPublisher>();
 
             container.Register(typeof(AbstractValidator<>), typeof(NullCommandValidator<>).Assembly);
             container.RegisterConditional(typeof(AbstractValidator<>), typeof(NullCommandValidator<>),
@@ -232,6 +233,7 @@ namespace FileService
             container.Register<IMimeTypeMap, MimeTypeMap>();
             
             container.Register<ICurrentUser, CurrentUser>(Lifestyle.Singleton);
+            container.Register<ICurrentUserSource, CurrentUserSource>(Lifestyle.Scoped);
             var storageConfiguration = Configuration.GetSection("Storage").Get<StorageConfiguration>();
             container.RegisterInstance(storageConfiguration);
             container.Register<ISerializer, JsonSerializer>(Lifestyle.Singleton);
@@ -240,6 +242,8 @@ namespace FileService
             container.Register<IEventBus, StringEventBusAdapter>(Lifestyle.Singleton);
             container.Register<ITypedEventBus<string>, RedisEventBus>(Lifestyle.Singleton);
             container.Register<IEventBusWrapper, EventBusWrapper>(Lifestyle.Singleton);
+            container.Register<IPublisherWrapper>(() => container.GetInstance<IEventBusWrapper>(), Lifestyle.Singleton);
+            container.Register<ISubscriberWrapper>(() => container.GetInstance<IEventBusWrapper>(), Lifestyle.Singleton);
             
             container.Register<IEventHandler<UserRegisteredEvent, UserInfo>, UserRegisteredEventHandler>(Lifestyle.Scoped);
             

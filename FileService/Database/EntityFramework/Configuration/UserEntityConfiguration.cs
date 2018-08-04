@@ -21,7 +21,7 @@ namespace FileService.Database.EntityFramework.Configuration
             builder
                 .HasMany(user => user.SharedFiles)
                 .WithOne(fs => fs.User)
-                .HasForeignKey(fs => fs.UserId)
+                .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
             
             builder.ToTable("Users");

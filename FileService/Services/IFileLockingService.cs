@@ -6,17 +6,17 @@ namespace FileService.Services
 {
     public interface IFileLockingService
     {
-        void Lock(File file);
-        void Unlock(File file);
+        void Lock(File file, User lockedBy);
+        void Unlock(File file, User lockedBy);
         UserDto GetLockOwner(File file);
         bool IsLocked(File file);
     }
 
     public static class FileLockingServiceExtensions
     {
-        public static FileLock CreateLock(this IFileLockingService fileLockingService, File fileToLock)
+        public static FileLock CreateLock(this IFileLockingService fileLockingService, File fileToLock, User lockOwner)
         {
-            return new FileLock(fileToLock, fileLockingService);
+            return new FileLock(fileToLock, fileLockingService, lockOwner);
         }
 
         public static UserDto GetRequiredLockOwner(this IFileLockingService fileLockingService, File file)

@@ -10,25 +10,22 @@ namespace FileService.Services
     public class FileLockingService : IFileLockingService
     {
         private readonly ICache lockCache;
-        private readonly ICurrentUser currentUser;
         private readonly TimeSpan fileLockDuration;
         private readonly IFileLockExpiryNotificator expiryNotificator;
         
         public FileLockingService(
             ICache lockCache, 
             IFileLockExpiryNotificator expiryNotificator, 
-            ICurrentUser currentUser, 
             StorageConfiguration configuration)
         {
             this.lockCache = lockCache;
-            this.currentUser = currentUser;
             this.expiryNotificator = expiryNotificator;
             this.fileLockDuration = configuration.FileLockDuration;
         }
 
-        public void Lock(File file)
+        public void Lock(File file, User lockedBy)
         {
-            var currentUserDto = new UserDto(currentUser.Id, currentUser.Username, "N/A");
+            var currentUserDto = new UserDto(lockedBy.Id, lockedBy.Username, "N/A");
             var owner = lockCache.ComputeIfAbsent(file.Id, () => currentUserDto, fileLockDuration);
             
             if (owner != null)
@@ -46,13 +43,14 @@ namespace FileService.Services
             }
         }
 
-        public void Unlock(File file)
+        public void Unlock(File file, User lockedBy)
         {
             var lockingUser = lockCache.Get<UserDto>(file.Id);
+            
             if (lockingUser == null)
                 throw new LockingException("The file cannot bu unlocked because it is not locked.");
             
-            if (lockingUser.Id != currentUser.Id)
+            if (lockingUser.Id != lockedBy.Id)
                 throw new LockingException("The file cannot bu unlocked because the user is not the lock owner.");
             
             lockCache.Remove(file.Id);
