@@ -39,5 +39,10 @@ namespace FileService.Tests.Fakes
                 throw new InvalidOperationException("File to remove not found.");                
             return Task.CompletedTask;
         }
+
+        public bool Exists(File file)
+        {
+            return fileToContentMap.ContainsKey(file);
+        }
     }
 }

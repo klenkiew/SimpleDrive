@@ -34,9 +34,8 @@ namespace FileService.Tests
             
             // Assert
             Assert.IsTrue(file.CanBeModifiedBy(shareWith));
-            Assert.AreEqual(1, eventPublisher.PublishedEvents.Count);
-            Assert.IsInstanceOf<FileSharesChangedMessage>(eventPublisher.PublishedEvents[0]);
-            Assert.AreEqual(file, ((FileSharesChangedMessage)eventPublisher.PublishedEvents[0]).File);
+            FileSharesChangedMessage publishedEvent = eventPublisher.VerifyPublishedOnce<FileSharesChangedMessage>();
+            Assert.AreEqual(file, publishedEvent.File);
         }
         
         [Test]

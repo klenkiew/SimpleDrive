@@ -20,7 +20,7 @@ namespace FileService.Tests
 
             File file = new ExampleFileFactory().CreateFile();            
             fileRepository.Save(file, "fileId");
-            currentUserSource.currentUser = file.Owner;
+            currentUserSource.CurrentUser = file.Owner;
 
             var commandHandler = new AcquireFileLockCommandHandler(
                 fileLockingService, fileRepository, eventPublisher, currentUserSource);
@@ -32,9 +32,9 @@ namespace FileService.Tests
             
             // Assert
             Assert.AreEqual(file.Owner.Id, fileLockingService.GetLockOwner(file).Id);
-            Assert.AreEqual(1, eventPublisher.PublishedEvents.Count);
-            Assert.IsInstanceOf<FileLockChangedMessage>(eventPublisher.PublishedEvents[0]);
-            Assert.AreEqual("fileId", ((FileLockChangedMessage)eventPublisher.PublishedEvents[0]).FileId);
+            
+            FileLockChangedMessage publishedEvent = eventPublisher.VerifyPublishedOnce<FileLockChangedMessage>();
+            Assert.AreEqual("fileId", publishedEvent.FileId);
         }
         
         [Test]
@@ -51,7 +51,7 @@ namespace FileService.Tests
             file.ShareWith(otherUser);
             
             fileRepository.Save(file, "fileId");
-            currentUserSource.currentUser = otherUser;
+            currentUserSource.CurrentUser = otherUser;
 
             var commandHandler = new AcquireFileLockCommandHandler(
                 fileLockingService, fileRepository, eventPublisher, currentUserSource);
@@ -63,11 +63,9 @@ namespace FileService.Tests
             
             // Assert
             Assert.AreEqual(otherUser.Id, fileLockingService.GetLockOwner(file).Id);
-            Assert.AreEqual(1, eventPublisher.PublishedEvents.Count);
-            Assert.IsInstanceOf<FileLockChangedMessage>(eventPublisher.PublishedEvents[0]);
-            
-            var publishedEvent = (FileLockChangedMessage)eventPublisher.PublishedEvents[0];
-            
+
+            FileLockChangedMessage publishedEvent = eventPublisher.VerifyPublishedOnce<FileLockChangedMessage>();
+
             Assert.AreEqual("fileId", publishedEvent.FileId);
             Assert.AreEqual(otherUser.Id, publishedEvent.NewLock.LockOwner.Id);
         }
@@ -85,7 +83,7 @@ namespace FileService.Tests
             User otherUser = new User("someRandomUserId", "someRandomUser");
             
             fileRepository.Save(file, "fileId");
-            currentUserSource.currentUser = otherUser;
+            currentUserSource.CurrentUser = otherUser;
 
             var commandHandler = new AcquireFileLockCommandHandler(
                 fileLockingService, fileRepository, eventPublisher, currentUserSource);
@@ -121,10 +119,9 @@ namespace FileService.Tests
             // Assert
             Assert.IsFalse(fileLockingService.IsLocked(file));
             Assert.IsNull(fileLockingService.GetLockOwner(file));
-            Assert.AreEqual(1, eventPublisher.PublishedEvents.Count);
-            Assert.IsInstanceOf<FileLockChangedMessage>(eventPublisher.PublishedEvents[0]);
-            Assert.AreEqual("fileId", ((FileLockChangedMessage)eventPublisher.PublishedEvents[0]).FileId);
-            Assert.IsFalse((((FileLockChangedMessage)eventPublisher.PublishedEvents[0]).NewLock.IsLockPresent));
+            
+            var publishedEvent = eventPublisher.VerifyPublishedOnce<FileLockChangedMessage>();
+            Assert.IsFalse(publishedEvent.NewLock.IsLockPresent);
         }
         
         [Test]

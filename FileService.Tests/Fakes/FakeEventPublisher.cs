@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using EventBus;
 using FileService.Infrastructure;
+using NUnit.Framework;
 
 namespace FileService.Tests.Fakes
 {
     public class FakeEventPublisher : IPostCommitEventPublisher, IPublisherWrapper 
     {
-        public List<object> PublishedEvents { get; } = new List<object>();
+        private List<object> PublishedEvents { get; } = new List<object>();
         
         public void PublishAfterCommit<TEvent, TMessage>(TMessage message) where TEvent : IEvent<TMessage>
         {
@@ -18,9 +19,11 @@ namespace FileService.Tests.Fakes
             PublishedEvents.Add(message);
         }
 
-        public FakeEventPublisher Verify()
+        public TMessage VerifyPublishedOnce<TMessage>()
         {
-            return this;
+            Assert.AreEqual(1, PublishedEvents.Count);
+            Assert.IsInstanceOf<TMessage>(PublishedEvents[0]);
+            return (TMessage) PublishedEvents[0];
         }
     }
 }
