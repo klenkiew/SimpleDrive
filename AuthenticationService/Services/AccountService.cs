@@ -1,21 +1,20 @@
 ﻿using System.Threading.Tasks;
 using AuthenticationService.Dto;
 using AuthenticationService.Model;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace AuthenticationService.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<User> userManager;
+        private readonly IUserManager userManager;
         private readonly ITokenService tokenService;
         private readonly ILogger<AccountService> logger;
         private readonly IEmailConfirmationService emailConfirmationService;
         private readonly IEmailConfirmationSender emailConfirmationSender;
 
         public AccountService(
-            UserManager<User> userManager,
+            IUserManager userManager,
             IEmailConfirmationService emailConfirmationService,
             IEmailConfirmationSender emailConfirmationSender,
             ITokenService tokenService,
@@ -41,9 +40,8 @@ namespace AuthenticationService.Services
             if (user.EmailConfirmed)
                 return OperationResult.Invalid($"User with id {userId} already has a confirmed e-mail");
 
-            IdentityResult result = await emailConfirmationService.ConfirmEmail(user, token);
-
-            return result.ToOperationResult();
+            OperationResult result = await emailConfirmationService.ConfirmEmail(user, token);
+            return result;
         }
 
         public async Task<OperationResult> ResendConfirmationEmail(string email, string password)
@@ -88,9 +86,9 @@ namespace AuthenticationService.Services
         {
             User user = await userManager.FindByIdAsync(userId);
 
-            IdentityResult result = await emailConfirmationService.ConfirmEmailChange(user, email, token);
+            OperationResult result = await emailConfirmationService.ConfirmEmailChange(user, email, token);
             
-            if (!result.Succeeded) return result.ToOperationResult().Cast<JwtToken>();
+            if (!result.IsValid) return result.Cast<JwtToken>();
             
             // the information in the user's token is stale after the e-mail change
             // - generate and send a new token with current user info  
@@ -102,9 +100,7 @@ namespace AuthenticationService.Services
         {
             User user = await userManager.FindByIdAsync(userId);
 
-            IdentityResult result = await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
-
-            return result.ToOperationResult();
+            return await userManager.ChangePasswordAsync(user, currentPassword, newPassword);
         }
     }
 }

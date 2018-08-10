@@ -33,7 +33,7 @@ namespace AuthenticationService.Services
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> ConfirmEmail(User user, string token)
+        public Task<OperationResult> ConfirmEmail(User user, string token)
         {
             throw new InvalidOperationException("The e-mail confirmation feature is currently disabled.");
         }
@@ -45,7 +45,7 @@ namespace AuthenticationService.Services
             await userManager.ChangeEmailAsync(user, newEmail, token);
         }
 
-        public Task<IdentityResult> ConfirmEmailChange(User user, string newEmail, string token)
+        public Task<OperationResult> ConfirmEmailChange(User user, string newEmail, string token)
         {
             throw new InvalidOperationException("The e-mail confirmation feature is currently disabled.");
         }

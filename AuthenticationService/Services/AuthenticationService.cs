@@ -5,25 +5,24 @@ using AuthenticationService.Dto;
 using AuthenticationService.Model;
 using CommonEvents;
 using EventBus;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace AuthenticationService.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly UserManager<User> userManager;
-        private readonly SignInManager<User> signInManager;
+        private readonly IUserManager userManager;
+        private readonly ISignInManager signInManager;
         private readonly ITokenService tokenService;
-        private readonly IEventBusWrapper eventBus;
+        private readonly IPublisherWrapper eventBus;
         private readonly ILogger<AuthenticationService> logger;
         private readonly IEmailConfirmationSender emailConfirmationService;
 
         public AuthenticationService(
-            UserManager<User> userManager, 
-            SignInManager<User> signInManager, 
+            IUserManager userManager, 
+            ISignInManager signInManager, 
             ITokenService tokenService, 
-            IEventBusWrapper eventBus, 
+            IPublisherWrapper eventBus, 
             ILogger<AuthenticationService> logger, 
             IEmailConfirmationSender emailConfirmationService)
         {
@@ -44,9 +43,9 @@ namespace AuthenticationService.Services
                 Email = email
             };
 
-            IdentityResult result = await userManager.CreateAsync(user, password);
+            OperationResult result = await userManager.CreateAsync(user, password);
 
-            if (!result.Succeeded) return result.ToOperationResult();
+            if (!result.IsValid) return result;
 
             eventBus.Publish<UserRegisteredEvent, UserInfo>(new UserInfo(user.Id, user.Username, user.Email));
 
@@ -77,10 +76,10 @@ namespace AuthenticationService.Services
             if (user == null)
                 return OperationResult<JwtToken>.Invalid("Login failed: invalid e-mail or password.");
 
-            SignInResult result = await signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+            OperationResult result = await signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
 
-            if (!result.Succeeded)
-                return result.ToOperationResult().Cast<JwtToken>();
+            if (!result.IsValid)
+                return result.Cast<JwtToken>();
 
             var encodedToken = tokenService.BuildToken(user);
             return OperationResult<JwtToken>.Valid(new JwtToken(encodedToken));

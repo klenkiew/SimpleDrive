@@ -45,14 +45,14 @@ namespace AuthenticationService.Services
             await SendEmailChangeConfirmationEmail(user, newEmail);
         }
 
-        public Task<IdentityResult> ConfirmEmail(User user, string token)
+        public async Task<OperationResult> ConfirmEmail(User user, string token)
         {
-            return userManager.ConfirmEmailAsync(user, token);
+            return (await userManager.ConfirmEmailAsync(user, token)).ToOperationResult();
         }
 
-        public Task<IdentityResult> ConfirmEmailChange(User user, string newEmail, string token)
+        public async Task<OperationResult> ConfirmEmailChange(User user, string newEmail, string token)
         {
-            return userManager.ChangeEmailAsync(user, newEmail, token);
+            return (await userManager.ChangeEmailAsync(user, newEmail, token)).ToOperationResult();
         }
 
         public void Dispose()

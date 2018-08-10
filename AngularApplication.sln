@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularApplication", "AngularApplication\AngularApplication.csproj", "{C7F213D3-0C98-41C7-8B05-11B0768B4EA1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{A6AA812D-3B4B-463B-9C1C-61D06B56EE60}"
@@ -19,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Libraries\Common\Common.csproj", "{EDE7979E-249D-44CB-A1E9-698C2CCB50F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileService.Tests", "FileService.Tests\FileService.Tests.csproj", "{1243F0A2-02C5-4894-970B-CE8D1B887991}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticationService.Tests", "AuthenticationService.Tests\AuthenticationService.Tests.csproj", "{89567AC2-25AA-493F-BAFB-B8305327148D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,5 +69,9 @@ Global
 		{1243F0A2-02C5-4894-970B-CE8D1B887991}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1243F0A2-02C5-4894-970B-CE8D1B887991}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1243F0A2-02C5-4894-970B-CE8D1B887991}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89567AC2-25AA-493F-BAFB-B8305327148D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89567AC2-25AA-493F-BAFB-B8305327148D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89567AC2-25AA-493F-BAFB-B8305327148D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89567AC2-25AA-493F-BAFB-B8305327148D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

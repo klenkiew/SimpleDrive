@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationService.Services
 {
-    internal class UsersService : IUsersService
+    public class UsersService : IUsersService
     {
         private readonly UserDbContext db;
 

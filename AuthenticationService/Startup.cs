@@ -100,6 +100,9 @@ namespace AuthenticationService
             services.AddTransient<IUsersService, UsersService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
+            
+            services.AddScoped<IUserManager, UserManagerAdapter>();
+            services.AddScoped<ISignInManager, SignInManagerAdapter>();
 
             if (requireEmailConfirmation)
             {
@@ -129,6 +132,8 @@ namespace AuthenticationService
             services.AddSingleton<IEventBus, StringEventBusAdapter>();
             services.AddSingleton<ITypedEventBus<string>, RedisEventBus>();
             services.AddSingleton<IEventBusWrapper, EventBusWrapper>();
+            services.AddSingleton<IPublisherWrapper>(provider => provider.GetService<IEventBusWrapper>());
+            services.AddSingleton<ISubscriberWrapper>(provider => provider.GetService<IEventBusWrapper>());
             services.AddSingleton<IRedisConnectionFactory, RedisConnectionFactory>();
             services.AddSingleton<ISerializer, JsonSerializer>();
             
