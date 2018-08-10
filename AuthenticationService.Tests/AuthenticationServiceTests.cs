@@ -13,6 +13,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Register_creates_user_publishes_event_and_sends_email()
         {
+            // Arrange
             ISignInManager signInManager = Mock.Of<ISignInManager>();
             ITokenService tokenService = Mock.Of<ITokenService>();
             
@@ -25,8 +26,10 @@ namespace AuthenticationService.Tests
             var service = new Services.AuthenticationService(
                 userManager.Object, signInManager, tokenService, eventBus.Object, logger.Object, confirmationSender.Object);
 
+            // Act
             OperationResult result = service.RegisterUser("username", "email", "password").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             userManager.VerifyUserCreated("username", "email", "password");
             eventBus.VerifyEventPublished<UserRegisteredEvent, UserInfo>(u => u.Username == "username" && u.Email == "email");
@@ -36,6 +39,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Create_token_succeeds_with_correct_email_and_password()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -62,8 +66,10 @@ namespace AuthenticationService.Tests
                 userManager.Object, signInManager.Object, tokenService.Object, eventBus.Object, logger.Object, 
                 confirmationSender.Object);
 
+            // Act
             OperationResult<JwtToken> result = service.CreateToken("email", "password").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             Assert.AreEqual("userId_token", result.Result.Token);
         }
@@ -71,6 +77,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Refresh_token_succeeds_for_existing_user()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -97,8 +104,10 @@ namespace AuthenticationService.Tests
                 userManager.Object, signInManager.Object, tokenService.Object, eventBus.Object, logger.Object, 
                 confirmationSender.Object);
 
+            // Act
             OperationResult<JwtToken> result = service.RefreshToken("userId").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             Assert.AreEqual("userId_token", result.Result.Token);
         }

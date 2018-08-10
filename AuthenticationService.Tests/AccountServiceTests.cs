@@ -10,6 +10,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void After_confirm_email_call_users_email_is_confirmed()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -34,8 +35,10 @@ namespace AuthenticationService.Tests
             var service = new AccountService(
                 userManager.Object, emailConfirmationService.Object, confirmationSender.Object, tokenService.Object, logger.Object);
 
+            // Act
             OperationResult result = service.ConfirmEmail("userId", "userId_token").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             Assert.True(user.EmailConfirmed);
         }
@@ -43,6 +46,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Email_confirmation_can_be_resent()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -68,8 +72,10 @@ namespace AuthenticationService.Tests
             var service = new AccountService(
                 userManager.Object, emailConfirmationService.Object, confirmationSender.Object, tokenService.Object, logger.Object);
 
+            // Act
             OperationResult result = service.ResendConfirmationEmail("mail@mail.com", "password").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             confirmationSender.VerifyEmailSent("username", "mail@mail.com");
         }
@@ -77,6 +83,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Users_email_can_be_changed()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -102,8 +109,10 @@ namespace AuthenticationService.Tests
             var service = new AccountService(
                 userManager.Object, emailConfirmationService.Object, confirmationSender.Object, tokenService.Object, logger.Object);
 
+            // Act
             OperationResult result = service.ChangeEmail("userId", "newmail@mail.com", "password").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             Assert.AreEqual("newmail@mail.com", user.Email);
         }
@@ -111,6 +120,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Users_password_can_be_changed()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -136,8 +146,10 @@ namespace AuthenticationService.Tests
             var service = new AccountService(
                 userManager.Object, emailConfirmationService.Object, confirmationSender.Object, tokenService.Object, logger.Object);
 
+            // Act
             OperationResult result = service.ChangePassword("userId", "password", "newPassword").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             Assert.AreEqual("newPassword", user.PasswordHash);
         }
@@ -145,6 +157,7 @@ namespace AuthenticationService.Tests
         [Test]
         public void Email_change_can_be_confirmed()
         {
+            // Arrange
             var user = new User()
             {
                 Id = "userId",
@@ -170,8 +183,10 @@ namespace AuthenticationService.Tests
             var service = new AccountService(
                 userManager.Object, emailConfirmationService.Object, confirmationSender.Object, tokenService.Object, logger.Object);
 
+            // Act
             OperationResult result = service.ConfirmEmailChange("userId", "newmail@mail.com", "userId_token").Result;
             
+            // Assert
             Assert.True(result.IsValid);
             emailConfirmationService.VerifyEmailChangeConfirmed(user, "newmail@mail.com", "userId_token");
         }
