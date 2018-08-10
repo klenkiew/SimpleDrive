@@ -1,6 +1,6 @@
 ﻿using Cache;
 
-namespace FileService.Queries
+namespace FileService.Queries.Decorators
 {
     internal class CachedQuery<TQuery, TResult> : IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
     {

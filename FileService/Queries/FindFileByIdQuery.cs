@@ -1,5 +1,4 @@
 ﻿using FileService.Dto;
-using FileService.Model;
 
 namespace FileService.Queries
 {

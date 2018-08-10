@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Serialization;
 
-namespace FileService.Queries
+namespace FileService.Queries.Decorators
 {
     public class LoggedQuery <TQuery, TResult>  : IQueryHandler<TQuery, TResult> where TQuery : IQuery<TResult>
     {

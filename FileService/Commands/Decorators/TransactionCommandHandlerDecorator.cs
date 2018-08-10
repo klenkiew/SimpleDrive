@@ -1,6 +1,6 @@
 ﻿using FileService.Database;
 
-namespace FileService.Commands
+namespace FileService.Commands.Decorators
 {
     internal class TransactionCommandHandlerDecorator<T> : ICommandHandler<T>
     {

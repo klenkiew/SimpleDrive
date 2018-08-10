@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace FileService.Commands
+namespace FileService.Commands.Decorators
 {
     internal class CommandValidatorDecorator<TCommand> : ICommandHandler<TCommand>
     {
