@@ -32,7 +32,7 @@ namespace FileService.Tests.Fakes
         public UserDto GetLockOwner(File file)
         {
             fileToLockOwnerMap.TryGetValue(file, out User lockOwner);
-            return lockOwner != null ? new UserDto(lockOwner.Id, lockOwner.Username, "N/A") : null;
+            return lockOwner != null ? new UserDto(lockOwner.Id, lockOwner.Username) : null;
         }
 
         public bool IsLocked(File file)

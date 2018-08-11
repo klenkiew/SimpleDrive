@@ -6,11 +6,6 @@ using FileService.Exceptions;
 
 namespace FileService.Model
 {
-    public interface IEntity
-    {
-        string Id { get; }
-    }
-
     public class File : IEntity
     {
         public virtual string Id { get; private set; }
@@ -28,8 +23,10 @@ namespace FileService.Model
 
         private File() {}
 
-        public File(string fileName, string description, long size, string mimeType, DateTime dateCreated, User owner)
+        public File(string id, string fileName, string description, long size, string mimeType, DateTime dateCreated, 
+            User owner) 
         {
+            Id = id;
             FileName = fileName;
             Description = description;
             Size = size;

@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Net.Sockets;
 using CommonEvents;
 using EventBus;
-using FileService.Database;
 using FileService.Database.EntityFramework;
 using FileService.Dto;
 using FileService.Infrastructure.HttpClient;
@@ -51,13 +50,19 @@ namespace FileService.Infrastructure
         private void FetchExistingUsers()
         {
             logger.LogInformation("Fetching existing users from the Authentication Service");
-            var users = httpClientWrapper.Get<IEnumerable<UserDto>>("http://localhost:5000/api/Users/GetAllUsers");
+
+            IEnumerable<UserDto> users = httpClientWrapper
+                .Get<IEnumerable<UserInfo>>(
+                    "http://localhost:5000/api/Users/GetAllUsers")
+                .Select(u => new UserDto(u.Id, u.Username));
+            
             logger.LogInformation("Existing users fetched successfully");
+            
             using (var scope = this.dbContextScopeFactory.CreateScope())
             {
                 var dbContext = scope.GetService();
                 const string ignoredFieldsValue = "ignore";
-                var dbUsers = dbContext.Users.Select(u => new UserDto(u.Id, ignoredFieldsValue, ignoredFieldsValue)).ToList();
+                var dbUsers = dbContext.Users.Select(u => new UserDto(u.Id, ignoredFieldsValue)).ToList();
                 var existingUsers = new HashSet<UserDto>(dbUsers, new UserDtoEqualityComparer());
                 int newUsersCount = 0;
                 foreach (var userDto in users)
@@ -72,6 +77,13 @@ namespace FileService.Infrastructure
                 dbContext.SaveChanges();
                 logger.LogInformation("The new users successfully added to the database");    
             }
+        }
+
+        private class UserInfo
+        {
+            public string Id { get; set; }
+            public string Username { get; set; }
+            public string Email { get; set; }
         }
     }
     

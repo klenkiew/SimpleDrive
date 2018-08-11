@@ -1,34 +1,29 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using FileService.Database.EntityFramework;
+using System.Data;
+using Dapper;
 using FileService.Dto;
-using FileService.Model;
-using FileService.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace FileService.Queries
 {
     public class FindUsersBySharedFileQueryHandler : IQueryHandler<FindUsersBySharedFileQuery, IEnumerable<UserDto>>
     {
-        private readonly FileDbContext fileDb;
-        private readonly IMapper<User, UserDto> userMapper;
+        private readonly IDbConnection dbConnection;
 
-        public FindUsersBySharedFileQueryHandler(FileDbContext fileDb, IMapper<User, UserDto> userMapper)
+        public FindUsersBySharedFileQueryHandler(IDbConnection dbConnection)
         {
-            this.fileDb = fileDb;
-            this.userMapper = userMapper;
+            this.dbConnection = dbConnection;
         }
 
         public IEnumerable<UserDto> Handle(FindUsersBySharedFileQuery query)
         {
-            return fileDb.Files
-                .Where(file => file.Id == query.FileId)
-                .Include(f => f.SharedWith)
-                .ThenInclude(sharedWith => sharedWith.User)
-                .First()
-                .SharedWith
-                .Select(sh => userMapper.Map(sh.User))
-                .ToList();
+            const string sql =
+                "SELECT u.\"Id\", u.\"Username\" " +
+                "FROM \"Files\" f " +
+                "INNER JOIN \"FileShare\" s ON s.\"FileId\" = f.\"Id\" " +
+                "INNER JOIN \"Users\" u ON s.\"UserId\" = u.\"Id\" " +
+                "WHERE f.\"Id\" = @FileId";
+
+            return dbConnection.Query<UserDto>(sql, new {FileId = query.FileId});
         }
     }
 }

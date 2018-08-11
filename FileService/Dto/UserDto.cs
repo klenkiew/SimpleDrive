@@ -6,13 +6,11 @@ namespace FileService.Dto
     {
         public string Id { get; }
         public string Username { get; }
-        public string Email { get; }
-
-        public UserDto(string id, string username, string email)
+        
+        public UserDto(string id, string username)
         {
             Id = id;
             Username = username;
-            Email = email;
         }
     }
 

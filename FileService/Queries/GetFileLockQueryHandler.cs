@@ -1,31 +1,38 @@
-﻿using System.Linq;
-using FileService.Database;
-using FileService.Database.EntityFramework;
+﻿using System.Data;
+using System.Linq;
+using Dapper;
 using FileService.Dto;
-using FileService.Exceptions;
+using FileService.Model;
 using FileService.Services;
 
 namespace FileService.Queries
 {
     public class GetFileLockQueryHandler : IQueryHandler<GetFileLockQuery, FileLockDto>
     {
+        private readonly IDbConnection dbConnection;
         private readonly IFileLockingService fileLockingService;
-        private readonly FileDbContext dbContext;
+        private readonly IMapper<FileDto, File> mapper;
 
-        public GetFileLockQueryHandler(IFileLockingService fileLockingService, FileDbContext dbContext)
+        public GetFileLockQueryHandler(
+            IDbConnection dbConnection, 
+            IFileLockingService fileLockingService, 
+            IMapper<FileDto, File> mapper)
         {
+            this.dbConnection = dbConnection;
             this.fileLockingService = fileLockingService;
-            this.dbContext = dbContext;
+            this.mapper = mapper;
         }
 
         public FileLockDto Handle(GetFileLockQuery query)
         {
-            var file = dbContext.Files.FirstOrDefault(f => f.Id == query.FileId);
+            const string sql =
+                "SELECT f.\"Id\", f.\"FileName\", f.\"Description\", f.\"Size\", f.\"MimeType\", f.\"DateCreated\", f.\"DateModified\" " +
+                "FROM \"Files\" f " +
+                "WHERE f.\"Id\" = @FileId";
 
-            if (file == null)
-                throw new NotFoundException($"A file with id {query.FileId} doesn't exist in the database.");
+            FileDto fileDto = dbConnection.Query<FileDto>(sql, new {FileId = query.FileId}).FirstOrDefault();
 
-            var lockOwner = fileLockingService.GetLockOwner(file);
+            UserDto lockOwner = fileLockingService.GetLockOwner(mapper.Map(fileDto));
             return FileLockDto.ForUser(lockOwner);
         }
     }

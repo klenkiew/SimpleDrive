@@ -1,29 +1,39 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using FileService.Database.EntityFramework;
+using System.Data;
+using Dapper;
 using FileService.Dto;
-using FileService.Model;
-using FileService.Services;
 
 namespace FileService.Queries
 {
     public class FindFilesByUserQueryHandler : IQueryHandler<FindFilesByUserQuery, IEnumerable<FileDto>>
     {
-        private readonly FileDbContext fileDb;
-        private readonly IMapper<File, FileDto> fileMapper;
-        
-        public FindFilesByUserQueryHandler(FileDbContext fileDb, IMapper<File, FileDto> fileMapper)
+        private readonly IDbConnection dbConnection;
+
+        public FindFilesByUserQueryHandler(IDbConnection dbConnection)
         {
-            this.fileDb = fileDb;
-            this.fileMapper = fileMapper;
+            this.dbConnection = dbConnection;
         }
 
         public IEnumerable<FileDto> Handle(FindFilesByUserQuery query)
         {
-            return fileDb.Files
-                .Where(file => file.Owner.Id == query.UserId || file.SharedWith.Any(sw => sw.User.Id == query.UserId))
-                .Select(file => fileMapper.Map(file))
-                .ToList();
+            const string sql =
+                "SELECT " +
+                "f.\"Id\", f.\"FileName\", f.\"Description\", f.\"Size\", f.\"MimeType\", f.\"DateCreated\", f.\"DateModified\", " +
+                "u.\"Id\", u.\"Username\" " +
+                "FROM \"Files\" f " +
+                "INNER JOIN \"Users\" u ON f.\"OwnerId\" = u.\"Id\" " +
+                "LEFT JOIN \"FileShare\" s ON s.\"FileId\" = f.\"Id\" " +
+                "WHERE f.\"OwnerId\" = @UserId OR s.\"UserId\" = @UserId";
+
+            IEnumerable<FileDto> files = dbConnection.Query<FileDto, UserDto, FileDto>(
+                sql,
+                (file, user) =>
+                {
+                    file.Owner = user;
+                    return file;
+                },
+                new {UserId = query.UserId});
+            return files;
         }
     }
 }

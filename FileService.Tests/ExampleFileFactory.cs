@@ -10,7 +10,7 @@ namespace FileService.Tests
         {
             DateTime dateCreated = DateTime.ParseExact("05/05/2030", "dd/MM/yyyy", CultureInfo.InvariantCulture);
             var owner = new User(Guid.Empty.ToString(), "testUser");
-            return new File("testFile", "desc", 5, "text/plain", dateCreated, owner);
+            return new File(null, "testFile", "desc", 5, "text/plain", dateCreated, owner);
         }
     }
 }

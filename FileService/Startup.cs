@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,6 +46,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Npgsql;
 using Npgsql.Logging;
 using Redis;
 using Redis.Cache;
@@ -268,6 +271,8 @@ namespace FileService
             container.Register<IWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>,
                 FileLockChangedNotificator>(Lifestyle.Singleton);
 
+            container.Register<IDbConnection>(() => new NpgsqlConnection("Host=localhost;Database=FileServiceDb;Username=dotnetUser;Pooling=true;"), Lifestyle.Scoped);
+            
             AddAutoMapper();
             container.RegisterSingleton(typeof(IMapper<,>), typeof(Mapper<,>));
             
@@ -282,8 +287,8 @@ namespace FileService
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<File, FileDto>();
-                cfg.CreateMap<User, UserDto>().ForCtorParam("email", opt => opt.ResolveUsing(user => "N/A"));
+                cfg.CreateMap<FileDto, File>(MemberList.Source);
+                cfg.CreateMap<UserDto, User>(MemberList.Source);
             });
             config.AssertConfigurationIsValid();
             container.RegisterSingleton<IMapper>(() => new Mapper(config));

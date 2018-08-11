@@ -25,7 +25,7 @@ namespace FileService.Services
 
         public void Lock(File file, User lockedBy)
         {
-            var currentUserDto = new UserDto(lockedBy.Id, lockedBy.Username, "N/A");
+            var currentUserDto = new UserDto(lockedBy.Id, lockedBy.Username);
             var owner = lockCache.ComputeIfAbsent(file.Id, () => currentUserDto, fileLockDuration);
             
             if (owner != null)

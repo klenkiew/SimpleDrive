@@ -40,7 +40,7 @@ namespace FileService.Commands
 
             var dateCreated = DateTime.UtcNow;
             var size = command.Content.Length;
-            var file = new File(command.FileName, command.Description, size, command.MimeType, dateCreated, owner);
+            var file = new File(null, command.FileName, command.Description, size, command.MimeType, dateCreated, owner);
 
             fileRepository.Save(file);
             
