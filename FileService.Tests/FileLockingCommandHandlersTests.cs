@@ -19,7 +19,7 @@ namespace FileService.Tests
             FakeCurrentUserSource currentUserSource = new FakeCurrentUserSource();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUserSource.CurrentUser = file.Owner;
 
             var commandHandler = new AcquireFileLockCommandHandler(
@@ -50,7 +50,7 @@ namespace FileService.Tests
             User otherUser = new User("someRandomUserId", "someRandomUser");
             file.ShareWith(otherUser);
             
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUserSource.CurrentUser = otherUser;
 
             var commandHandler = new AcquireFileLockCommandHandler(
@@ -82,7 +82,7 @@ namespace FileService.Tests
             File file = new ExampleFileFactory().CreateFile();
             User otherUser = new User("someRandomUserId", "someRandomUser");
             
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUserSource.CurrentUser = otherUser;
 
             var commandHandler = new AcquireFileLockCommandHandler(
@@ -104,7 +104,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser = new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = "currentUserId";
             fileLockingService.Lock(file, new User(currentUser.Id, currentUser.Username));
             
@@ -134,7 +134,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser = new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = "currentUserId";
             fileLockingService.Lock(file, new User("someRandomUserId", "someRandomUser"));
             
@@ -157,7 +157,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser = new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = "currentUserId";
             
             var commandHandler = new RemoveFileLockCommandHandler(

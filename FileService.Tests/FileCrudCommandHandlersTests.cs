@@ -21,7 +21,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser= new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = file.Owner.Id;
 
             var commandHandler = new EditFileCommandHandler(fileRepository, currentUser, eventPublisher);
@@ -48,7 +48,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser= new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = "otherUserId";
 
             var commandHandler = new EditFileCommandHandler(fileRepository, currentUser, eventPublisher);
@@ -69,8 +69,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser= new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();
-            EntityHelper.SetId(file, "fileId");
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             fileStorage.SaveFile(file, Stream.Null);
             currentUser.Id = file.Owner.Id;
 
@@ -99,8 +98,7 @@ namespace FileService.Tests
             FakeCurrentUser currentUser= new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();
-            EntityHelper.SetId(file, "fileId");
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             fileStorage.SaveFile(file, Stream.Null);
             currentUser.Id = "otherUserId";
 

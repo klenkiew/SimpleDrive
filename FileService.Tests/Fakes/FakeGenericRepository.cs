@@ -9,11 +9,11 @@ namespace FileService.Tests.Fakes
     {
         protected virtual string EntityName { get; } = "entity";
 
-        protected readonly Dictionary<string, T> filesById = new Dictionary<string, T>();
+        protected readonly Dictionary<string, T> entitiesById = new Dictionary<string, T>();
 
         public T GetById(string id)
         {
-            return filesById.GetValueOrDefault(id, null);
+            return entitiesById.GetValueOrDefault(id, null);
         }
 
         public void Save(T entity)
@@ -22,31 +22,23 @@ namespace FileService.Tests.Fakes
             if (entity.Id == null)
                 EntityHelper.SetId(entity, Guid.NewGuid().ToString());
                 
-            if (filesById.ContainsKey(entity.Id))
-                throw new InvalidOperationException($"A {EntityName} with same id already exists.");
+            if (entitiesById.ContainsKey(entity.Id))
+                throw new InvalidOperationException($"A {EntityName} with the same id already exists.");
 
-            filesById.Add(entity.Id, entity);
-        }
-
-        public virtual void Save(T entity, string id)
-        {
-            if (filesById.ContainsKey(id))
-                throw new InvalidOperationException($"A {EntityName} with same id already exists.");
-
-            filesById.Add(id, entity);
+            entitiesById.Add(entity.Id, entity);
         }
 
         public void Update(T entity)
         {
-            if (!filesById.ContainsKey(entity.Id))
+            if (!entitiesById.ContainsKey(entity.Id))
                 throw new InvalidOperationException($"The {EntityName} to update doesn't exist.");
 
-            filesById[entity.Id] = entity;
+            entitiesById[entity.Id] = entity;
         }
 
         public void Delete(T entity)
         {
-            if (!filesById.Remove(entity.Id))
+            if (!entitiesById.Remove(entity.Id))
                 throw new InvalidOperationException($"The {EntityName} to delete doesn't exist");
         }
     }

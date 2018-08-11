@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using FileService.Model;
-using FileService.Tests.Helpers;
 
 namespace FileService.Tests.Fakes
 {
@@ -8,15 +7,9 @@ namespace FileService.Tests.Fakes
     {
         protected override string EntityName { get; } = "file";
 
-        public override void Save(File entity, string id)
-        {
-            EntityHelper.SetId(entity, id);
-            base.Save(entity, id);
-        }
-
         public File GetByName(string filename)
         {
-            return filesById.Values.FirstOrDefault(file => file.FileName == filename);
+            return entitiesById.Values.FirstOrDefault(file => file.FileName == filename);
         }
     }
 }

@@ -20,8 +20,8 @@ namespace FileService.Tests
 
             File file = new ExampleFileFactory().CreateFile();            
             User shareWith = new User("shareWithUserId", "username");
-            fileRepository.Save(file, "fileId");
-            userRepository.Save(shareWith, shareWith.Id);
+            fileRepository.Save(file);
+            userRepository.Save(shareWith);
             currentUser.Id = file.Owner.Id;
 
             var commandHandler = new ShareFileCommandHandler(
@@ -49,7 +49,7 @@ namespace FileService.Tests
 
             File file = new ExampleFileFactory().CreateFile();            
             User shareWith = new User("shareWithUserId", "username");
-            fileRepository.Save(file, "fileId");
+            fileRepository.Save(file);
             currentUser.Id = file.Owner.Id;
 
             var commandHandler = new ShareFileCommandHandler(
@@ -72,8 +72,8 @@ namespace FileService.Tests
 
             File file = new ExampleFileFactory().CreateFile();            
             User shareWith = new User("shareWithUserId", "username");
-            fileRepository.Save(file, "fileId");
-            userRepository.Save(shareWith, shareWith.Id);
+            fileRepository.Save(file);
+            userRepository.Save(shareWith);
             currentUser.Id = shareWith.Id;
 
             var commandHandler = new ShareFileCommandHandler(
@@ -96,8 +96,8 @@ namespace FileService.Tests
 
             File file = new ExampleFileFactory().CreateFile();            
             User shareWith = new User("shareWithUserId", "username");
-            fileRepository.Save(file, "fileId");
-            userRepository.Save(shareWith, shareWith.Id);
+            fileRepository.Save(file);
+            userRepository.Save(shareWith);
             file.ShareWith(shareWith);
             currentUser.Id = shareWith.Id;
 
@@ -120,8 +120,8 @@ namespace FileService.Tests
             FakeCurrentUser currentUser= new FakeCurrentUser();
 
             File file = new ExampleFileFactory().CreateFile();            
-            fileRepository.Save(file, "fileId");
-            userRepository.Save(file.Owner, file.Owner.Id);
+            fileRepository.Save(file);
+            userRepository.Save(file.Owner);
             currentUser.Id = file.Owner.Id;
 
             var commandHandler = new ShareFileCommandHandler(
