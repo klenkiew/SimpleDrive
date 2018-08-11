@@ -123,7 +123,7 @@ namespace FileService
             services.AddSignalR();
             
             services.AddEntityFrameworkNpgsql().AddDbContext<FileDbContext>(options => options
-                    .UseNpgsql("Host=localhost;Database=FileServiceDb;Username=dotnetUser;Pooling=true;"));
+                    .UseNpgsql(Configuration.GetConnectionString("CommandSide")));
             NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Info, true, true);
             
             services.AddSingleton<JsonSerializer>();
@@ -271,7 +271,8 @@ namespace FileService
             container.Register<IWebSocketHandler<CurrentLockNotificationsSubscriptionMessage>,
                 FileLockChangedNotificator>(Lifestyle.Singleton);
 
-            container.Register<IDbConnection>(() => new NpgsqlConnection("Host=localhost;Database=FileServiceDb;Username=dotnetUser;Pooling=true;"), Lifestyle.Scoped);
+            container.Register<IDbConnection>(
+                () => new NpgsqlConnection(Configuration.GetConnectionString("QuerySide")), Lifestyle.Scoped);
             
             AddAutoMapper();
             container.RegisterSingleton(typeof(IMapper<,>), typeof(Mapper<,>));

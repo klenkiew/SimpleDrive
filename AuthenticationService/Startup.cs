@@ -43,7 +43,8 @@ namespace AuthenticationService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var requireEmailConfirmation = Convert.ToBoolean(Configuration["Security:EmailConfirmation:RequireEmailConfirmation"]);
+            bool requireEmailConfirmation = 
+                Convert.ToBoolean(Configuration["Security:EmailConfirmation:RequireEmailConfirmation"]);
             
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -90,7 +91,7 @@ namespace AuthenticationService
 
 
             services.AddEntityFrameworkNpgsql().AddDbContext<UserDbContext>(options => options
-                .UseNpgsql("Host=localhost;Database=UsersDb;Username=dotnetUser;Pooling=true;"));
+                .UseNpgsql(Configuration.GetConnectionString("UserDatabase")));
             services.AddDbContext<DbContext>();
             NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Info, true, true);
             
