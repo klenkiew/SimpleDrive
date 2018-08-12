@@ -10,18 +10,18 @@ services:
       - redis-data:/data
 
   db:
-    image: postgres
-    environment:
-      POSTGRES_USER: dotnetUser
+    build: ./Database
     restart: on-failure # "no" | always | on-failure | unless-stopped   
     ports:
-      - "5432"
+      - "1433"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/opt/mssql
     network_mode: "host"
 
   angularapp:
     build: ./AngularApplication
+    environment:
+      ASPNETCORE_URLS: "http://*:4200"
     ports:
       - "4200"
     network_mode: "host"
@@ -33,6 +33,8 @@ services:
     build:
       context: .
       dockerfile: ./AuthenticationService/Dockerfile
+    environment:
+      ASPNETCORE_URLS: "http://*:5000"
     ports:
       - "5000"
     network_mode: "host"
@@ -44,6 +46,8 @@ services:
     build:
       context: .
       dockerfile: ./FileService/Dockerfile
+    environment:
+      ASPNETCORE_URLS: "http://*:5001"
     ports:
       - "5001"
     network_mode: "host"
@@ -52,7 +56,14 @@ services:
     depends_on:
       - redis
       - db
-          
+      
+  wait-for-deps:
+    build: ./DockerUtils
+    network_mode: "host"
+    depends_on:
+      - redis
+      - db
+            
 volumes:
   db-data:
   redis-data:

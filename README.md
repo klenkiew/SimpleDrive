@@ -9,7 +9,7 @@ and the usability somewhat questionable.
 
 This application runs on Linux and utilizes Docker containers for building and deployment. 
 It requires Docker and Docker Compose installed. It can be run without Docker as well, but it requires installing a few
-tools (notably Redis & Postgres) so using Docker is the preferred way.
+tools (notably Redis & SQL Server) so using Docker is the preferred way.
 
 Full build & deploy from scratch script for Arch-based distros:
 ```shell
@@ -17,7 +17,7 @@ sudo pacman -S docker docker-compose
 mkdir SimpleDrive
 cd SimpleDrive
 git clone https://github.com/klenkiew/SimpleDrive
-docker-compose up
+sh ./start.sh
 
 firefox localhost:4200
 ```

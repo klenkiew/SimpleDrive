@@ -17,4 +17,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="hosting.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

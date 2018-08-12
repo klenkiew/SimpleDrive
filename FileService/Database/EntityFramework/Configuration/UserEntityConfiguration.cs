@@ -15,8 +15,7 @@ namespace FileService.Database.EntityFramework.Configuration
 
             builder
                 .HasMany(user => user.OwnedFiles)
-                .WithOne(file => file.Owner)
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(file => file.Owner);
 
             builder
                 .HasMany(user => user.SharedFiles)

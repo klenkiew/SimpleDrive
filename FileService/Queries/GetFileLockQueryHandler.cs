@@ -26,9 +26,9 @@ namespace FileService.Queries
         public FileLockDto Handle(GetFileLockQuery query)
         {
             const string sql =
-                "SELECT f.\"Id\", f.\"FileName\", f.\"Description\", f.\"Size\", f.\"MimeType\", f.\"DateCreated\", f.\"DateModified\" " +
-                "FROM \"Files\" f " +
-                "WHERE f.\"Id\" = @FileId";
+                "SELECT f.[Id], f.[FileName], f.[Description], f.[Size], f.[MimeType], f.[DateCreated], f.[DateModified] " +
+                "FROM [Files] f " +
+                "WHERE f.[Id] = @FileId";
 
             FileDto fileDto = dbConnection.Query<FileDto>(sql, new {FileId = query.FileId}).FirstOrDefault();
 

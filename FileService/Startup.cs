@@ -46,8 +46,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Npgsql;
-using Npgsql.Logging;
 using Redis;
 using Redis.Cache;
 using Serialization;
@@ -122,9 +120,8 @@ namespace FileService
 
             services.AddSignalR();
             
-            services.AddEntityFrameworkNpgsql().AddDbContext<FileDbContext>(options => options
-                    .UseNpgsql(Configuration.GetConnectionString("CommandSide")));
-            NpgsqlLogManager.Provider = new ConsoleLoggingProvider(NpgsqlLogLevel.Info, true, true);
+            services.AddEntityFrameworkSqlServer().AddDbContext<FileDbContext>(options => options
+                    .UseSqlServer(Configuration.GetConnectionString("CommandSide")));
             
             services.AddSingleton<JsonSerializer>();
             
@@ -272,7 +269,7 @@ namespace FileService
                 FileLockChangedNotificator>(Lifestyle.Singleton);
 
             container.Register<IDbConnection>(
-                () => new NpgsqlConnection(Configuration.GetConnectionString("QuerySide")), Lifestyle.Scoped);
+                () => new SqlConnection(Configuration.GetConnectionString("QuerySide")), Lifestyle.Scoped);
             
             AddAutoMapper();
             container.RegisterSingleton(typeof(IMapper<,>), typeof(Mapper<,>));

@@ -17,11 +17,11 @@ namespace FileService.Queries
         public IEnumerable<UserDto> Handle(FindUsersBySharedFileQuery query)
         {
             const string sql =
-                "SELECT u.\"Id\", u.\"Username\" " +
-                "FROM \"Files\" f " +
-                "INNER JOIN \"FileShare\" s ON s.\"FileId\" = f.\"Id\" " +
-                "INNER JOIN \"Users\" u ON s.\"UserId\" = u.\"Id\" " +
-                "WHERE f.\"Id\" = @FileId";
+                "SELECT u.[Id], u.[Username] " +
+                "FROM [Files] f " +
+                "INNER JOIN [FileShare] s ON s.[FileId] = f.[Id] " +
+                "INNER JOIN [Users] u ON s.[UserId] = u.[Id] " +
+                "WHERE f.[Id] = @FileId";
 
             return dbConnection.Query<UserDto>(sql, new {FileId = query.FileId});
         }
