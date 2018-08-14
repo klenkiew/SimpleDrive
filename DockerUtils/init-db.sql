@@ -120,3 +120,17 @@ GO
 
 print 'Permissions granted'
 GO
+
+
+CREATE TRIGGER CascadeDeleteOwnedFilesOnUsersDelete ON [Users]
+  INSTEAD OF DELETE
+AS
+  DELETE FROM [Files] WHERE [Files].[OwnerId] IN
+                          (
+                              SELECT deleted.[Id] FROM deleted
+                          )
+  DELETE FROM [Users] WHERE [Users].[Id] IN
+                            (
+                              SELECT deleted.[Id] FROM deleted
+                            )
+GO

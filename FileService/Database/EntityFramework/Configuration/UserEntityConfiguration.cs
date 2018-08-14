@@ -15,7 +15,8 @@ namespace FileService.Database.EntityFramework.Configuration
 
             builder
                 .HasMany(user => user.OwnedFiles)
-                .WithOne(file => file.Owner);
+                .WithOne(file => file.Owner)
+                .IsRequired();
 
             builder
                 .HasMany(user => user.SharedFiles)
