@@ -6,4 +6,4 @@ WORKDIR /shell-scripts
 
 COPY . .
 
-CMD sh ./wait-for-deps.sh
+CMD sh ./init-db.sh

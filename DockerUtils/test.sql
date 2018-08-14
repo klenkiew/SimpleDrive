@@ -1,1 +1,0 @@
-print 'MSSQL ready to accept connections'

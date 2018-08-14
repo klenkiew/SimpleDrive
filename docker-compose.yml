@@ -10,7 +10,10 @@ services:
       - redis-data:/data
 
   db:
-    build: ./Database
+    image: microsoft/mssql-server-linux
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: AdminPassword1
     restart: on-failure # "no" | always | on-failure | unless-stopped   
     ports:
       - "1433"
@@ -57,7 +60,7 @@ services:
       - redis
       - db
       
-  wait-for-deps:
+  init-db:
     build: ./DockerUtils
     network_mode: "host"
     depends_on:

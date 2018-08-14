@@ -4,7 +4,7 @@
 
 echo Waiting for MSSQL to listen on the default port...
 
-while ! /opt/mssql-tools/bin/sqlcmd -S localhost -U dotnetUser -P Password1 -d UsersDb -i test.sql
+while ! /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P AdminPassword1 -d master -i init-db.sql
 do 
     echo MSSQL not ready - sleeping; 
     sleep ${SLEEP_LENGTH}; 

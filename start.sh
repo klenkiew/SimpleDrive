@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-docker-compose run --rm wait-for-deps
-docker-compose up --scale wait-for-deps=0
+docker-compose run --rm init-db
+docker-compose up --scale init-db=0
